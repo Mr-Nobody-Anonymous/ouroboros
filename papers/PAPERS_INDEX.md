@@ -18,6 +18,7 @@ This directory compiles seminal peer-reviewed research papers and preprints on a
 | **Parameter-Efficient Tuning** | *LoRA & QLoRA: Quantized Low-Rank Adaptation* | [arXiv:2106.09685](https://arxiv.org/abs/2106.09685) | Intrinsic rank factorization $W = W_0 + \frac{\alpha}{r}(BA)$ |
 | **Self-Instruct Bootstrapping** | *Self-Instruct: Aligning with Self-Generated Data* | [arXiv:2212.10560](https://arxiv.org/abs/2212.10560) | Autonomous synthetic task & pair generation |
 | **Representation Engineering** | *Representation Engineering: Transparency & Steering* | [arXiv:2310.01405](https://arxiv.org/abs/2310.01405) | Dynamic activation steering vectors $x_l' = x_l + c \cdot v_{steer}$ |
+| **Weight-Space Programming (WSP)** | *Sparks of Weight-Space Programming (MIT CSAIL)* | [arXiv/Takehi et al.](papers/Sparks_of_Weight_Space_Programming.md) | GPT-6 Astra editing 0.016% of Qwen weights; MATH-500 jumps 7.9% -> 48.1% |
 | **Self-Adapting Models (SEAL)** | *Self-Adapting Language Models (MIT CSAIL)* | [arXiv:2506.10943](https://arxiv.org/abs/2506.10943) | Autonomous self-edits with RL outer-loop weight optimization |
 | **Continual MoE Evolution** | *Self-Evolving LLMs via MoE-CL* | [arXiv:2404.14818](https://arxiv.org/abs/2404.14818) | Adversarial shared LoRA experts with task discriminators |
 | **Entropy Collapse Protection** | *AI Models Collapse on Recursive Data (MAD)* | [Nature 631, 755](https://www.nature.com/articles/s41586-024-07566-y) | Proves necessity of Golden Anchor reference memory banks |
@@ -28,6 +29,7 @@ This directory compiles seminal peer-reviewed research papers and preprints on a
 ## 🔗 Implementation Mapping
 
 Each paper's mathematical formulation maps directly into an Ouroboros module and cloned framework:
+- **Weight-Space Programming (Zero-Gradient Surgery)**: `ouroboros/core/weight_space_programmer.py`
 - **ROME / MEMIT**: `ouroboros/core/weight_editor.py` & `external/EasyEdit/`
 - **Task Vectors & Weight Merging**: `ouroboros/core/task_arithmetic.py` & `external/mergekit/`
 - **Parameter-Efficient Adaptation**: `ouroboros/core/adapter_engine.py` & `external/peft/`

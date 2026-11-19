@@ -16,6 +16,7 @@ from ouroboros.core.anchor_memory import AnchorMemoryBank
 from ouroboros.core.adversarial_critic import AdversarialCritic
 from ouroboros.core.code_mutator import CodeMutator
 from ouroboros.core.pareto_pruner import ParetoCheckpointPruner
+from ouroboros.core.weight_space_programmer import WeightSpaceProgrammer
 from ouroboros.integrations.mergekit_bridge import MergeKitBridge
 
 class TestOuroborosCore(unittest.TestCase):
@@ -31,6 +32,7 @@ class TestOuroborosCore(unittest.TestCase):
         self.critic = AdversarialCritic()
         self.coder = CodeMutator()
         self.pruner = ParetoCheckpointPruner(max_checkpoints_to_keep=2)
+        self.wsp = WeightSpaceProgrammer(target_sparsity=0.05)
         self.mergekit = MergeKitBridge()
 
     def test_lora_delta_computation(self):
@@ -103,6 +105,20 @@ class TestOuroborosCore(unittest.TestCase):
         mutated = self.coder.propose_loss_mutation(code_snippet, "dpo_beta", 0.05)
         self.assertIn("beta=0.050", mutated)
         self.assertTrue(self.coder.validate_syntax(mutated))
+
+    def test_weight_space_programming(self):
+        # Create mock down-projection matrix (64 x 128)
+        w_down = np.random.normal(0, 0.02, (64, 128)).astype(np.float32)
+        # Identify attractor vector
+        attractor = self.wsp.diagnose_repetitive_attractor(w_down)
+        self.assertEqual(attractor.shape, (64, 1))
+        # Directional ablation
+        ablated = self.wsp.surgical_directional_ablation(w_down, attractor, ablation_strength=0.5)
+        # Sparse top-K edit
+        final_w, stats = self.wsp.sparse_topk_edit(w_down, ablated, sparsity_ratio=0.016)
+        self.assertEqual(final_w.shape, w_down.shape)
+        self.assertGreater(stats["edited_weights"], 0)
+        self.assertLessEqual(stats["actual_sparsity_percentage"], 2.0)
 
     def test_mergekit_bridge_recipe(self):
         tmp_yaml = "./outputs/test_merge_recipe.yml"

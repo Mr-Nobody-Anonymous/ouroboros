@@ -21,6 +21,7 @@ from ..core.anchor_memory import AnchorMemoryBank
 from ..core.adversarial_critic import AdversarialCritic
 from ..core.code_mutator import CodeMutator
 from ..core.pareto_pruner import ParetoCheckpointPruner
+from ..core.weight_space_programmer import WeightSpaceProgrammer
 
 class RecursiveTuningLoop:
     """
@@ -47,6 +48,7 @@ class RecursiveTuningLoop:
         self.adversarial_critic = AdversarialCritic(skepticism_level=0.8)
         self.code_mutator = CodeMutator()
         self.pareto_pruner = ParetoCheckpointPruner(max_checkpoints_to_keep=2)
+        self.weight_space_programmer = WeightSpaceProgrammer()
         
         self.history: List[Dict[str, Any]] = []
 
@@ -103,7 +105,13 @@ class RecursiveTuningLoop:
             stats = self.weight_editor.inspect_matrix_stats(dare_weights)
             print(f"  [5. Task Vector DARE Merge] Norm: {stats['frobenius_norm']:.4f}, Sparsity: {stats['sparsity']*100:.1f}%")
 
-            # Step 6: Post-Tuning Verification
+            # Step 6: Zero-Gradient Weight-Space Programming Surgery (Astra on Qwen style)
+            attractor = self.weight_space_programmer.diagnose_repetitive_attractor(dare_weights)
+            ablated_w = self.weight_space_programmer.surgical_directional_ablation(dare_weights, attractor, ablation_strength=0.3)
+            final_w, wsp_stats = self.weight_space_programmer.sparse_topk_edit(dare_weights, ablated_w, sparsity_ratio=0.00016)
+            print(f"  [6. Weight-Space Programming] Directional attractor ablated on 0.016% of weights ({wsp_stats['edited_weights']} params edited).")
+
+            # Step 7: Post-Tuning Verification
             updated_scores = current_scores.copy()
             boost = np.random.uniform(0.04, 0.08)
             updated_scores[target_domain] = min(0.99, updated_scores[target_domain] + boost)
@@ -118,12 +126,12 @@ class RecursiveTuningLoop:
             )
 
             if passed:
-                print(f"  [6. Verification SUCCESS] {report}")
+                print(f"  [7. Verification SUCCESS] {report}")
                 current_scores = updated_scores
                 checkpoint_path = os.path.join(self.cycle_config.checkpoint_dir, f"generation_{gen}")
                 self.adapter_engine.save_adapter_checkpoint(checkpoint_path, metadata={"gen": gen, "scores": current_scores})
             else:
-                print(f"  [6. Verification ROLLBACK] {report} - Rolling back updates.")
+                print(f"  [7. Verification ROLLBACK] {report} - Rolling back updates.")
 
             self.history.append({
                 "generation": gen,
@@ -133,10 +141,10 @@ class RecursiveTuningLoop:
                 "checkpoint": f"generation_{gen}" if passed else None
             })
 
-            # Step 7: Checkpoint Pareto Pruning (Reclaims disk space automatically)
+            # Step 8: Checkpoint Pareto Pruning (Reclaims disk space automatically)
             pruned = self.pareto_pruner.prune_checkpoints(self.cycle_config.checkpoint_dir, self.history)
             if pruned:
-                print(f"  [7. Storage Pruning] Cleaned {len(pruned)} stale checkpoints to maintain disk headroom.")
+                print(f"  [8. Storage Pruning] Cleaned {len(pruned)} stale checkpoints to maintain disk headroom.")
 
         print(f"\n=======================================================")
         print(f"  OUROBOROS: Evolution Complete. Final Generation Scores ")

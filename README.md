@@ -116,7 +116,8 @@ ouroboros-tuner/
 │   │   ├── anchor_memory.py        # Golden Anchor Memory Replay preventing entropy collapse (MAD)
 │   │   ├── adversarial_critic.py   # Dual-agent Generator vs. Skeptic adversarial stress testing
 │   │   ├── code_mutator.py         # Autonomous loss function & hyperparameter code mutation
-│   │   └── pareto_pruner.py        # Automated Pareto-optimal checkpoint pruning to preserve disk space
+│   │   ├── pareto_pruner.py        # Automated Pareto-optimal checkpoint pruning to preserve disk space
+│   │   └── weight_space_programmer.py # Zero-gradient Weight-Space Programming (Astra on Qwen style)
 │   ├── pipeline/
 │   │   └── self_loop.py            # Recursive evolution loop orchestrator
 │   ├── integrations/
@@ -134,13 +135,14 @@ ouroboros-tuner/
 │   └── self-instruct/              # Cloned self-instruct bootstrapping engine
 ├── papers/
 │   ├── PAPERS_INDEX.md             # Complete literature taxonomy & mapping
+│   ├── Sparks_of_Weight_Space_Programming.md # WSP: Astra on Qwen (MATH-500: 7.9% -> 48.1%)
 │   ├── SEAL_and_Recent_Literature.md # MIT SEAL, MoE-CL, MAD Nature 2024, & SIA
 │   ├── ROME_and_MEMIT.md           # Factual editing mathematical breakdown
 │   ├── Task_Arithmetic_and_Weight_Vectors.md # Weight vector algebra & DARE formulation
 │   ├── Self_Rewarding_and_SPIN.md  # DPO & self-rewarding mathematical breakdown
 │   └── Automated_Self_Evolution_AI_Scientist.md # Topology & code self-mutation
 ├── tests/
-│   └── test_pipeline.py            # Comprehensive 11-test unit suite
+│   └── test_pipeline.py            # Comprehensive 12-test unit suite
 ├── requirements.txt
 └── README.md
 ```
