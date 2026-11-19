@@ -36,13 +36,6 @@ adapters/
 outputs/
 logs/
 
-# Large datasets and media caches
-*.jsonl
-*.parquet
-*.arrow
-*.gif
-external/**/data/
-
 # IDEs
 .vscode/
 .idea/
