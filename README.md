@@ -2,8 +2,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Research: arXiv Literature](https://img.shields.io/badge/Research-arXiv%20Verified-brightgreen)](papers/PAPERS_INDEX.md)
-[![Submodules: EasyEdit & MergeKit](https://img.shields.io/badge/Submodules-EasyEdit%20%7C%20MergeKit-orange)](external/)
+[![Release: v0.1.0](https://img.shields.io/badge/Release-v0.1.0-brightgreen)](https://github.com/Mr-Nobody-Anonymous/ouroboros/releases/tag/v0.1.0)
+[![Research: arXiv Literature](https://img.shields.io/badge/Research-arXiv%20Verified-blue)](papers/PAPERS_INDEX.md)
+[![Submodules: 7 Frameworks](https://img.shields.io/badge/Submodules-SEAL%20%7C%20EasyEdit%20%7C%20MergeKit-orange)](external/)
 
 **Ouroboros** is an autonomous framework engineered for Large Language Models (LLMs) to inspect, critique, and recursively fine-tune their own mathematical weight matrices, biases, internal representations, and architectures. 
 
@@ -117,7 +118,8 @@ ouroboros/
 │   │   ├── adversarial_critic.py   # Dual-agent Generator vs. Skeptic adversarial stress testing
 │   │   ├── code_mutator.py         # Autonomous loss function & hyperparameter code mutation
 │   │   ├── pareto_pruner.py        # Automated Pareto-optimal checkpoint pruning to preserve disk space
-│   │   └── weight_space_programmer.py # Zero-gradient Weight-Space Programming (Astra on Qwen style)
+│   │   ├── weight_space_programmer.py # Zero-gradient Weight-Space Programming (Astra on Qwen style)
+│   │   └── test_time_compute.py    # Test-time compute scaling, Best-of-N rollouts & STaR extraction
 │   ├── pipeline/
 │   │   └── self_loop.py            # Recursive evolution loop orchestrator
 │   ├── integrations/
@@ -135,6 +137,7 @@ ouroboros/
 │   └── self-instruct/              # Cloned self-instruct bootstrapping engine
 ├── papers/
 │   ├── PAPERS_INDEX.md             # Complete literature taxonomy & mapping
+│   ├── Test_Time_Compute_and_Reasoning_Tokens.md # STaR & Test-time scaling
 │   ├── Sparks_of_Weight_Space_Programming.md # WSP: Astra on Qwen (MATH-500: 7.9% -> 48.1%)
 │   ├── SEAL_and_Recent_Literature.md # MIT SEAL, MoE-CL, MAD Nature 2024, & SIA
 │   ├── ROME_and_MEMIT.md           # Factual editing mathematical breakdown
@@ -142,7 +145,7 @@ ouroboros/
 │   ├── Self_Rewarding_and_SPIN.md  # DPO & self-rewarding mathematical breakdown
 │   └── Automated_Self_Evolution_AI_Scientist.md # Topology & code self-mutation
 ├── tests/
-│   └── test_pipeline.py            # Comprehensive 12-test unit suite
+│   └── test_pipeline.py            # Comprehensive 13-test unit suite
 ├── requirements.txt
 └── README.md
 ```

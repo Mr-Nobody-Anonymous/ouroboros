@@ -17,6 +17,7 @@ from ouroboros.core.adversarial_critic import AdversarialCritic
 from ouroboros.core.code_mutator import CodeMutator
 from ouroboros.core.pareto_pruner import ParetoCheckpointPruner
 from ouroboros.core.weight_space_programmer import WeightSpaceProgrammer
+from ouroboros.core.test_time_compute import TestTimeComputeEngine
 from ouroboros.integrations.mergekit_bridge import MergeKitBridge
 
 class TestOuroborosCore(unittest.TestCase):
@@ -33,6 +34,7 @@ class TestOuroborosCore(unittest.TestCase):
         self.coder = CodeMutator()
         self.pruner = ParetoCheckpointPruner(max_checkpoints_to_keep=2)
         self.wsp = WeightSpaceProgrammer(target_sparsity=0.05)
+        self.ttc = TestTimeComputeEngine(default_budget_n=4)
         self.mergekit = MergeKitBridge()
 
     def test_lora_delta_computation(self):
@@ -119,6 +121,17 @@ class TestOuroborosCore(unittest.TestCase):
         self.assertEqual(final_w.shape, w_down.shape)
         self.assertGreater(stats["edited_weights"], 0)
         self.assertLessEqual(stats["actual_sparsity_percentage"], 2.0)
+
+    def test_test_time_compute(self):
+        rollouts = self.ttc.sample_rollouts("Solve integral of 2x dx", n_candidates=4)
+        self.assertEqual(len(rollouts), 4)
+        best, margin = self.ttc.verifier_rerank(rollouts)
+        self.assertIn("candidate_id", best)
+        self.assertGreaterEqual(margin, 0.0)
+        # Extract STaR pair
+        star_pair = self.ttc.extract_star_training_pair("Solve integral", "x^2 + C", rollouts)
+        if star_pair:
+            self.assertIn("curated_rationale", star_pair)
 
     def test_mergekit_bridge_recipe(self):
         tmp_yaml = "./outputs/test_merge_recipe.yml"

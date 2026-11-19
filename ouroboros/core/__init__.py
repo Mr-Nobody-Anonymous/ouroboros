@@ -1,5 +1,5 @@
 """
-Core weight manipulation, adapter fine-tuning, architecture mutation, self-evolution, memory, and weight-space programming modules.
+Core weight manipulation, adapter fine-tuning, architecture mutation, self-evolution, memory, and test-time compute modules.
 """
 from .weight_editor import WeightEditor
 from .adapter_engine import AdapterEngine
@@ -13,6 +13,7 @@ from .adversarial_critic import AdversarialCritic
 from .code_mutator import CodeMutator
 from .pareto_pruner import ParetoCheckpointPruner
 from .weight_space_programmer import WeightSpaceProgrammer
+from .test_time_compute import TestTimeComputeEngine
 
 __all__ = [
     "WeightEditor",
@@ -26,5 +27,6 @@ __all__ = [
     "AdversarialCritic",
     "CodeMutator",
     "ParetoCheckpointPruner",
-    "WeightSpaceProgrammer"
+    "WeightSpaceProgrammer",
+    "TestTimeComputeEngine"
 ]
