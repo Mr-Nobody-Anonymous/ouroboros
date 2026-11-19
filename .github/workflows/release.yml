@@ -1,0 +1,50 @@
+name: Publish reviewed core bundle
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing release tag matching the package version (for example v0.2.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  core-bundle:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate tag and build from the clean checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=$(python -c 'from ouroboros import __version__; print(__version__)')
+          test "$RELEASE_TAG" = "v$version"
+          python scripts/build_release.py
+          cd artifacts/releases
+          sha256sum -c "ouroboros-$version-core.tar.gz.sha256"
+      - name: Attach the actual archive and checksum without overwriting assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          version=$(python -c 'from ouroboros import __version__; print(__version__)')
+          gh release upload "$RELEASE_TAG" \
+            "artifacts/releases/ouroboros-$version-core.tar.gz" \
+            "artifacts/releases/ouroboros-$version-core.tar.gz.sha256"

@@ -72,4 +72,10 @@ The script produces `artifacts/releases/ouroboros-0.2.0-core.tar.gz` plus a SHA-
 
 This core archive is not falsely called a recovered 600 MB “complete model.” To obtain the complete development source tree, Git clone the repository and initialize its pinned submodules; the preserved vendored sources arrive with the clone. Obtain large models/data separately under their original licenses.
 
-Publication is a separate reviewed GitHub operation. Use a pre-release/draft for branch work, specify its actual commit, attach the generated archive/checksum if network permissions permit, and do not overwrite the historical v0.1.0 release or claim an asset uploaded merely because a release tag exists. No release builder uploads automatically.
+Publication is a separate reviewed GitHub operation. Use a pre-release/draft for branch work, specify its actual commit, attach the generated archive/checksum if network permissions permit, and do not overwrite the historical v0.1.0 release or claim an asset uploaded merely because a release tag exists. The local release builder never uploads automatically.
+
+### GitHub-side publication
+
+The [release workflow](../.github/workflows/release.yml) builds the same deterministic core archive when an authorized maintainer **publishes** a release, including a pre-release published from a draft. It checks out that tag, requires its name to equal `v` plus the package version, builds from a clean tree, checks the SHA-256, then attaches the archive/checksum using the job's scoped GitHub token. It does not install training dependencies, run external agents, include upstream trees or upload model weights. Existing same-name assets are not silently overwritten. A manual retry input is available once the workflow is on the default branch.
+
+Only the upload job receives `contents: write`; pull-request/core testing remains read-only. Review the tagged source and publication permissions before releasing. No credentials are committed or placed in generated candidates. During this refresh a direct sandbox release upload failed with `EOF` from the upload endpoint and left an empty draft; the GitHub-side workflow is the publication path, not proof of success. Check the release's actual asset list and workflow conclusion before promising a download.
