@@ -103,7 +103,7 @@ Located in the [`papers/`](papers/) directory:
 ## 📂 Repository Layout
 
 ```plaintext
-ouroboros-tuner/
+ouroboros/
 ├── ouroboros/
 │   ├── core/
 │   │   ├── weight_editor.py        # Direct tensor surgery, SVD rank updates, LoRA deltas & clamping
