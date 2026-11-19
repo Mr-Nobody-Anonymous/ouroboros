@@ -1,0 +1,30 @@
+[
+  {
+    "instruction": "Add 2 and 2. Output only the number.",
+    "target": "4",
+    "domain": "math_logic",
+    "source": "human-authored-smoke-fixture",
+    "verified": true
+  },
+  {
+    "instruction": "Add 3 and 3. Output only the number.",
+    "target": "6",
+    "domain": "math_logic",
+    "source": "human-authored-smoke-fixture",
+    "verified": true
+  },
+  {
+    "instruction": "Say exactly blue and nothing else.",
+    "target": "blue",
+    "domain": "instruction_following",
+    "source": "human-authored-smoke-fixture",
+    "verified": true
+  },
+  {
+    "instruction": "Say exactly red and nothing else.",
+    "target": "red",
+    "domain": "instruction_following",
+    "source": "human-authored-smoke-fixture",
+    "verified": true
+  }
+]

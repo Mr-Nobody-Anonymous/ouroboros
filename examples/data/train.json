@@ -1,0 +1,44 @@
+[
+  {
+    "instruction": "What is 2 + 2? Reply with the number only.",
+    "target": "4",
+    "domain": "math_logic",
+    "source": "human-authored-smoke-fixture",
+    "verified": true
+  },
+  {
+    "instruction": "What is 3 + 3? Reply with the number only.",
+    "target": "6",
+    "domain": "math_logic",
+    "source": "human-authored-smoke-fixture",
+    "verified": true
+  },
+  {
+    "instruction": "What is 4 + 4? Reply with the number only.",
+    "target": "8",
+    "domain": "math_logic",
+    "source": "human-authored-smoke-fixture",
+    "verified": true
+  },
+  {
+    "instruction": "Repeat the word blue.",
+    "target": "blue",
+    "domain": "instruction_following",
+    "source": "human-authored-smoke-fixture",
+    "verified": true
+  },
+  {
+    "instruction": "Repeat the word red.",
+    "target": "red",
+    "domain": "instruction_following",
+    "source": "human-authored-smoke-fixture",
+    "verified": true
+  },
+  {
+    "instruction": "Repeat the word green.",
+    "target": "green",
+    "domain": "instruction_following",
+    "source": "human-authored-smoke-fixture",
+    "verified": true
+  }
+]

@@ -1,157 +1,228 @@
+"""Measured, bounded candidate training with promotion, persistent provenance, and rollback.
+
+This is an experiment controller, not a claim of guaranteed recursive intelligence gains.
+The default backend is explicitly a tiny CPU classification fixture, not a language model.
 """
-Recursive Tuning Loop: The autonomous self-evolution cycle for language models.
-Integrates PEFT, Task Arithmetic, Self-Rewarding DPO, Architecture Mutation,
-Anchor Memory Replay, Adversarial Critic, Code Mutation, and Pareto Pruning.
-"""
-import os
-import json
+
+import itertools
 import time
-from typing import Dict, Any, List, Optional
+import uuid
+from dataclasses import asdict
+from pathlib import Path
+
 import numpy as np
 
+from ..backends.base import TrainingBackend
+from ..backends.numpy_backend import NumpyLoRABackend
 from ..config import RecursiveCycleConfig, TuningConfig
-from ..core.weight_editor import WeightEditor
-from ..core.adapter_engine import AdapterEngine
-from ..core.meta_feedback import MetaFeedbackGenerator
-from ..core.evaluator import SelfEvaluator
-from ..core.task_arithmetic import TaskArithmeticEngine
-from ..core.architecture_mutator import ArchitectureMutator
-from ..core.self_rewarding import SelfRewardingEngine
 from ..core.anchor_memory import AnchorMemoryBank
-from ..core.adversarial_critic import AdversarialCritic
-from ..core.code_mutator import CodeMutator
+from ..core.checkpoints import CheckpointStore, atomic_json
+from ..core.evaluator import SelfEvaluator
 from ..core.pareto_pruner import ParetoCheckpointPruner
-from ..core.weight_space_programmer import WeightSpaceProgrammer
+from ..data import DatasetBundle, Sample, curate_proposals, demo_dataset
+
 
 class RecursiveTuningLoop:
-    """
-    Executes iterative generations of self-critique, anchor blending, adversarial stress-tests,
-    adapter weight updates, task vector arithmetic, and Pareto-pruned checkpointing.
-    """
-
     def __init__(
         self,
-        cycle_config: Optional[RecursiveCycleConfig] = None,
-        tuning_config: Optional[TuningConfig] = None
+        cycle_config=None,
+        tuning_config=None,
+        *,
+        backend: TrainingBackend = None,
+        dataset: DatasetBundle = None,
+        proposal_provider=None,
+        proposal_verifier=None,
     ):
         self.cycle_config = cycle_config or RecursiveCycleConfig()
         self.tuning_config = tuning_config or TuningConfig()
-        
-        self.weight_editor = WeightEditor()
-        self.adapter_engine = AdapterEngine(self.tuning_config)
-        self.feedback_generator = MetaFeedbackGenerator()
+        self.dataset = dataset or demo_dataset()
+        self.backend = backend or NumpyLoRABackend(
+            [*self.dataset.train, *self.dataset.anchors],
+            rank=self.tuning_config.lora_r,
+            alpha=self.tuning_config.lora_alpha,
+            seed=self.cycle_config.seed,
+        )
+        if proposal_provider is not None and proposal_verifier is None:
+            raise ValueError("Self-generated curricula require an independent proposal_verifier")
+        self.proposal_provider = proposal_provider
+        self.proposal_verifier = proposal_verifier
+        self.history = []
+        self.run_id = uuid.uuid4().hex
+        self.run_directory = Path(self.cycle_config.output_dir) / self.run_id
+        self.checkpoint_directory = Path(self.cycle_config.checkpoint_dir) / self.run_id
         self.evaluator = SelfEvaluator()
-        self.task_arithmetic = TaskArithmeticEngine()
-        self.architecture_mutator = ArchitectureMutator()
-        self.self_rewarding = SelfRewardingEngine()
-        self.anchor_memory = AnchorMemoryBank(anchor_ratio=0.25)
-        self.adversarial_critic = AdversarialCritic(skepticism_level=0.8)
-        self.code_mutator = CodeMutator()
-        self.pareto_pruner = ParetoCheckpointPruner(max_checkpoints_to_keep=2)
-        self.weight_space_programmer = WeightSpaceProgrammer()
-        
-        self.history: List[Dict[str, Any]] = []
+        self.anchor_memory = AnchorMemoryBank(
+            self.cycle_config.anchor_ratio,
+            [s.as_dict() for s in self.dataset.anchors],
+            seed=self.cycle_config.seed,
+        )
+        if self.cycle_config.anchor_ratio and not self.dataset.anchors:
+            raise ValueError("Positive anchor_ratio requires explicitly verified replay data")
+        self.pareto_pruner = ParetoCheckpointPruner(self.cycle_config.max_checkpoints)
+        self._has_run = False
 
-    def run_cycle(self, max_generations: Optional[int] = None) -> List[Dict[str, Any]]:
-        """
-        Runs the full recursive loop across multiple generations.
-        """
-        generations = max_generations or self.cycle_config.max_generations
-        print(f"\n=======================================================")
-        print(f"  OUROBOROS: Autonomous Recursive Evolution Pipeline   ")
-        print(f"  Target Generations: {generations}                   ")
-        print(f"=======================================================\n")
-
-        current_scores = self.evaluator.baseline_scores.copy()
-        print(f"[Gen 0 - Base] Starting Baseline Scores:")
-        for k, v in current_scores.items():
-            print(f"   • {k:22s}: {v*100:5.1f}%")
-
-        d_model = 256
-        self.adapter_engine.initialize_lora_layers(["q_proj", "v_proj"], in_features=d_model, out_features=d_model)
-
-        for gen in range(1, generations + 1):
-            print(f"\n>>> Generation {gen}/{generations} Evolution Cycle Started")
-            
-            # Step 1: Self-Diagnosis
-            target_domain = self.feedback_generator.diagnose_weakness(current_scores)
-            print(f"  [1. Self-Diagnosis] Weakest vector: '{target_domain}' ({current_scores[target_domain]*100:.1f}%)")
-
-            # Step 2: Curriculum & Golden Anchor Blending (Entropy Collapse Protection)
-            synthetic_curriculum = self.feedback_generator.synthesize_curriculum_batch(target_domain, batch_size=4)
-            blended_curriculum = self.anchor_memory.blend_curriculum(synthetic_curriculum)
-            dpo_pairs = self.self_rewarding.synthesize_dpo_dataset([c["instruction"] for c in blended_curriculum])
-            print(f"  [2. Anchor Blending] Curated {len(blended_curriculum)} training pairs ({len(dpo_pairs)} DPO pairs) blended with Golden Memory anchors.")
-
-            # Step 3: Adversarial Stress Test
-            challenges = self.adversarial_critic.generate_adversarial_challenges(count=2)
-            print(f"  [3. Adversarial Red-Team] Deployed {len(challenges)} reasoning pitfall tests.")
-
-            # Step 4: Weight Adjustment (LoRA Gradient Step)
-            grad_b = np.random.normal(0, 0.01, (d_model, self.tuning_config.lora_r)).astype(np.float32)
-            grad_a = np.random.normal(0, 0.01, (self.tuning_config.lora_r, d_model)).astype(np.float32)
-            loss_step = self.adapter_engine.train_step("q_proj", grad_b, grad_a)
-            print(f"  [4. Parameter Tuning] LoRA gradient step executed. Loss: {loss_step:.4e}")
-
-            # Step 5: Task Vector Extraction & DARE Sparing
-            sample_delta = self.weight_editor.compute_lora_delta(
-                self.adapter_engine.active_adapters["q_proj"]["lora_A"],
-                self.adapter_engine.active_adapters["q_proj"]["lora_B"],
-                alpha=self.tuning_config.lora_alpha,
-                r=self.tuning_config.lora_r
+    def _evaluate(self):
+        predictions = self.backend.predict([s.instruction for s in self.dataset.validation])
+        if len(predictions) != len(self.dataset.validation):
+            raise ValueError("Backend returned the wrong number of predictions")
+        suite = {}
+        for sample, prediction in zip(self.dataset.validation, predictions):
+            suite.setdefault(sample.domain, []).append(
+                {"prediction": prediction, "target": sample.target}
             )
-            base_w = np.zeros_like(sample_delta)
-            dare_weights = self.task_arithmetic.dare_merge(base_w, [sample_delta], drop_rate=0.4)
-            stats = self.weight_editor.inspect_matrix_stats(dare_weights)
-            print(f"  [5. Task Vector DARE Merge] Norm: {stats['frobenius_norm']:.4f}, Sparsity: {stats['sparsity']*100:.1f}%")
+        return self.evaluator.evaluate_generation(suite), predictions
 
-            # Step 6: Zero-Gradient Weight-Space Programming Surgery (Astra on Qwen style)
-            attractor = self.weight_space_programmer.diagnose_repetitive_attractor(dare_weights)
-            ablated_w = self.weight_space_programmer.surgical_directional_ablation(dare_weights, attractor, ablation_strength=0.3)
-            final_w, wsp_stats = self.weight_space_programmer.sparse_topk_edit(dare_weights, ablated_w, sparsity_ratio=0.00016)
-            print(f"  [6. Weight-Space Programming] Directional attractor ablated on 0.016% of weights ({wsp_stats['edited_weights']} params edited).")
+    def _persist(self, manifest):
+        atomic_json(self.run_directory / "run.json", {**manifest, "history": self.history})
 
-            # Step 7: Post-Tuning Verification
-            updated_scores = current_scores.copy()
-            boost = np.random.uniform(0.04, 0.08)
-            updated_scores[target_domain] = min(0.99, updated_scores[target_domain] + boost)
-            
-            for domain in updated_scores:
-                if domain != target_domain:
-                    updated_scores[domain] = max(0.0, updated_scores[domain] + np.random.uniform(-0.01, 0.02))
-
-            passed, report = self.evaluator.verify_improvement(
-                updated_scores, 
-                forgetting_threshold=self.cycle_config.forgetting_threshold
+    def run_cycle(self, max_generations=None):
+        if self._has_run:
+            raise RuntimeError(
+                "A loop instance can run only once; create a new run for another experiment"
             )
-
-            if passed:
-                print(f"  [7. Verification SUCCESS] {report}")
-                current_scores = updated_scores
-                checkpoint_path = os.path.join(self.cycle_config.checkpoint_dir, f"generation_{gen}")
-                self.adapter_engine.save_adapter_checkpoint(checkpoint_path, metadata={"gen": gen, "scores": current_scores})
-            else:
-                print(f"  [7. Verification ROLLBACK] {report} - Rolling back updates.")
-
-            self.history.append({
-                "generation": gen,
-                "targeted_domain": target_domain,
-                "scores": current_scores.copy(),
-                "passed": passed,
-                "checkpoint": f"generation_{gen}" if passed else None
-            })
-
-            # Step 8: Checkpoint Pareto Pruning (Reclaims disk space automatically)
-            pruned = self.pareto_pruner.prune_checkpoints(self.cycle_config.checkpoint_dir, self.history)
-            if pruned:
-                print(f"  [8. Storage Pruning] Cleaned {len(pruned)} stale checkpoints to maintain disk headroom.")
-
-        print(f"\n=======================================================")
-        print(f"  OUROBOROS: Evolution Complete. Final Generation Scores ")
-        print(f"=======================================================")
-        for k, v in current_scores.items():
-            diff = (v - self.evaluator.baseline_scores[k]) * 100
-            sign = "+" if diff >= 0 else ""
-            print(f"   • {k:22s}: {v*100:5.1f}% ({sign}{diff:.1f}%)")
-
+        generations = (
+            self.cycle_config.max_generations if max_generations is None else max_generations
+        )
+        if type(generations) is not int or generations < 1:
+            raise ValueError("max_generations must be a positive integer")
+        self._has_run = True
+        self.run_directory.mkdir(parents=True, exist_ok=False)
+        store = CheckpointStore(
+            self.checkpoint_directory, self.run_id, self.cycle_config.min_free_disk_bytes
+        )
+        started = time.monotonic()
+        deadline = started + self.cycle_config.max_seconds
+        current_scores, base_predictions = self._evaluate()
+        self.evaluator.baseline_scores = current_scores.copy()
+        baseline = store.save(
+            self.backend,
+            0,
+            scores=current_scores,
+            metadata={"dataset_sha256": self.dataset.fingerprint()},
+        )
+        latest = baseline
+        manifest = {
+            "schema_version": 1,
+            "run_id": self.run_id,
+            "backend": self.backend.describe(),
+            "measurement": "normalized_exact_match",
+            "dataset_sha256": self.dataset.fingerprint(),
+            "config": {"cycle": asdict(self.cycle_config), "tuning": asdict(self.tuning_config)},
+            "baseline_scores": current_scores.copy(),
+            "baseline_predictions": base_predictions,
+            "latest_checkpoint": latest,
+            "checkpoint_directory": str(self.checkpoint_directory.resolve()),
+            "status": "running",
+        }
+        self._persist(manifest)
+        print(
+            f"[Ouroboros] {self.backend.name}; run {self.run_id}; measured baseline {current_scores}"
+        )
+        for generation in range(1, generations + 1):
+            if time.monotonic() >= deadline:
+                manifest["status"] = "budget_exhausted"
+                break
+            # An experiment targets its weakest measured domain, but keeps all supplied training data.
+            target = min(current_scores, key=lambda domain: (current_scores[domain], domain))
+            training = list(self.dataset.train)
+            proposal_count = 0
+            if self.proposal_provider is not None:
+                proposals = list(
+                    itertools.islice(self.proposal_provider(target, tuple(training)), 32)
+                )
+                curated = curate_proposals(
+                    proposals, self.dataset.validation, self.proposal_verifier
+                )
+                # Revalidate both generated and existing labels before any weight updates.
+                training = DatasetBundle(
+                    [*training, *curated], self.dataset.validation, self.dataset.anchors
+                ).train
+                proposal_count = len(curated)
+            blended = [
+                Sample.from_dict(row)
+                for row in self.anchor_memory.blend_curriculum([s.as_dict() for s in training])
+            ]
+            snapshot = self.backend.snapshot()
+            before = current_scores.copy()
+            record = {
+                "generation": generation,
+                "targeted_domain": target,
+                "previous_scores": before,
+                "training_examples": len(blended),
+                "anchor_examples": sum(s.is_anchor for s in blended),
+                "verified_proposals": proposal_count,
+                "checkpoint": None,
+                "passed": False,
+            }
+            try:
+                metrics = self.backend.train(
+                    blended,
+                    self.tuning_config,
+                    max_steps=self.cycle_config.max_train_steps,
+                    deadline=deadline,
+                )
+                if metrics.get("steps", 0) < 1:
+                    raise RuntimeError("No optimization step completed within the budget")
+                if metrics.get("loss") is None or not np.isfinite(metrics["loss"]):
+                    raise FloatingPointError("Backend did not return a finite measured loss")
+                candidate_scores, predictions = self._evaluate()
+                passed, reason = self.evaluator.verify_improvement(
+                    candidate_scores,
+                    forgetting_threshold=self.cycle_config.forgetting_threshold,
+                    previous_scores=before,
+                    improvement_threshold=self.cycle_config.improvement_threshold,
+                )
+                record.update(
+                    training=metrics,
+                    candidate_scores=candidate_scores,
+                    candidate_predictions=predictions,
+                    reason=reason,
+                )
+                if passed:
+                    checkpoint = store.save(
+                        self.backend,
+                        generation,
+                        scores=candidate_scores,
+                        parent=latest,
+                        metadata={
+                            "dataset_sha256": self.dataset.fingerprint(),
+                            "training": metrics,
+                        },
+                    )
+                    current_scores, latest = candidate_scores, checkpoint
+                    record.update(passed=True, checkpoint=checkpoint)
+                else:
+                    self.backend.restore(snapshot)
+            except BaseException as exc:
+                # Restore even on cancellation; system-exit/interrupt still propagate to the caller.
+                self.backend.restore(snapshot)
+                if not isinstance(exc, Exception):
+                    manifest["status"] = "interrupted"
+                    record.update(reason=type(exc).__name__, error=True, scores=before)
+                    self.history.append(record)
+                    self._persist(manifest)
+                    raise
+                record.update(reason=f"{type(exc).__name__}: {exc}", error=True)
+            record["scores"] = current_scores.copy()
+            self.history.append(record)
+            manifest["latest_checkpoint"] = latest
+            self._persist(manifest)
+            # Only this run's managed checkpoints can be removed; baseline/current are immutable anchors.
+            self.pareto_pruner.prune_checkpoints(
+                self.checkpoint_directory,
+                run_id=self.run_id,
+                protected=(baseline, latest),
+                apply=True,
+            )
+            print(
+                f"[Generation {generation}] {'PROMOTED' if record['passed'] else 'ROLLED BACK'}: {record['reason']}"
+            )
+            if record.get("error"):
+                manifest["status"] = "failed"
+                break
+        if manifest["status"] == "running":
+            manifest["status"] = "completed"
+        manifest.update(final_scores=current_scores, elapsed_seconds=time.monotonic() - started)
+        self._persist(manifest)
+        print(f"[Ouroboros] Report: {self.run_directory / 'run.json'}")
         return self.history

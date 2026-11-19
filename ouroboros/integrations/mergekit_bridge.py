@@ -1,90 +1,85 @@
-"""
-MergeKit Bridge: Integrates Ouroboros with the MergeKit weight merging framework.
-"""
-import os
-import sys
-import yaml
-from typing import Dict, Any, List, Optional
+"""Validated mergekit recipes and explicit opt-in execution in a separate environment."""
 
-MERGEKIT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "external", "mergekit"))
-if os.path.exists(MERGEKIT_PATH) and MERGEKIT_PATH not in sys.path:
-    sys.path.insert(0, MERGEKIT_PATH)
+import math
+import shutil
+import subprocess
+from pathlib import Path
+
+import yaml
+
 
 class MergeKitBridge:
-    """
-    Interfaces Ouroboros directly with MergeKit configuration generators
-    for TIES, SLERP, DARE, and Passthrough (Frankenmerge) execution.
-    """
+    @property
+    def is_available(self):
+        return shutil.which("mergekit-yaml") is not None
 
-    def __init__(self):
-        self.is_available = os.path.exists(MERGEKIT_PATH)
+    @staticmethod
+    def _write(recipe, path):
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(yaml.safe_dump(recipe, sort_keys=False), encoding="utf-8")
+        return str(path)
 
     def generate_slerp_recipe(
-        self,
-        base_model_a: str,
-        base_model_b: str,
-        output_yaml_path: str,
-        interpolation_t: float = 0.5
-    ) -> str:
-        """Generates a SLERP merge configuration for MergeKit."""
-        recipe = {
-            "slices": [
-                {
-                    "sources": [
-                        {"model": base_model_a, "layer_range": [0, 32]},
-                        {"model": base_model_b, "layer_range": [0, 32]}
-                    ]
-                }
-            ],
-            "merge_method": "slerp",
-            "base_model": base_model_a,
-            "parameters": {
-                "t": [
-                    {"filter": "self_attn", "value": [0.0, 0.5, 0.3, 0.7, 1.0]},
-                    {"filter": "mlp", "value": [1.0, 0.5, 0.7, 0.3, 0.0]},
-                    {"value": interpolation_t}
-                ]
+        self, base_model_a, base_model_b, output_yaml_path, interpolation_t=0.5
+    ):
+        if not math.isfinite(interpolation_t) or not 0 <= interpolation_t <= 1:
+            raise ValueError("interpolation_t must be in [0, 1]")
+        # Whole-model form has no hardcoded assumption that every architecture has 32 layers.
+        return self._write(
+            {
+                "models": [{"model": base_model_a}, {"model": base_model_b}],
+                "merge_method": "slerp",
+                "base_model": base_model_a,
+                "parameters": {"t": interpolation_t},
+                "dtype": "bfloat16",
             },
-            "dtype": "bfloat16"
-        }
-
-        os.makedirs(os.path.dirname(os.path.abspath(output_yaml_path)), exist_ok=True)
-        with open(output_yaml_path, "w") as f:
-            yaml.dump(recipe, f, default_flow_style=False)
-
-        return output_yaml_path
+            output_yaml_path,
+        )
 
     def generate_dare_ties_recipe(
-        self,
-        base_model: str,
-        expert_models: List[str],
-        output_yaml_path: str,
-        density: float = 0.6,
-        weight: float = 0.5
-    ) -> str:
-        """Generates a DARE-TIES multi-model consensus merge recipe."""
-        models_block = [{"model": base_model}]
-        for m in expert_models:
-            models_block.append({
-                "model": m,
-                "parameters": {
-                    "density": density,
-                    "weight": weight
-                }
-            })
-
-        recipe = {
-            "models": models_block,
-            "merge_method": "dare_ties",
-            "base_model": base_model,
-            "parameters": {
-                "int8_mask": True
+        self, base_model, expert_models, output_yaml_path, density=0.6, weight=0.5
+    ):
+        if (
+            not expert_models
+            or not math.isfinite(density)
+            or not 0 < density <= 1
+            or not math.isfinite(weight)
+        ):
+            raise ValueError("Provide experts, density in (0, 1], and a finite weight")
+        return self._write(
+            {
+                "models": [
+                    {"model": model, "parameters": {"density": density, "weight": weight}}
+                    for model in expert_models
+                ],
+                "merge_method": "dare_ties",
+                "base_model": base_model,
+                "dtype": "bfloat16",
             },
-            "dtype": "bfloat16"
-        }
+            output_yaml_path,
+        )
 
-        os.makedirs(os.path.dirname(os.path.abspath(output_yaml_path)), exist_ok=True)
-        with open(output_yaml_path, "w") as f:
-            yaml.dump(recipe, f, default_flow_style=False)
-
-        return output_yaml_path
+    def execute(self, recipe_path, output_path, *, allow_execution=False, timeout=300):
+        if not allow_execution:
+            raise PermissionError(
+                "Set allow_execution=True to run a merge; recipe creation does not merge weights"
+            )
+        executable = shutil.which("mergekit-yaml")
+        if not executable:
+            raise RuntimeError("Install mergekit in its own environment; no merge was run")
+        recipe = Path(recipe_path).resolve()
+        if not recipe.is_file():
+            raise ValueError("Merge recipe not found")
+        output = Path(output_path).resolve()
+        if output.exists():
+            raise FileExistsError("Refusing to overwrite existing merge output")
+        # No shell interpolation. Models in the recipe must be local when operating offline.
+        result = subprocess.run(
+            [executable, str(recipe), str(output)],
+            check=True,
+            text=True,
+            capture_output=True,
+            timeout=timeout,
+        )
+        return {"status": "executed", "stdout": result.stdout, "validated_improvement": False}

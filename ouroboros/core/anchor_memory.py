@@ -1,52 +1,51 @@
-"""
-Anchor Memory Bank: Protects recursive self-tuning from Model Autophagy Disorder (MAD)
-and entropy collapse by blending high-entropy golden exemplars.
-"""
-from typing import Dict, Any, List, Optional
+"""Deterministic replay of caller-verified examples; a mitigation, not a collapse guarantee."""
+
+import copy
+import math
+
 import numpy as np
 
+
 class AnchorMemoryBank:
-    """
-    Maintains a frozen, human-verified reference distribution of core skills
-    and blends anchor samples during recursive self-adaptation.
-    """
-
-    def __init__(self, anchor_ratio: float = 0.25):
+    def __init__(self, anchor_ratio=0.25, anchors=None, seed=42):
+        if not math.isfinite(anchor_ratio) or not 0 <= anchor_ratio < 1:
+            raise ValueError("anchor_ratio must be in [0, 1)")
         self.anchor_ratio = anchor_ratio
-        # High-entropy foundational ground truth anchor dataset
-        self.anchors: List[Dict[str, str]] = [
-            {
-                "domain": "math_logic",
-                "instruction": "Prove that the square root of 2 is irrational.",
-                "target": "Proof by contradiction: Assume sqrt(2) = a/b in lowest terms. 2 = a^2/b^2 => a^2 = 2b^2, so a is even (a=2k). 4k^2 = 2b^2 => b^2 = 2k^2, so b is also even. This contradicts that a/b was in lowest terms. Therefore, sqrt(2) is irrational."
-            },
-            {
-                "domain": "coding",
-                "instruction": "Explain time complexity of quicksort average vs worst case.",
-                "target": "Average case is O(n log n) when partitions split reasonably evenly. Worst case is O(n^2) when the pivot selected is consistently the smallest or largest element (e.g., sorted array with naive pivot selection)."
-            },
-            {
-                "domain": "general_knowledge",
-                "instruction": "What is the physical mechanism of DNA replication semi-conservative nature?",
-                "target": "During replication, the double helix unwinds via helicase. DNA polymerase synthesizes a new complementary strand along each template strand. Each resulting daughter DNA molecule consists of one original parent strand and one newly synthesized strand."
-            }
-        ]
+        # Small illustrative defaults for the legacy utility API, not a foundational corpus.
+        if anchors is None:
+            anchors = [
+                {
+                    "domain": "math_logic",
+                    "instruction": "What is 2 plus 2?",
+                    "target": "4",
+                    "source": "built-in-example",
+                    "verified": True,
+                }
+            ]
+        if any(not a.get("verified", False) for a in anchors):
+            raise ValueError("Anchor examples must be explicitly verified")
+        self._anchors = tuple(copy.deepcopy(anchors))
+        self.rng = np.random.default_rng(seed)
 
-    def blend_curriculum(self, synthetic_samples: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    @property
+    def anchors(self):
+        return copy.deepcopy(list(self._anchors))
+
+    def blend_curriculum(self, synthetic_samples):
+        """Return fresh records with at least ratio anchors in the final batch (rounded up).
+
+        For n new samples and ratio r, a = ceil(n*r/(1-r)), not n*r.
+        Empty curricula stay empty. Duplicated replay examples do not increase corpus diversity.
         """
-        Blends synthetic self-generated training instances with frozen anchor exemplars
-        at the specified anchor_ratio to prevent distribution drift.
-        """
-        total_synthetic = len(synthetic_samples)
-        num_anchors_needed = max(1, int(total_synthetic * self.anchor_ratio))
-        
-        selected_anchors = []
-        for i in range(num_anchors_needed):
-            anchor = self.anchors[i % len(self.anchors)].copy()
-            anchor["id"] = f"anchor_golden_{i+1}"
+        blended = copy.deepcopy(list(synthetic_samples))
+        if not blended or self.anchor_ratio == 0:
+            return blended
+        if not self._anchors:
+            raise ValueError("Positive anchor_ratio requires a nonempty anchor bank")
+        count = math.ceil(len(blended) * self.anchor_ratio / (1 - self.anchor_ratio))
+        for i in range(count):
+            anchor = copy.deepcopy(self._anchors[i % len(self._anchors)])
             anchor["is_anchor"] = True
-            selected_anchors.append(anchor)
-
-        blended = synthetic_samples + selected_anchors
-        np.random.shuffle(blended)
+            blended.append(anchor)
+        self.rng.shuffle(blended)
         return blended

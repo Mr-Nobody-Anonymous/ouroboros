@@ -1,0 +1,16 @@
+[
+  {
+    "instruction": "What is 1 + 1? Reply with the number only.",
+    "target": "2",
+    "domain": "math_logic",
+    "source": "human-authored-smoke-fixture",
+    "verified": true
+  },
+  {
+    "instruction": "Repeat the word yellow.",
+    "target": "yellow",
+    "domain": "instruction_following",
+    "source": "human-authored-smoke-fixture",
+    "verified": true
+  }
+]

@@ -1,52 +1,61 @@
-"""
-EasyEdit Bridge: Connects Ouroboros to ROME, MEMIT, and MEND model editing engines.
-"""
-import sys
-import os
-from typing import Dict, Any, Optional
+"""Explicit EasyEdit invocation; availability is never confused with a successful edit."""
 
-# Register external EasyEdit if present
-EASYEDIT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "external", "EasyEdit"))
-if os.path.exists(EASYEDIT_PATH) and EASYEDIT_PATH not in sys.path:
-    sys.path.insert(0, EASYEDIT_PATH)
+import importlib
+import importlib.util
+from pathlib import Path
+
 
 class EasyEditBridge:
-    """
-    Adapter bridge allowing Ouroboros to invoke surgical weight editing
-    algorithms (ROME, MEMIT, MEND, FT) from EasyEdit.
-    """
+    METHODS = {
+        "ROME": "ROMEHyperParams",
+        "MEMIT": "MEMITHyperParams",
+        "MEND": "MENDHyperParams",
+        "FT": "FTHyperParams",
+    }
 
-    def __init__(self, method_name: str = "ROME"):
+    def __init__(self, method_name="ROME"):
+        if method_name not in self.METHODS:
+            raise ValueError(f"Supported methods: {sorted(self.METHODS)}")
         self.method_name = method_name
-        self.is_available = os.path.exists(EASYEDIT_PATH)
 
-    def execute_direct_edit(
-        self,
-        model_name: str,
-        target_fact: Dict[str, str],
-        hparams: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Executes localized parametric weight editing on the specified model.
+    @property
+    def is_available(self):
+        return importlib.util.find_spec("easyeditor") is not None
+
+    def execute_direct_edit(self, model_name, target_fact, hparams=None):
+        """Return actual editor metrics/model/original weights, or raise an actionable error.
+
+        EasyEdit must be installed in a dedicated compatible environment. This call may
+        load model/statistics artifacts according to the USER-SUPPLIED upstream config.
         """
         if not self.is_available:
-            return {
-                "status": "simulated",
-                "method": self.method_name,
-                "message": "EasyEdit external repo not yet initialized. Running in native Ouroboros mode."
-            }
-
-        try:
-            # Dynamically import EasyEdit components if installed
-            # from easyeditor import BaseEditor, ROMEHyperParams
-            return {
-                "status": "success",
-                "method": self.method_name,
-                "target": target_fact,
-                "delta_applied": True
-            }
-        except Exception as e:
-            return {
-                "status": "error",
-                "error": str(e)
-            }
+            raise RuntimeError(
+                "EasyEdit is not installed. Initialize external/EasyEdit and follow "
+                "its setup in an isolated environment; no edit was applied."
+            )
+        path = Path(hparams) if isinstance(hparams, (str, Path)) else None
+        if path is None or not path.is_file():
+            raise ValueError("Provide an existing upstream EasyEdit hyperparameter YAML path")
+        if not all(
+            isinstance(target_fact.get(k), str) and target_fact[k].strip()
+            for k in ("prompt", "target_new", "subject")
+        ):
+            raise ValueError("target_fact requires prompt, target_new, and subject strings")
+        easyeditor = importlib.import_module("easyeditor")
+        params = getattr(easyeditor, self.METHODS[self.method_name]).from_hparams(str(path))
+        params.model_name = model_name
+        editor = easyeditor.BaseEditor.from_hparams(params)
+        metrics, edited_model, original_weights = editor.edit(
+            prompts=[target_fact["prompt"]],
+            target_new=[target_fact["target_new"]],
+            subject=[target_fact["subject"]],
+            keep_original_weight=True,
+        )
+        return {
+            "status": "executed",
+            "method": self.method_name,
+            "metrics": metrics,
+            "edited_model": edited_model,
+            "original_weights": original_weights,
+            "validated_improvement": False,
+        }

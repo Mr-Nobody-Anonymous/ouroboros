@@ -1,33 +1,12 @@
-# Representation Engineering: Top-Down Model Transparency & Activation Steering
+# Representation engineering and activation steering
 
-- **Seminal Papers**:
-  - *Representation Engineering: A Top-Down Approach to AI Transparency and Control* (Zou et al., Center for AI Safety & CMU, 2023) — [arXiv:2310.01405](https://arxiv.org/abs/2310.01405)
-  - *Steering Language Models with Activation Addition* (Turner et al., 2023) — [arXiv:2308.10248](https://arxiv.org/abs/2308.10248)
-- **Primary Breakthrough**:
-  - Rather than updating billions of static weights on disk, the model's behavior, truthfulness, reasoning stance, and safety can be controlled dynamically by adding "steering vectors" directly into intermediate residual stream activations during the forward pass:
-    $$x_l' = x_l + c \cdot v_{steer}$$
-  - Enables non-destructive cognitive reprogramming in real-time.
+- Zou et al., [Representation Engineering: A Top-Down Approach to AI Transparency](https://arxiv.org/abs/2310.01405), 2023.
+- Turner et al., [Steering Language Models With Activation Addition](https://arxiv.org/abs/2308.10248), 2023.
 
----
+Contrastive activation statistics can define a direction such as `v = mean(a_positive) - mean(a_negative)`, possibly normalized or estimated through PCA. A runtime intervention adds a scaled vector to selected activations. Its meaning depends on prompts, layer/token selection, controls and evaluation; a vector does not inherently guarantee truthfulness, safety or mathematical ability.
 
-## 🧮 Mathematical Formulation
+## Local status
 
-### 1. Contrastive Difference-in-Means
-Given paired contrastive prompts (e.g. Truthful vs. Hallucinatory, Rigorous vs. Sloppy):
-$$v_{raw} = \frac{1}{|D_+|} \sum_{i \in D_+} a_l(x_i^+) - \frac{1}{|D_-|} \sum_{j \in D_-} a_l(x_j^-)$$
-where $a_l(x)$ denotes the activation at layer $l$ on the target token.
+`ArchitectureMutator.compute_steering_vector` implements finite, dimension-checked difference-in-means. `WeightSpaceProgrammer.contrastive_direction` separately exposes a measured direction for candidate tensor edits. Neither automatically installs activation hooks, fits all representation-reading methods or proves causal semantics.
 
-### 2. PCA Reading Vector
-Extracting the first principal component of contrastive pairs:
-$$v_{PCA} = \text{PCA}_1 \left( \{ a_l(x_i^+) - a_l(x_i^-) \}_{i=1}^N \right)$$
-
-### 3. Layer Injection
-At inference or during fine-tuning:
-$$a_l^{(modified)} = a_l + \gamma \cdot \frac{v_{PCA}}{\|v_{PCA}\|_2}$$
-where $\gamma$ is a scalar steering strength coefficient.
-
----
-
-## 💻 Integrated in Ouroboros
-- Implemented in `ouroboros/core/architecture_mutator.py` (`compute_steering_vector`)
-- Linked to external `external/repeng/`
+`external/repeng` is a preserved upstream reference snapshot. Use its actual `ControlModel`/`ControlVector` workflow in a compatible isolated environment for runtime steering and measure behavioral side effects. Arithmetic tests of a vector are not an end-to-end representation-engineering benchmark. See [integration notes](../docs/INTEGRATIONS.md).

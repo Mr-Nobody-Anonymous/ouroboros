@@ -1,41 +1,60 @@
-# 📚 arXiv Literature Index: Self-Evolving & Weight-Editing AI
+# Research index: model adaptation, weight editing, and self-evolution
 
-This directory compiles seminal peer-reviewed research papers and preprints on autonomous model self-modification, weight surgery, model arithmetic, and recursive self-play.
+As of **2026-11-19**. 33 references; 11 recent primary-source reviews in the **2026-08-19 to 2026-11-19** window.
 
----
+This is a curated selection, not an exhaustive survey. Blog posts, preprints and journal papers are labeled separately. Source-reported results have **not** been reproduced by Ouroboros. An implementation link is a partial mapping unless explicitly stated otherwise.
 
-## 📑 Core Taxonomy of Self-Evolving Architectures
+Machine-readable [catalogue](research.json), abbreviated-author [BibTeX](references.bib), [recent evidence review](RECENT_RESEARCH_2026.md), [architecture](../docs/SELF_EVOLVING_ARCHITECTURE.md), and [source inventory](../external/README.md).
 
-| Research Vector | Seminal Papers | arXiv Identifier | Core Mechanism |
-| :--- | :--- | :--- | :--- |
-| **Surgical Weight Editing** | *Locating and Editing Factual Associations in GPT (ROME)* | [arXiv:2202.05262](https://arxiv.org/abs/2202.05262) | Rank-one MLP projection updates $\Delta W = (v - W_0 k) \frac{k^T}{k^T k + \lambda}$ |
-| **Mass Weight Surgery** | *Mass-Editing Memory in a Transformer (MEMIT)* | [arXiv:2210.07229](https://arxiv.org/abs/2210.07229) | Distributed residual rank-$k$ updates across multiple layers simultaneously |
-| **Task Arithmetic** | *Editing Models with Task Vectors* | [arXiv:2212.04089](https://arxiv.org/abs/2212.04089) | Direct linear arithmetic on weight vectors: $\theta_{new} = \theta_{base} + \lambda \tau$ |
-| **TIES & DARE Merging** | *Deep Model Merging without Training* | [arXiv:2311.03099](https://arxiv.org/abs/2311.03099) | Sparsification, sign-resolution, and rescaling of parameter deltas |
-| **Self-Rewarding Evolution** | *Self-Rewarding Language Models* | [arXiv:2401.10020](https://arxiv.org/abs/2401.10020) | LLM acts as self-judge and self-trainer via iterative DPO cycles |
-| **Self-Play Fine-Tuning** | *SPIN: Self-Play Fine-Tuning Converts Weak to Strong* | [arXiv:2401.01335](https://arxiv.org/abs/2401.01335) | Zero-human-data self-play minimax optimization |
-| **Autonomous Code/Arch** | *The AI Scientist: Automated Discovery* | [arXiv:2408.06292](https://arxiv.org/abs/2408.06292) | Autonomous code mutation, experiment execution, and paper generation |
-| **Parameter-Efficient Tuning** | *LoRA & QLoRA: Quantized Low-Rank Adaptation* | [arXiv:2106.09685](https://arxiv.org/abs/2106.09685) | Intrinsic rank factorization $W = W_0 + \frac{\alpha}{r}(BA)$ |
-| **Self-Instruct Bootstrapping** | *Self-Instruct: Aligning with Self-Generated Data* | [arXiv:2212.10560](https://arxiv.org/abs/2212.10560) | Autonomous synthetic task & pair generation |
-| **Representation Engineering** | *Representation Engineering: Transparency & Steering* | [arXiv:2310.01405](https://arxiv.org/abs/2310.01405) | Dynamic activation steering vectors $x_l' = x_l + c \cdot v_{steer}$ |
-| **Test-Time Compute Scaling (STaR)** | *STaR: Bootstrapping Reasoning & Inference Scaling* | [arXiv:2203.14465](https://arxiv.org/abs/2203.14465) | Best-of-N rollouts, verifiers & reasoning trace extraction |
-| **Weight-Space Programming (WSP)** | *Sparks of Weight-Space Programming (MIT CSAIL)* | [arXiv/Takehi et al.](papers/Sparks_of_Weight_Space_Programming.md) | GPT-6 Astra editing 0.016% of Qwen weights; MATH-500 jumps 7.9% -> 48.1% |
-| **Self-Adapting Models (SEAL)** | *Self-Adapting Language Models (MIT CSAIL)* | [arXiv:2506.10943](https://arxiv.org/abs/2506.10943) | Autonomous self-edits with RL outer-loop weight optimization |
-| **Continual MoE Evolution** | *Self-Evolving LLMs via MoE-CL* | [arXiv:2404.14818](https://arxiv.org/abs/2404.14818) | Adversarial shared LoRA experts with task discriminators |
-| **Entropy Collapse Protection** | *AI Models Collapse on Recursive Data (MAD)* | [Nature 631, 755](https://www.nature.com/articles/s41586-024-07566-y) | Proves necessity of Golden Anchor reference memory banks |
-| **Co-Evolving Weights & Harness** | *SIA: Self-Improving AI with Weights & Scaffolds* | [HuggingFace 2025](https://huggingface.co) | Dual-knob co-evolution of agent harnesses and underlying weights |
+## Recent work (first release inside the requested three-month window)
 
----
+| First released | Primary source / type | Relevance and limitations | Local status |
+| --- | --- | --- | --- |
+| 2026-09-10 | [The Last AI Built by Humans: Toward Genuine Recursive Self-Improvement](https://arxiv.org/abs/2609.11873) — survey/preprint | Distinguishes execution, strategy, experience, environment, and meta-improvement autonomy; a roadmap is not evidence that this repository reaches the final level. | [reference-only](../docs/SELF_EVOLVING_ARCHITECTURE.md) |
+| 2026-10-09 | [Evo2: Evolving the Evolver through Weight-Harness Co-Evolution](https://arxiv.org/abs/2610.13025) — preprint | Joint proposer/reflector harness search and SFT/GRPO weight updates. Ouroboros exports reviewable code proposals, but does not reproduce EvoTIDE or its coding-benchmark results. | [partial-infrastructure](../ouroboros/core/code_mutator.py) |
+| 2026-10-19 | [Are Self-Evolving Agents Continual Learners?](https://arxiv.org/abs/2610.25858) — preprint | Finds a plasticity/stability tradeoff even for nonparametric harness and memory updates. Motivates comparisons with both the original and latest accepted generation. | [design-motivation](../ouroboros/core/evaluator.py) |
+| 2026-11-02 | [Sparks of Weight-Space Programming: LLMs can natively read & write neural network weights](https://rikiyat.github.io/blog/weight-space-programming/) — research-blog | MIT CSAIL reports an Astra edit of Qwen3.5-0.8B: MATH-500 7.9% to 48.1%, with 50 forward passes and 131072 edited entries. Not a Harvard paper, not gradient training, and not an Ouroboros result. | [reference-and-bounded-edit-primitives](../papers/Sparks_of_Weight_Space_Programming.md) |
+| 2026-11-05 | [Can an LLM Actually Reason and Program about Neural Network's Weights or is it just memorization on steroids? Exploring "Weight-Space Programming"](https://arxiv.org/abs/2611.08070) — preprint | An exploratory reading audit finds local arithmetic plus dataset priors; label permutation controls undermine stronger semantic-reading claims. Does not refute every editing result. | [reference-only](../ouroboros/core/weight_space_programmer.py) |
+| 2026-11-06 | [Exploring Weight-Space Programming: Capabilities, Generalization, and Limitations](https://arxiv.org/abs/2611.09382) — preprint | Six of sixteen trajectories retain the original weights; gains and transfer vary. The 29.45-point MATH-500 result is author-reported, not reproduced here. Upstream checkout currently contains a PDF only. | [reference-only](../ouroboros/pipeline/self_loop.py) |
+| 2026-11-13 | [Interpretable weight-space programming builds transparent transformers and brain encoding models](https://arxiv.org/abs/2611.18114) — preprint | Studies directly coded interpretable computations for small networks and scientific encoding tasks. This is not a general algorithm for autonomously growing a deployed LLM. | [reference-only](../ouroboros/core/architecture_mutator.py) |
+| 2026-11-13 | [WeightBench: Evaluating Language Models as Weight-Space Programmers](https://arxiv.org/abs/2611.18553) — preprint/benchmark | 42 tasks across reading, fixing, writing, impossible edits and data-free compression; abstract reports substantial limitations. Upstream OS-level harness is separate from Ouroboros unit tests. | [external-reference](../external/WeightBench) |
+| 2026-11-16 | [Replicating and Extending Weight-Space Programming: Frontier LLMs Compile Programs into Weights and Read Input Layers](https://arxiv.org/abs/2611.21449) — preprint | Independent replication of small-network writing, with evidence for program compilation and shallow input-layer reading rather than unrestricted semantic understanding. | [reference-only](../papers/RECENT_RESEARCH_2026.md) |
+| 2026-11-16 | [Language Models Can Rewrite Their Own Weights](https://arxiv.org/abs/2611.21885v2) — preprint | A 27B model reportedly gains 6.6 accuracy points on held-out math; smaller models abstain or damage themselves. Repeated practice checks are not an untouched final test. v2 dated November 18 was consulted. | [design-motivation-not-reproduced](../ouroboros/pipeline/self_loop.py) |
+| 2026-11-17 | [Weight-Space Programming Doesn't Need Transformers](https://arxiv.org/abs/2611.22055) — work-in-progress-preprint | Agents choose sparse associative tables for directly written weights. Pretrained LLMs remain more accurate; the claim is about structures to build when writing weights, not replacing all Transformers. | [reference-only](../ouroboros/core/architecture_mutator.py) |
 
-## 🔗 Implementation Mapping
+## Foundations and earlier related work
 
-Each paper's mathematical formulation maps directly into an Ouroboros module and cloned framework:
-- **Test-Time Compute & STaR Trajectories**: `ouroboros/core/test_time_compute.py`
-- **Weight-Space Programming (Zero-Gradient Surgery)**: `ouroboros/core/weight_space_programmer.py`
-- **ROME / MEMIT**: `ouroboros/core/weight_editor.py` & `external/EasyEdit/`
-- **Task Vectors & Weight Merging**: `ouroboros/core/task_arithmetic.py` & `external/mergekit/`
-- **Parameter-Efficient Adaptation**: `ouroboros/core/adapter_engine.py` & `external/peft/`
-- **Self-Reward, DPO & GRPO**: `ouroboros/core/self_rewarding.py` & `external/trl/`
-- **Representation Engineering & Steering**: `ouroboros/core/architecture_mutator.py` & `external/repeng/`
-- **Self-Instruct Synthesis**: `ouroboros/core/meta_feedback.py` & `external/self-instruct/`
-- **Autonomous Architecture Mutation**: `ouroboros/core/architecture_mutator.py`
+| Primary reference | First released | Mechanism / caveat | Local status |
+| --- | --- | --- | --- |
+| [LoRA: Low-Rank Adaptation of Large Language Models](https://arxiv.org/abs/2106.09685) | 2021-06-17 | Low-rank trainable adapters over frozen base weights. | [implemented-via-peft](../ouroboros/backends/transformers_backend.py) |
+| [Locating and Editing Factual Associations in GPT](https://arxiv.org/abs/2202.05262) | 2022-02-10 | Full ROME includes causal tracing, key/value optimization and covariance statistics. A generic rank-one update is not equivalent. | [explicit-upstream-bridge](../ouroboros/integrations/easyedit_bridge.py) |
+| [STaR: Bootstrapping Reasoning With Reasoning](https://arxiv.org/abs/2203.14465) | 2022-03-28 | Correctness-filtered reasoning data with iterative fine-tuning; local export utilities implement only part of the algorithm. | [partial-curation](../ouroboros/core/test_time_compute.py) |
+| [Mass-Editing Memory in a Transformer](https://arxiv.org/abs/2210.07229) | 2022-10-13 | Distributed multi-layer factual edits, requiring method-specific statistics and validation. | [explicit-upstream-bridge](../ouroboros/integrations/easyedit_bridge.py) |
+| [Editing Models with Task Arithmetic](https://arxiv.org/abs/2212.04089) | 2022-12-08 | Extract and add/subtract task vectors; subtraction is not certified unlearning. | [reference-tensor-implementation](../ouroboros/core/task_arithmetic.py) |
+| [Self-Instruct: Aligning Language Models with Self-Generated Instructions](https://arxiv.org/abs/2212.10560) | 2022-12-20 | Bootstrap tasks and filter generated examples. Trusted independent verification remains necessary. | [callback-interface](../ouroboros/core/meta_feedback.py) |
+| [QLoRA: Efficient Finetuning of Quantized LLMs](https://arxiv.org/abs/2305.14314) | 2023-05-23 | Quantized base weights and LoRA adapters. CUDA/bitsandbytes support is opt-in and not GPU-tested in this sandbox. | [optional-untested-gpu-path](../ouroboros/backends/transformers_backend.py) |
+| [Direct Preference Optimization: Your Language Model is Secretly a Reward Model](https://arxiv.org/abs/2305.18290) | 2023-05-29 | Optimize preferred versus rejected completions relative to a frozen reference policy. | [curation-not-default-training](../ouroboros/core/self_rewarding.py) |
+| [TIES-Merging: Resolving Interference When Merging Models](https://arxiv.org/abs/2306.01708) | 2023-06-02 | Trim, elect signs, and disjointly merge agreeing task-vector entries. Separate from DARE. | [reference-tensor-implementation](../ouroboros/core/task_arithmetic.py) |
+| [Representation Engineering: A Top-Down Approach to AI Transparency](https://arxiv.org/abs/2310.01405) | 2023-10-02 | Read and intervene on representations; vector arithmetic alone does not install runtime model hooks. | [vector-primitives](../ouroboros/core/architecture_mutator.py) |
+| [UltraFeedback: Boosting Language Models with High-quality Feedback](https://arxiv.org/abs/2310.01377) | 2023-10-02 | AI feedback for preference data; not proof that a model can reliably judge itself. | [design-motivation](../ouroboros/core/self_rewarding.py) |
+| [Language Models are Super Mario: Absorbing Abilities from Homologous Models as a Free Lunch](https://arxiv.org/abs/2311.03099) | 2023-11-06 | DARE drops and rescales task-vector entries; this is not the TIES paper. | [reference-tensor-implementation](../ouroboros/core/task_arithmetic.py) |
+| [Self-Play Fine-Tuning Converts Weak Language Models to Strong Language Models](https://arxiv.org/abs/2401.01335) | 2024-01-02 | Self-play alignment research; no learned minimax loop is claimed for fixed local adversarial fixtures. | [reference-only](../ouroboros/core/adversarial_critic.py) |
+| [Self-Rewarding Language Models](https://arxiv.org/abs/2401.10020) | 2024-01-18 | Iterative self-generated preferences and DPO. A style-word heuristic is not a valid reproduction. | [explicit-judge-interface](../ouroboros/core/self_rewarding.py) |
+| [DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models](https://arxiv.org/abs/2402.03300) | 2024-02-05 | Introduces GRPO in a mathematical reasoning training setting; not implemented by the default loop. | [reference-only](../papers/GRPO_and_DeepSeekMath.md) |
+| [Evolutionary Optimization of Model Merging Recipes](https://arxiv.org/abs/2403.13187) | 2024-03-19 | Searches merging recipes in parameter and data-flow spaces; shape-compatible layer copies are only a primitive. | [partial-primitives](../ouroboros/core/architecture_mutator.py) |
+| [Large Language Monkeys: Scaling Inference Compute with Repeated Sampling](https://arxiv.org/abs/2407.21787) | 2024-07-31 | Repeated sampling makes verifier quality and equal-compute comparison critical. | [callback-interface](../ouroboros/core/test_time_compute.py) |
+| [The AI Scientist: Towards Fully Automated Open-Ended Scientific Discovery](https://arxiv.org/abs/2408.06292) | 2024-08-12 | Automated research workflows; generated source must not share host credentials or evaluator authority. | [proposal-infrastructure](../ouroboros/core/code_mutator.py) |
+| [Darwin Godel Machine: Open-Ended Evolution of Self-Improving Agents](https://arxiv.org/abs/2505.22954) | 2025-05-29 | Empirical source-code self-improvement with an archive of agents; not the same as parametric self-rewriting. | [external-reference](../external/dgm) |
+| [Self-Adapting Language Models](https://arxiv.org/abs/2506.10943) | 2025-06-12 | Generate self-edits and optimize them with an outer RL loop; local SFT does not reproduce that outer loop. | [external-reference](../external/SEAL) |
+| [SIA: Self Improving AI with Harness & Weight Updates](https://arxiv.org/abs/2605.27276) | 2026-05-26 | Co-updates an agent harness and weights; replaces the former unspecific 2025 homepage citation. | [design-motivation](../ouroboros/core/code_mutator.py) |
+| [AI models collapse when trained on recursively generated data](https://www.nature.com/articles/s41586-024-07566-y) | 2024-07-24 | Motivates preserving real data and monitoring distribution drift; does not establish a universal 25% replay ratio or guarantee against forgetting. | [replay-mitigation](../ouroboros/core/anchor_memory.py) |
+
+## Corrections and reading policy
+
+- The Astra/Qwen source is an MIT CSAIL research blog post, not a Harvard arXiv paper. The reported 7.9% to 48.1% change is +40.2 percentage points, not a local result or a guarantee.
+- arXiv:2404.14818 was previously mislabeled as MoE-CL. It is an unrelated topology paper and has been removed from the AI research catalogue; see the [audit](../docs/AUDIT_AND_MIGRATION.md).
+- TIES (2306.01708) and DARE (2311.03099) are distinct papers. Rank-one least-squares utilities are not complete ROME/MEMIT implementations.
+- SIA now links to its exact May 2026 preprint, not an unspecific homepage or an invented 2025 citation.
+- Replay mitigates drift; neither a universal 20–30% ratio nor guaranteed zero forgetting is established here.
+- Recent entries record primary abstracts/selected methods actually consulted on November 19. Foundational entries are background references, not a claim that every full paper was newly re-read.
+- Original summaries and bibliographic links are stored here; full papers are not automatically relicensed or redistributed. Upstream WSP-Scope is paper-only at the locked revision.

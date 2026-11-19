@@ -1,65 +1,49 @@
-# 🔬 Comparative Analysis of Integrated Repositories for Autonomous AI Self-Evolution
+# Repository deep dive: audit and complementary upstream sources
 
-This document provides a deep architectural, mathematical, and mechanistic analysis of the 7 core open-source repositories integrated into Ouroboros.
+Reviewed November 19, 2026. The repository name is already **ouroboros**; no remote rename is needed. Scope is the working branch based on `97181d3`. Historical chat messages are requests/claims to audit, not evidence that their described actions succeeded.
 
----
+## Starting-state findings
 
-## 📊 Framework Comparison Matrix
+The thirteen original tests passed, but mostly asserted shapes/strings. The default loop used random gradients unrelated to its examples, invented score boosts, saved only adapter metadata and displayed rollback without restoring parameters. A boolean simulation flag could not enable real training. The EasyEdit bridge returned success without invoking EasyEdit. The “Pareto” cleaner ranked mean scores without using file sizes and could delete unknown folders. Test-time exports could accept a wrong answer based only on a random high score. The sparse threshold mask could edit every tied parameter.
 
-| Repository | Primary Weight/Architecture Mechanism | Granularity | Mathematical Core | Role in Ouroboros |
-| :--- | :--- | :--- | :--- | :--- |
-| **SEAL** | Self-adapting language models (MIT CSAIL) | System / Autonomous | Self-edits via SFT & outer RL loop ([arXiv:2506.10943](https://arxiv.org/abs/2506.10943)) | Generates autonomous fine-tuning directives & optimization parameters |
-| **EasyEdit** | Localized associative MLP editing | Factual / Parametric | Closed-form $\Delta W = (v - W_0 k)\frac{k^T C^{-1}}{k^T C^{-1} k}$ (ROME/MEMIT) | Surgical factual correction without retraining |
-| **mergekit** | Multi-model weight tensor algebra | Layer / Model-wide | SLERP, TIES sign election, DARE random mask & rescale | Combining specialized autonomous agents & task vectors |
-| **peft** | Low-rank matrix decomposition | Layer projections | $W = W_0 + \frac{\alpha}{r}(B \cdot A)$ | Resource-efficient parameter adaptation across generations |
-| **trl** | Preference optimization & RL policy updates | Sequence / Token probabilities | DPO loss & GRPO relative group advantage | Aligning model generations with self-reward rubrics |
-| **repeng** | Real-time activation steering vectors | Residual stream activations | Contrastive difference-in-means & PCA reading vectors | Non-destructive cognitive and behavioral steering |
-| **self-instruct** | Autonomous task bootstrapping | Data synthesis & curriculum | ROUGE-L diversity filtering & multi-turn generation | Generating training curricula from self-critiques |
+Seven source names existed, but only five were vendored trees. EasyEdit and mergekit were gitlinks without `.gitmodules`, so their empty directories looked available to bridges while not being reproducible from a clone. The old docs misattributed a topology arXiv ID to MoE-CL and overstated replay/no-forgetting guarantees. The old release's asset list was empty; no LFS pointer/payload or recoverable 600 MB cache bundle was found. See [migration and evidence](../docs/AUDIT_AND_MIGRATION.md).
 
----
+## Why these sources, rather than cloning everything?
 
-## 🔍 Deep-Dive by Framework
+A useful stack needs complementary update surfaces **and** independent evaluation. More clones do not create a stronger model, resolve dependency conflicts or prove integration. We kept existing trees intact, repaired broken clone metadata, added five targeted sources, and recorded whether each is code, evidence, a paper-only placeholder or an actual callable adapter. We did not count repository popularity as proof of correctness or run unreviewed installers.
 
-### 1. SEAL (`external/SEAL`)
-* **How it edits weights**: Generates self-edits that specify hyperparameter updates, data augmentations, and optimization directives, executing them via SFT and guiding them with an outer RL loop.
-* **Key Concept**: The model actively writes its own tuning recipe rather than depending on human training pipelines.
+| Source / upstream | Mechanism and role | Actual local connection | Requirements / caveat |
+| --- | --- | --- | --- |
+| [PEFT](https://github.com/huggingface/peft) | Mature parameter-efficient adapter library | Real installed-package LoRA backend; existing vendored reference preserved | Local causal LM; optional CUDA/bitsandbytes for QLoRA; GPU path untested |
+| [TRL](https://github.com/huggingface/trl) | DPO/GRPO and other post-training objectives | Existing source/reference and optional dependency; preference curation callbacks | Not executed by the default SFT loop; reward/reference/data design required |
+| [EasyEdit](https://github.com/zjunlp/EasyEdit) | ROME/MEMIT/MEND/FT factual edits | Repaired pinned submodule; bridge calls real installed editor or fails | Method-specific config/covariance/model support; upstream may fetch data/use remote code |
+| [mergekit](https://github.com/arcee-ai/mergekit) | Checkpoint merging, task vectors and data-flow recipes | Repaired pinned submodule; validated recipes and explicit subprocess execution | Matching architectures/tokenizers, model checkpoints, RAM/storage; LGPL license |
+| [SEAL](https://github.com/Continual-Intelligence/SEAL) | Learned self-edits and outer RL | Existing source preserved; motivates verified data-proposal/controller separation | No SEAL outer RL reproduction; upstream GPU/data setup separate |
+| [repeng](https://github.com/vgel/repeng) | Runtime activation control vectors | Existing source preserved; local vector primitives | Hooks are not automatically installed; behavioral effects require testing |
+| [self-instruct](https://github.com/yizhongw/self-instruct) | Synthetic instruction bootstrapping/filtering | Existing partial snapshot preserved; real callback boundary replaces canned generator | No automatic large generated corpus; independent target verification necessary |
+| [Original WSP logs](https://github.com/RikiyaT/lm_understand-logs) **new** | Original prompts, code, protocols, outcomes and artifacts | Pinned evidence/source reference; informs bounded reversible tensor utilities | Mixed licenses; specific Astra/Qwen results not reproduced |
+| [WSP-Scope](https://github.com/WSP-Scope/WSP-Scope-Project) **new** | Study of sparse edits, transfer and abstention | Pinned paper provenance | At this revision **PDF only**, no runnable code/license grant; not an engine |
+| [WeightBench](https://github.com/Aayush-Marasini/WeightBench) **new** | Independent 42-task WSP evaluation and OS harness | Pinned external benchmark source | Requires separate sandbox/model/API setup; no local benchmark run claimed |
+| [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness) **new** | Standardized independent LLM evaluation | Pinned source with setup boundaries documented | Provision licensed task datasets and model/adapter separately; no MATH-500/IFEval claim |
+| [Darwin Gödel Machine](https://github.com/jennyzzt/dgm) **new** | Empirical source-code evolution of coding agents | Pinned reference for proposal/archive workflows | Docker, benchmark data and APIs; not direct parametric self-rewriting |
 
-### 2. EasyEdit (`external/EasyEdit`)
-* **How it edits weights**: Targets feed-forward network (FFN) down-projection layers which act as key-value associative memories. Computes uncentered covariance $C = \mathbb{E}[k k^T]$ over reference corpora and applies analytical rank-one updates.
-* **Key Algorithms**: ROME (single-edit), MEMIT (mass editing across transformer layers), MEND (hypernetwork gradient transforms).
+Exact commits, snapshot hashes and licenses live in [sources.lock.json](../external/sources.lock.json). Existing vendored revisions remain unknown rather than guessed; content hashes make future local changes visible. There are **seven submodules plus five vendored snapshots**, not twelve automatically integrated trainer packages. New upstream trees were not patched secretly; adaptation is in owned modules.
 
-### 3. MergeKit (`external/mergekit`)
-* **How it edits weights**: Operates directly on `.safetensors` model checkpoints without backpropagation.
-* **Key Algorithms**:
-  * **DARE**: Randomly zeroes out 90–99% of delta weights and rescales the remaining weights by $\frac{1}{1-p}$.
-  * **TIES**: Resolves interference where different models disagree on parameter signs by taking consensus votes.
-  * **SLERP**: Spherical linear interpolation between two high-dimensional weight spaces.
+## Implemented changes that close practical gaps
 
-### 4. PEFT (`external/peft`)
-* **How it edits weights**: Freezes the base foundation matrix $W_0$ and attaches trainable rank-$r$ adapters $B \cdot A$.
-* **Role in Ouroboros**: Enables generation-to-generation iterative parameter updates with minimal VRAM.
+1. Minimal packaging/CLI/CI separate from optional heavy ML dependencies.
+2. A backend protocol and actual gradient-trained CPU classifier for fast deterministic orchestration tests.
+3. A local safetensors causal-LM PEFT LoRA backend with prompt/padding masking, gradient clipping/accumulation, deterministic evaluation and export/reload.
+4. Data/source fingerprints, exact normalized split-leak checks, conflicting-label rejection and independently verified proposals/replay.
+5. Measured original/latest gates, strict improvement/forgetting thresholds, real rollback after training/evaluation/export failure, and bounded generations/steps/cooperative time.
+6. Actual tensor checkpoint files with atomic export, hashes and parent lineage, plus conservative actual-byte Pareto retention.
+7. Exact sparse budgets, finite/shape checks, reversible PyTorch candidate edits, explicit copied structural candidates, TIES and arithmetic edge-case fixes.
+8. No fake EasyEdit success, no random verifier/judge values, no acceptance of confident wrong STaR labels, no auto-execution of generated Python.
+9. Original-source research notes with 33 references including 11 actually recent reviews, bibliography, limitations and machine-readable status.
+10. Honest artifact inventory, narrow LFS attributes, non-destructive storage audit, deterministic core release builder and remote-publication separation.
 
-### 5. TRL (`external/trl`)
-* **How it edits weights**: Uses policy gradients and implicit reward functions (DPO/GRPO) to shift token probability distributions.
-* **Role in Ouroboros**: Drives the self-reward loop where model critique directly updates generative policies.
+## Still not solved
 
-### 6. RepEng (`external/repeng`)
-* **How it edits weights/mechanisms**: Extracts steering vectors by analyzing contrastive positive vs. negative prompt activations in the residual stream.
-* **Role in Ouroboros**: Instantaneous behavioral and cognitive guidance alongside permanent parameter updates.
+A learned autonomous experiment proposer, a complete SEAL/EvoTIDE/DPO/GRPO outer training loop, robust semantic contamination detection, hard OS/VRAM quotas, arbitrary architecture/quantization support, broad independently benchmarked capability gains, and a universal self-judge are **not implemented merely by adding these tools**. Statistical uncertainty, held-out final tests, multiple seeds, locality/safety evaluation and provenance of the original model still matter.
 
-### 7. Self-Instruct (`external/self-instruct`)
-* **How it edits models**: Bootstraps diverse instruction-following data from an initial seed task pool.
-* **Role in Ouroboros**: Powers `meta_feedback.py` to auto-generate custom self-correction curricula.
-
----
-
-## ♾️ How Ouroboros Unifies These Repositories
-
-Ouroboros connects these 7 tools into an autonomous, closed-loop pipeline:
-1. **Self-Diagnosis** (`meta_feedback.py` + `self-instruct`): Identifies cognitive bottlenecks.
-2. **Behavior Steering** (`architecture_mutator.py` + `repeng`): Activates high-rigor reasoning states.
-3. **Parametric Tuning** (`adapter_engine.py` + `peft` + `trl`): Computes LoRA updates and DPO policy adjustments.
-4. **Surgical Precision** (`weight_space_programmer.py` + `EasyEdit`): Directionally ablates looping attractors on 0.016% of weights.
-5. **Consolidation** (`task_arithmetic.py` + `mergekit`): Merges task vectors into stable checkpoints.
-6. **Entropy Safeguard** (`anchor_memory.py`): Replays golden foundation exemplars to eliminate Model Autophagy Disorder (MAD).
-7. **Adversarial Audit** (`adversarial_critic.py`): Stress-tests the generation against deductive pitfalls before advancing.
+See [architecture](../docs/SELF_EVOLVING_ARCHITECTURE.md), [testing](../docs/TESTING.md), [integration setup](../docs/INTEGRATIONS.md) and [recent primary-source review](../papers/RECENT_RESEARCH_2026.md).

@@ -1,30 +1,17 @@
-# Low-Rank Adaptation & Quantized Low-Rank Adaptation (LoRA & QLoRA)
+# LoRA and QLoRA
 
-- **Seminal Papers**:
-  - *LoRA: Low-Rank Adaptation of Large Language Models* (Hu et al., Microsoft, 2021) — [arXiv:2106.09685](https://arxiv.org/abs/2106.09685)
-  - *QLoRA: Efficient Finetuning of Quantized LLMs* (Dettmers et al., UW, 2023) — [arXiv:2305.14314](https://arxiv.org/abs/2305.14314)
-- **Primary Breakthrough**:
-  - Proved that weight updates during adaptation have a low intrinsic dimension.
-  - Frozen base model weights $W_0 \in \mathbb{R}^{d \times k}$ are injected with trainable rank decomposition matrices:
-    $$h = W_0 x + \Delta W x = W_0 x + \frac{\alpha}{r} B A x$$
-  - QLoRA introduces NormalFloat4 (NF4) quantization, Double Quantization, and Paged Optimizers, allowing 65B/70B models to fine-tune on a single 48GB GPU without performance degradation.
+- Hu et al., [LoRA: Low-Rank Adaptation of Large Language Models](https://arxiv.org/abs/2106.09685), 2021.
+- Dettmers et al., [QLoRA: Efficient Finetuning of Quantized LLMs](https://arxiv.org/abs/2305.14314), 2023.
 
----
+For a frozen matrix W, LoRA learns `delta_W = (alpha/r) B A`. The added parameter count is `r*(d_in+d_out)` rather than `d_in*d_out`. Initializing B to zero preserves the starting function. This is an empirically useful low-rank adaptation assumption, not a proof that every possible update is low rank.
 
-## 🧮 Mathematical Details
+QLoRA combines low-rank adapters with quantized frozen weights and memory-saving techniques. Published hardware/quality results depend on model, sequence length, optimizer, precision and implementation; they are not universal guarantees that a 70B model fits a particular GPU without degradation.
 
-### 1. Intrinsic Rank Factorization
-For rank $r \ll \min(d, k)$:
-- $A \sim \mathcal{N}(0, \sigma^2)$ is initialized with random Gaussian noise.
-- $B = 0$ is initialized to zeros, ensuring $\Delta W = 0$ at initialization ($t = 0$), so model behavior starts identical to the base pre-trained model.
+## Local status
 
-### 2. Zero Inference Latency Folding
-Once fine-tuning converges, the low-rank delta is merged directly into the base weights:
-$$W_{merged} = W_0 + \frac{\alpha}{r} (B \cdot A)$$
-This requires zero architectural changes or extra compute during subsequent inference.
+- The NumPy adapter/reference backend computes real analytical gradients for a tiny **classifier**, exports tensors and tests reload/rollback.
+- The Transformers backend uses installed PEFT for real completion-masked causal-LM SFT. Offline CPU tests construct a tiny GPT-2, verify only adapters change, and check safetensors export/reload and predictions.
+- Optional 4-bit QLoRA requires a local model, CUDA and bitsandbytes. **The GPU/quantization path was not tested in this environment.**
+- The default controller does not claim a LoRA gradient step plus a random score bump is LLM self-improvement.
 
----
-
-## 💻 Integrated in Ouroboros
-- Implemented natively in `ouroboros/core/adapter_engine.py` and `ouroboros/core/weight_editor.py`
-- Linked to external `external/peft/`
+See [local training](../docs/TRAINING.md) and [test evidence](../docs/TESTING.md). Base model weights must remain available; an adapter checkpoint is not a standalone foundation model.

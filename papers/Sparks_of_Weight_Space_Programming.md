@@ -1,46 +1,45 @@
-# ⚡ Sparks of Weight-Space Programming: LLMs Can Natively Read & Write Neural Network Weights
+# Sparks of Weight-Space Programming: verified source and implementation boundary
 
-- **Authors**: Rikiya Takehi, Jayden Teoh, Alex Zhang, Omar Khattab (MIT CSAIL, Nov 2026)
-- **Title**: *Sparks of Weight-Space Programming: LLMs can natively read & write neural network weights*
-- **Primary Breakthrough**:
-  - Neural network weights are traditionally "write-only" artifacts produced by gradient descent and backpropagation.
-  - Demonstrates that frontier LLMs (such as **GPT-6 Astra**) can natively inspect, interpret, and directly edit raw weights of target models like **Qwen3.5-0.8B** without traditional training, backpropagation, or optimizer passes.
+**Source:** Rikiya Takehi, Jayden Teoh, Alex Zhang, Omar Khattab, MIT CSAIL. November 2, 2026. [Primary research blog](https://rikiyat.github.io/blog/weight-space-programming/), [original logs and harness](https://github.com/RikiyaT/lm_understand-logs). Consulted November 19, including the math experiment and limitations.
 
----
+## What matches the remembered result?
 
-## 🎯 The Seminal Qwen3.5-0.8B Mathematical Surgery
+The source describes GPT-6 Astra editing **Qwen3.5-0.8B**, not a Harvard study. It is a **blog/research report with no formal DOI/publication listed on the page**, not a verified arXiv article. The authors report:
 
-### 1. The Glitch Diagnosis
-A small locally running model (**Qwen3.5-0.8B**) was trapped by repetitive reasoning loops during multi-step mathematical problems, limiting its baseline **MATH-500** benchmark performance to just **7.9%**.
+| Metric | Base | 50-forward-pass edit |
+| --- | ---: | ---: |
+| MATH-500 accuracy | 7.9% | 48.1% |
+| GSM8K accuracy | 13.8% | 67.1% |
+| IFEval | 21.0% | 62.3% |
 
-### 2. Surgical Parameter Surgery
-* **Zero Gradient Descent**: GPT-6 Astra was given direct programmatic read/write access to Qwen's parameter tensors via Python.
-* **Directional Ablation in Weight Space**: Astra diagnosed the looping mechanism in the down-projection MLP layers and surgically altered just **0.016% of total parameters** (~131,000 weights out of 800 million).
-* **The Result**:
-  * **MATH-500 Score surged from 7.9% to 48.1%** (~6x improvement, reaching the 40%–50% range).
-  * **IFEval (Instruction Following)** tripled as a byproduct of fixing the repetitive attractor state.
+These are source-reported numbers for a specific setup, not measurements from this repository. The MATH-500 change is **+40.2 percentage points**, approximately 6.09 times baseline accuracy. Percent and percentage points are not interchangeable.
 
----
+## What was actually edited?
 
-## 🧮 Mathematical Formulation of Weight-Space Surgery
+The post describes a Python environment without gradient training, a limited forward-pass budget, contrastive productive/repetitive activation analysis, layer-isolation and strength experiments, and a norm-matched random-direction control. The final patch changes selected MLP output columns at layers 15 and 19: 64 columns each, **131,072 entries**, about 0.016% of total parameters. It attributes the benefit to reducing pathological repeated reasoning that exhausted the token budget.
 
-### 1. Attractor Direction Identification
-Let $W_{down} \in \mathbb{R}^{d_{model} \times d_{ffn}}$ be the MLP down-projection matrix. A degenerate repetitive attractor is represented by top singular vector $u_{loop}$:
-$$u_{loop} = \arg\max_{\|u\|=1} \| W_{down}^T u \|$$
+That is **not equivalent** to choosing the largest singular vector of an arbitrary matrix or thresholding the largest deltas across the whole model. A singular direction shows algebraic structure, not causal proof of a repetitive attractor. The original code's universal SVD diagnosis and fixed-percentage pipeline stage overstated what had been implemented.
 
-### 2. Directional Ablation
-Rather than retraining the layer, the projection onto the degenerate subspace is attenuated:
-$$W_{down}' = W_{down} - \eta (u_{loop} u_{loop}^T) W_{down}$$
-where $\eta \in (0, 1]$ controls the ablation strength.
+The post's Gemma 3 270M follow-up did not establish a comparable improvement. The authors distinguish repairing an obstacle to an existing skill from adding an absent skill. The result is neither a guarantee of general mathematical learning without gradients nor evidence that any small model can autonomously improve itself.
 
-### 3. Sparse Weight Masking (0.016% Top Delotas)
-To minimize collateral damage to unrelated general capabilities:
-$$\Delta W = W_{down}' - W_{down}$$
-$$\text{Mask}_{ij} = \mathbb{I}(|\Delta W_{ij}| \ge \text{TopK}_{0.016\%}(|\Delta W|))$$
-$$W_{final} = W_{down} + (\text{Mask} \odot \Delta W)$$
+## What Ouroboros now provides
 
----
+- Pinned `external/weight-space-logs` source with original protocols/evidence; no modified or fabricated experiment logs.
+- An explicitly labeled `dominant_weight_direction` utility and deprecated misleading diagnostic name.
+- `contrastive_direction` from caller-supplied failing/successful activation matrices.
+- Shape/finite/zero-vector checks and bounded directional ablation.
+- Exact maximum edited-entry budgets, including ties, zero and very small tensors.
+- Explicit PyTorch single-tensor candidate edits with rollback data.
+- Measured candidate evaluation and real checkpoint/rollback infrastructure, rather than invented benchmark boosts.
 
-## 💻 Integrated in Ouroboros
-- Implemented natively in `ouroboros/core/weight_space_programmer.py`
-- Integrated into `ouroboros/pipeline/self_loop.py`
+These are reusable **experimental primitives**, not a reproduction of Astra's discovery process or exact released patch. Core training does not run this surgery automatically. Zeroing small deltas does not guarantee locality, no forgetting, or preservation of unrelated capabilities.
+
+## Related recent work
+
+- [WSP-Scope, 2611.09382](https://arxiv.org/abs/2611.09382): sparse interventions, uneven generalization, six of sixteen trajectories abstain.
+- [WeightBench, 2611.18553](https://arxiv.org/abs/2611.18553): independent task-based evaluation including impossible edits and failures.
+- [Reading audit, 2611.08070](https://arxiv.org/abs/2611.08070): dataset priors can masquerade as semantic weight understanding.
+- [Replication, 2611.21449](https://arxiv.org/abs/2611.21449): small-network writing replicates with narrower interpretation.
+- [Self-rewriting, 2611.21885v2](https://arxiv.org/abs/2611.21885v2): a 27B model reportedly edits itself; smaller variants may fail.
+
+Read [the recent review](RECENT_RESEARCH_2026.md) for scope/limitations and [SECURITY.md](../SECURITY.md) before executing any generated intervention.

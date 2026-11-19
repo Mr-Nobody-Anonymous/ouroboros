@@ -1,45 +1,14 @@
-# Self-Instruct & Autonomous Curriculum Generation
+# Self-Instruct, synthetic curricula and feedback quality
 
-- **Seminal Papers**:
-  - *Self-Instruct: Aligning Language Models with Self-Generated Instructions* (Wang et al., UW & AI2, 2022) — [arXiv:2212.10560](https://arxiv.org/abs/2212.10560)
-  - *UltraFeedback: Boosting Language Models with High-Filtered AI Feedback* (Cui et al., 2023) — [arXiv:2310.01377](https://arxiv.org/abs/2310.01377)
-- **Primary Breakthrough**:
-  - Showed that pre-trained language models can autonomously bootstrap their own instruction-following ability by generating diverse tasks, input instances, and target outputs from a small seed set of human examples.
-  - Paved the way for modern synthetic data generation pipelines (e.g., Alpaca, Orca, UltraFeedback).
+- Wang et al., [Self-Instruct: Aligning Language Models with Self-Generated Instructions](https://arxiv.org/abs/2212.10560), 2022.
+- Cui et al., [UltraFeedback: Boosting Language Models with High-quality Feedback](https://arxiv.org/abs/2310.01377), 2023.
 
----
+Self-Instruct bootstraps instructions/instances from seed tasks and filters the generated corpus. UltraFeedback studies richer AI feedback for model improvement. Neither establishes that a single model's unverified judgment is always reliable or that recursively generated data can replace distributional coverage indefinitely.
 
-## 🧮 Autonomous Bootstrapping Pipeline
+## Local status
 
-```
-  ┌────────────────────────────────────────────────────────┐
-  │ Seed Tasks Pool (e.g., 175 human seed tasks)          │
-  └──────────────────────────┬─────────────────────────────┘
-                             │ Sample 8 tasks (3 human + 5 model)
-                             ▼
-  ┌────────────────────────────────────────────────────────┐
-  │ Task Generation: Prompt model to invent new operations  │
-  └──────────────────────────┬─────────────────────────────┘
-                             │
-                             ▼
-  ┌────────────────────────────────────────────────────────┐
-  │ Input/Output Generation (Input-First or Output-First)  │
-  └──────────────────────────┬─────────────────────────────┘
-                             │
-                             ▼
-  ┌────────────────────────────────────────────────────────┐
-  │ Quality Filtering (ROUGE-L overlap < 0.7, heuristic    │
-  │ length checks, self-critique verification)             │
-  └──────────────────────────┬─────────────────────────────┘
-                             │ Pass
-                             ▼
-  ┌────────────────────────────────────────────────────────┐
-  │ Add to Training Pool & Fine-Tune Model Weights         │
-  └────────────────────────────────────────────────────────┘
-```
+The original `MetaFeedbackGenerator` returned a few repeated templates and was not a complete Self-Instruct implementation. It now exposes explicit generation callbacks and weak-domain selection without altering Python's global random state. The controller caps proposed examples, requires an independent verifier, rejects exact normalized validation overlap, deduplicates conflicting labels, records source/verification fields, and blends verified replay.
 
----
+`external/self-instruct` remains the existing partial source snapshot; no original revision is invented. The built-in demo data are deliberately small local fixtures, not an autonomously generated research-quality corpus. Semantic deduplication, broad diversity auditing, contamination detection beyond normalized exact prompts, and expert/task-specific verification remain necessary for serious experiments.
 
-## 💻 Integrated in Ouroboros
-- Implemented in `ouroboros/core/meta_feedback.py`
-- Linked to external `external/self-instruct/`
+See [data schema and callback example](../docs/TRAINING.md), [recent continual-learning evidence](RECENT_RESEARCH_2026.md), and [the source inventory](../external/README.md).

@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ouroboros"
+version = "0.2.0"
+description = "Auditable local model adaptation, weight editing, and bounded self-improvement experiments"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "Ouroboros contributors"}]
+dependencies = ["numpy>=1.24,<3", "PyYAML>=6,<7"]
+
+[project.optional-dependencies]
+train = ["torch>=2.2,<3", "transformers>=4.46,<5", "peft>=0.14,<1", "accelerate>=1,<2", "safetensors>=0.4,<1"]
+quantization = ["bitsandbytes>=0.45,<1"]
+preference = ["trl>=0.15,<1", "datasets>=3,<5"]
+dev = ["pytest>=8,<10", "ruff>=0.8,<1", "build>=1,<2"]
+
+[project.scripts]
+ouroboros = "ouroboros.cli:main"
+
+[project.urls]
+Repository = "https://github.com/Mr-Nobody-Anonymous/ouroboros"
+
+[tool.setuptools.packages.find]
+include = ["ouroboros*"]
+exclude = ["external*", "tests*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = ["ml: optional local Transformers/PEFT integration tests (no downloads)"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+include = ["ouroboros/**/*.py", "tests/**/*.py", "scripts/**/*.py"]
+exclude = ["external", ".venv"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

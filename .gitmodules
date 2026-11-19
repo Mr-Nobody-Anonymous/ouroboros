@@ -1,0 +1,21 @@
+[submodule "external/EasyEdit"]
+	path = external/EasyEdit
+	url = https://github.com/zjunlp/EasyEdit.git
+[submodule "external/mergekit"]
+	path = external/mergekit
+	url = https://github.com/arcee-ai/mergekit.git
+[submodule "external/weight-space-logs"]
+	path = external/weight-space-logs
+	url = https://github.com/RikiyaT/lm_understand-logs.git
+[submodule "external/WSP-Scope"]
+	path = external/WSP-Scope
+	url = https://github.com/WSP-Scope/WSP-Scope-Project.git
+[submodule "external/WeightBench"]
+	path = external/WeightBench
+	url = https://github.com/Aayush-Marasini/WeightBench.git
+[submodule "external/lm-evaluation-harness"]
+	path = external/lm-evaluation-harness
+	url = https://github.com/EleutherAI/lm-evaluation-harness.git
+[submodule "external/dgm"]
+	path = external/dgm
+	url = https://github.com/jennyzzt/dgm.git
