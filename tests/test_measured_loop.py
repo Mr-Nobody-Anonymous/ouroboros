@@ -142,6 +142,39 @@ def test_no_unverified_self_training(tmp_path):
         loop_at(tmp_path, proposal_provider=lambda *args: [])
 
 
+@pytest.mark.parametrize("failure", ["provider", "verifier", "conflicting-label"])
+def test_curriculum_failures_are_terminal_recorded_and_rolled_back(tmp_path, failure):
+    from ouroboros.data import Sample
+
+    backend = NumpyLoRABackend(demo_dataset().train)
+    initial = backend.snapshot()
+
+    def provider(*args):
+        if failure == "provider":
+            backend.a[:] = (
+                17  # callback writes are trusted, but owned adapter state still rolls back
+            )
+            raise RuntimeError("proposer unavailable")
+        if failure == "conflicting-label":
+            return [Sample("classify red", "cool", "warm_colors")]
+        return [Sample("novel red prompt", "warm", "warm_colors")]
+
+    def verifier(sample):
+        if failure == "verifier":
+            raise RuntimeError("independent verifier unavailable")
+        return True
+
+    loop = loop_at(
+        tmp_path, backend=backend, proposal_provider=provider, proposal_verifier=verifier
+    )
+    history = loop.run_cycle()
+    assert loop.report["status"] == "failed"
+    assert history[0]["stage"] == "curriculum" and not history[0]["passed"]
+    assert loop.report["final_test"]["status"] == "skipped_after_failure"
+    np.testing.assert_array_equal(backend.a, initial["a"])
+    assert loop.report["latest_checkpoint"] == "generation_0000"
+
+
 def test_proposals_are_bounded_and_verified(tmp_path):
     from ouroboros.data import Sample
 
@@ -188,3 +221,25 @@ def test_failed_atomic_export_leaves_no_partial_checkpoint(tmp_path):
     with pytest.raises(OSError):
         CheckpointStore(tmp_path, "test").save(backend, 1, scores={"a": 0.5})
     assert list(tmp_path.iterdir()) == []
+
+
+def test_evaluation_failure_keeps_completed_training_evidence_and_rolls_back(tmp_path):
+    loop = loop_at(tmp_path)
+    initial = loop.backend.snapshot()
+    original = loop.backend.predict
+    calls = 0
+
+    def predict(prompts):
+        nonlocal calls
+        calls += 1
+        if calls > 1:
+            raise RuntimeError("candidate grader unavailable")
+        return original(prompts)
+
+    loop.backend.predict = predict
+    (record,) = loop.run_cycle()
+    assert record["error"] and record["stage"] == "evaluation"
+    assert record["training"]["steps"] > 0 and np.isfinite(record["training"]["loss"])
+    assert loop.report["final_test"]["status"] == "skipped_after_failure"
+    np.testing.assert_array_equal(loop.backend.a, initial["a"])
+    np.testing.assert_array_equal(loop.backend.b, initial["b"])

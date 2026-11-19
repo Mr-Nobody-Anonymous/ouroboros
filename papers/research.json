@@ -61,7 +61,7 @@
       "url": "https://rikiyat.github.io/blog/weight-space-programming/",
       "summary": "MIT CSAIL reports an Astra edit of Qwen3.5-0.8B: MATH-500 7.9% to 48.1%, with 50 forward passes and 131072 edited entries. Not a Harvard paper, not gradient training, and not an Ouroboros result.",
       "local_path": "papers/Sparks_of_Weight_Space_Programming.md",
-      "implementation_status": "reference-and-bounded-edit-primitives",
+      "implementation_status": "reference-and-measured-edit-tools-not-reproduced",
       "reviewed_on": "2026-11-19",
       "review_scope": "abstract-and-selected-methods",
       "reproduced_here": false

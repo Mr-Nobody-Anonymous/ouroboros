@@ -212,3 +212,60 @@ def test_structural_candidate_is_separate_and_updates_cache_indices():
     with torch.inference_mode():
         result = candidate(torch.tensor([[1, 2, 3]]))
     assert result.logits.shape == (1, 3, 16)
+
+
+def test_shared_bare_model_loader_runs_real_weight_trial_and_cli(local_model, tmp_path, capsys):
+    import json
+
+    import numpy as np
+    import torch
+
+    from ouroboros.backends.local_model import LocalCausalLM
+    from ouroboros.cli import main
+    from ouroboros.config import ModelConfig
+    from ouroboros.core.weight_trials import WeightEditPlan, run_weight_edit_trial
+    from ouroboros.data import Sample
+
+    backend = LocalCausalLM(ModelConfig(model_name_or_path=str(local_model), max_new_tokens=4))
+    assert not any(p.requires_grad for p in backend.model.parameters())
+    name = "transformer.h.0.mlp.c_proj.weight"
+    parameter = dict(backend.model.named_parameters())[name]
+    original = parameter.detach().clone()
+    # Unreachable canonical label: the real random LM cannot earn credit from a style heuristic.
+    validation = [Sample("What is 2 + 2 ?", "unreachable-canonical-answer", "math_logic")]
+    plan = WeightEditPlan(name, edited_fraction=0.01, strength=0.25, max_relative_norm=1)
+    result = run_weight_edit_trial(
+        backend.model,
+        backend.predict,
+        validation,
+        np.ones(parameter.shape[0]),
+        plan,
+        tmp_path / "api-trials",
+        provenance="generated random GPT-2 integration fixture",
+        license_name="MIT",
+        model_info=backend.describe(),
+    )
+    assert result["status"] == "rejected" and not result["passed"]
+    assert result["baseline"]["examples"] == result["candidate"]["examples"] == 1
+    assert torch.equal(parameter, original) and result["model_restored"]
+
+    (tmp_path / "validation.json").write_text(json.dumps([s.as_dict() for s in validation]))
+    (tmp_path / "direction.json").write_text(json.dumps([1.0] * parameter.shape[0]))
+    config = {
+        "model": {"model_name_or_path": str(local_model), "max_new_tokens": 4},
+        "edit": {"parameter_name": name, "edited_fraction": 0.01, "max_relative_norm": 1},
+        "validation": "validation.json",
+        "direction_file": "direction.json",
+        "output_dir": "cli-trials",
+        "provenance": "generated random GPT-2 integration fixture",
+        "license": "MIT",
+    }
+    path = tmp_path / "trial.json"
+    path.write_text(json.dumps(config))
+    assert main(["weights", "trial", "--config", str(path)]) == 0
+    response = json.loads(capsys.readouterr().out)
+    assert response["model_restored"] and response["status"] == "rejected"
+    assert main(["weights", "trial", "--config", str(path), "--list-parameters"]) == 0
+    listed = json.loads(capsys.readouterr().out)
+    assert any(row["name"] == name for row in listed["parameters"])
+    assert listed["edited"] is False

@@ -1,0 +1,34 @@
+[
+  {
+    "instruction": "red label only",
+    "target": "warm",
+    "domain": "warm_colors",
+    "source": "demo-fixture",
+    "verified": true,
+    "is_anchor": false
+  },
+  {
+    "instruction": "orange label only",
+    "target": "warm",
+    "domain": "warm_colors",
+    "source": "demo-fixture",
+    "verified": true,
+    "is_anchor": false
+  },
+  {
+    "instruction": "blue label only",
+    "target": "cool",
+    "domain": "cool_colors",
+    "source": "demo-fixture",
+    "verified": true,
+    "is_anchor": false
+  },
+  {
+    "instruction": "green label only",
+    "target": "cool",
+    "domain": "cool_colors",
+    "source": "demo-fixture",
+    "verified": true,
+    "is_anchor": false
+  }
+]

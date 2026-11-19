@@ -29,10 +29,14 @@ The post's Gemma 3 270M follow-up did not establish a comparable improvement. Th
 - `contrastive_direction` from caller-supplied failing/successful activation matrices.
 - Shape/finite/zero-vector checks and bounded directional ablation.
 - Exact maximum edited-entry budgets, including ties, zero and very small tensors.
-- Explicit PyTorch single-tensor candidate edits with rollback data.
-- Measured candidate evaluation and real checkpoint/rollback infrastructure, rather than invented benchmark boosts.
+- Bounded read-only safetensors metadata/prefix inspection without loading a model; numeric values do not reveal arbitrary semantics.
+- Explicit measured single-tensor trials: paired baseline/candidate inference, actual rounded entry/norm/payload-byte limits and improvement/retention gates.
+- Unconditional live-target restoration, even on acceptance, and accepted-only data-only sparse patches with exact explicit application/reversal against complete before/after target-tensor hashes.
+- Independent optional final-test evaluation after SFT selection, excluded from generated curricula/promotion, rather than invented benchmark boosts.
 
-These are reusable **experimental primitives**, not a reproduction of Astra's discovery process or exact released patch. Core training does not run this surgery automatically. Zeroing small deltas does not guarantee locality, no forgetting, or preservation of unrelated capabilities.
+See the [weight-edit guide](../docs/WEIGHT_EDITING.md) for runnable CLI examples and limits. `edited_fraction` is a bound on the **selected matrix**, not Astra's reported fraction of all model parameters. The 2×2 edit demo and random-LM tests establish mechanics, not meaningful pretrained improvement.
+
+These are reusable **experimental tools**, not a reproduction of Astra's discovery process or exact released patch. Core SFT does not run this surgery automatically, and its adapter-only snapshots cannot capture arbitrary base edits. Tiny changes do not guarantee locality, no forgetting or unrelated capability preservation. Patch hashes bind only the target tensor, not the full model, author or legal rights.
 
 ## Related recent work
 

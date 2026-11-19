@@ -37,10 +37,11 @@ Exact commits, snapshot hashes and licenses live in [sources.lock.json](../exter
 4. Data/source fingerprints, exact normalized split-leak checks, conflicting-label rejection and independently verified proposals/replay.
 5. Measured original/latest gates, strict improvement/forgetting thresholds, real rollback after training/evaluation/export failure, and bounded generations/steps/cooperative time.
 6. Actual tensor checkpoint files with atomic export, hashes and parent lineage, plus conservative actual-byte Pareto retention.
-7. Exact sparse budgets, finite/shape checks, reversible PyTorch candidate edits, explicit copied structural candidates, TIES and arithmetic edge-case fixes.
+7. Exact sparse budgets, finite/shape checks, explicit copied structural candidates, TIES and arithmetic edge-case fixes. The 0.3 extension adds bounded numeric inspection, measured one-matrix trials with unconditional restoration, and accepted-only exact reversible data patches; this is owned tooling, not upstream benchmark reproduction.
 8. No fake EasyEdit success, no random verifier/judge values, no acceptance of confident wrong STaR labels, no auto-execution of generated Python.
 9. Original-source research notes with 33 references including 11 actually recent reviews, bibliography, limitations and machine-readable status.
 10. Honest artifact inventory, narrow LFS attributes, non-destructive storage audit, deterministic core release builder and remote-publication separation.
+11. Optional disjoint final-test data, blocked from proposals/promotion and evaluated once after selection. Curriculum callback/label failures now terminate with recorded stage evidence and owned-state rollback. Shared frozen local-LM inference is used by both PEFT and direct trials.
 
 ## Still not solved
 

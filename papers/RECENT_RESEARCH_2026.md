@@ -30,7 +30,7 @@ This is a research **blog post**, not a verified Harvard/arXiv paper. With a Pyt
 
 The post describes contrastive productive/repetitive activations, layer/strength experiments, a norm-matched random-direction control, and changes to selected MLP output columns in layers 15 and 19. **It does not say that taking the largest singular vector of any weight matrix diagnoses a looping circuit.** The Gemma 3 270M follow-up did not establish a comparable improvement. Fixing a failure that suppresses an existing skill is not proof of learning arbitrary new skills without training.
 
-**Local consequence:** pinned logs, contrastive-direction and bounded reversible tensor primitives; no claim to reproduce Astra's reasoning, exact patch or benchmark. See [the detailed correction](Sparks_of_Weight_Space_Programming.md).
+**Local consequence:** pinned logs, contrastive-direction utilities and [measured reversible edit tools](../docs/WEIGHT_EDITING.md), with accepted-only data patches and unconditional live-target restoration. Numeric inspection is not semantic understanding, and per-matrix budgets are not the original multi-layer protocol. No claim to reproduce Astra's reasoning, exact patch or benchmark is made. See [the detailed correction](Sparks_of_Weight_Space_Programming.md).
 
 ## 5. Counterevidence on reading semantics from raw weights
 
@@ -66,7 +66,7 @@ Replicates small-network weight writing and studies modified tasks, decompiled p
 
 **Language Models Can Rewrite Their Own Weights** — Jiajun Fan et al.; November 16, **v2 November 18**. [arXiv:2611.21885v2](https://arxiv.org/abs/2611.21885v2).
 
-The paper reports an open 27B model diagnosing and editing itself without gradients, gaining 6.6 accuracy points on held-out math, and repairing a damaged copy. Smaller sizes abstain or break themselves. The selected methods/figures describe practice checks, hidden-state comparisons and separate evaluation; repeated selection on practice problems must not be confused with an untouched final test. **Local consequence:** preserve real rollback, make abstention normal, record successive candidates, and do not promise the same behavior from a tiny local model. No official code checkout was represented as integrated without verifying a released implementation; no 27B model was run here.
+The paper reports an open 27B model diagnosing and editing itself without gradients, gaining 6.6 accuracy points on held-out math, and repairing a damaged copy. Smaller sizes abstain or break themselves. Reported sessions restart from base weights; they do not establish cumulative improvement across sessions. The selected methods/figures describe practice checks, hidden-state comparisons and separate evaluation; repeated practice selection is not an untouched final test. **Local consequence:** preserve rollback, make abstention normal, record candidates and optionally evaluate disjoint final data once after selection. Do not promise the same behavior from a tiny local model. No official code checkout was represented as integrated without verifying a released implementation; no 27B model was run here.
 
 ## 11. Architecture depends on how parameters are written
 

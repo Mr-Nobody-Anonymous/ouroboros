@@ -24,6 +24,8 @@ jobs:
       - run: ruff format --check ouroboros tests scripts
       - run: python scripts/check_docs.py
       - run: ouroboros run --config examples/local_sft.json --check-only
+      - run: ouroboros weights trial --config examples/weight_trial.json --check-only
+      - run: python -m pip check
       - run: python -m build
   local-lora:
     runs-on: ubuntu-latest

@@ -85,11 +85,13 @@ class DatasetBundle:
     train: list[Sample]
     validation: list[Sample]
     anchors: list[Sample] = field(default_factory=list)
+    test: list[Sample] = field(default_factory=list)
 
     def __post_init__(self):
         self.train = unique_samples(self.train)
         self.validation = unique_samples(self.validation)
         self.anchors = unique_samples(self.anchors)
+        self.test = unique_samples(self.test)
         if not self.train or not self.validation:
             raise ValueError("Nonempty train and validation splits are required")
         unique_samples([*self.train, *self.anchors])  # detect conflicting replay labels
@@ -97,6 +99,10 @@ class DatasetBundle:
         for sample in self.validation:
             if prompt_key(sample.instruction) in training_keys:
                 raise ValueError(f"Train/validation contamination: {sample.instruction!r}")
+        selection_keys = training_keys | {prompt_key(s.instruction) for s in self.validation}
+        for sample in self.test:
+            if prompt_key(sample.instruction) in selection_keys:
+                raise ValueError(f"Train/validation/test contamination: {sample.instruction!r}")
         for anchor in self.anchors:
             if not anchor.verified:
                 raise ValueError("Replay anchors must be explicitly verified")
@@ -109,6 +115,9 @@ class DatasetBundle:
             name: [s.as_dict() for s in getattr(self, name)]
             for name in ("train", "validation", "anchors")
         }
+        # Preserve fingerprints of 0.2 datasets that have no final-test split.
+        if self.test:
+            payload["test"] = [s.as_dict() for s in self.test]
         return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
 
@@ -144,7 +153,17 @@ def demo_dataset() -> DatasetBundle:
         Sample("red category please", "warm", "warm_colors", "demo-fixture", True, True),
         Sample("blue category please", "cool", "cool_colors", "demo-fixture", True, True),
     ]
-    return DatasetBundle(train, validation, anchors)
+    test = [
+        Sample(
+            f"{color} label only",
+            target,
+            "warm_colors" if target == "warm" else "cool_colors",
+            "demo-fixture",
+            True,
+        )
+        for color, target in colors.items()
+    ]
+    return DatasetBundle(train, validation, anchors, test)
 
 
 def tokens(text: str) -> list[str]:

@@ -18,6 +18,12 @@ ouroboros repos sync --name WeightBench
 
 The [local training guide](TRAINING.md) describes the installed-package backend and tested dependency combination. Vendored PEFT is a reference copy; editing it does not change the installed PEFT wheel. Install a reviewed fork explicitly in a separate environment if you need to change the upstream implementation.
 
+The owned `LocalCausalLM` loader also supports explicit direct-weight trials without inserting LoRA. It freezes a local safetensors base, records base/tokenizer hashes and shares SFT's prompt/greedy inference path. PEFT is only imported by the SFT subclass, though the `train` convenience extra installs both.
+
+## Numeric inspection and direct trials: owned tools, not an upstream reproduction
+
+[Weight-edit commands/APIs](WEIGHT_EDITING.md) provide bounded read-only inspection without Torch, measured one-matrix trials with unconditional restoration, accepted-only sparse data exports and explicit exact apply/reverse. The original WSP logs motivated their contracts; neither those tools nor a passing 2×2 fixture demonstrate reproduction of Astra, WSP-Scope or WeightBench results. Callers still choose the model, target, direction and independent evaluation. Keep direct base edits outside adapter-only SFT snapshots/exports unless you implement/test their backend state contract.
+
 ## EasyEdit: explicit call, separate environment
 
 The bridge supports `ROME`, `MEMIT`, `MEND` and `FT` with an installed compatible `easyeditor` package and a real method-specific hyperparameter YAML.

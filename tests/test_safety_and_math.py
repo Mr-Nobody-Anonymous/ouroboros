@@ -237,3 +237,14 @@ def test_pruner_never_deletes_unowned_unknown_symlink_or_corrupt(tmp_path):
     ).is_symlink()
     with pytest.raises(ValueError):
         ParetoCheckpointPruner().prune_checkpoints(tmp_path)
+
+
+def test_sparse_edit_preserves_unedited_bytes_and_handles_fortran_layout():
+    base = np.array([[-1.0, -0.0], [0.0, 1.0]], dtype=np.float64, order="F")
+    target = base.copy(order="F")
+    target[0, 0] = 0.0
+    for ratio in (0, 0.25, 1):
+        result, stats = WeightSpaceProgrammer().sparse_topk_edit(base, target, ratio)
+        expected = base if ratio == 0 else target
+        assert result.tobytes() == expected.tobytes(), f"Unexpected byte change at ratio {ratio}"
+        assert stats["edited_weights"] == (0 if ratio == 0 else 1)

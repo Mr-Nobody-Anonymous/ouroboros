@@ -1,9 +1,39 @@
 """Measured exact-match evaluation and fail-closed promotion decisions."""
 
 import math
+from collections import Counter
+from collections.abc import Sequence
 from typing import Dict, List, Optional, Tuple
 
 from ..data import normalize
+
+
+def evaluate_samples(predict, samples):
+    """Score a fixed nonempty split, validating the complete prediction vector before zipping."""
+    if not samples:
+        raise ValueError("A nonempty evaluation split is required")
+    predictions = predict([sample.instruction for sample in samples])
+    if (
+        isinstance(predictions, (str, bytes))
+        or not isinstance(predictions, Sequence)
+        or len(predictions) != len(samples)
+        or any(not isinstance(value, str) for value in predictions)
+    ):
+        raise ValueError("Backend returned the wrong number or type of predictions")
+    suite = {}
+    for sample, prediction in zip(samples, predictions):
+        suite.setdefault(sample.domain, []).append(
+            {"prediction": prediction, "target": sample.target}
+        )
+    scores = SelfEvaluator().evaluate_generation(suite)
+    return {
+        "metric": "normalized_exact_match",
+        "scores": scores,
+        "macro_accuracy": sum(scores.values()) / len(scores),
+        "domain_counts": dict(Counter(sample.domain for sample in samples)),
+        "examples": len(samples),
+        "predictions": list(predictions),
+    }
 
 
 class SelfEvaluator:

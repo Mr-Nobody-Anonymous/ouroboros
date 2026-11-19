@@ -27,7 +27,7 @@ class WeightSpaceProgrammer:
 
     @staticmethod
     def _ratio(value):
-        if not math.isfinite(value) or not 0 <= value <= 1:
+        if type(value) not in (int, float) or not 0 <= value <= 1 or not math.isfinite(value):
             raise ValueError("Edited fraction must be finite and in [0, 1]")
 
     def dominant_weight_direction(self, weight):
@@ -76,12 +76,15 @@ class WeightSpaceProgrammer:
         # Floor enforces an upper bound. A tiny matrix may legitimately have a zero edit budget.
         k = min(base.size, math.floor(base.size * ratio))
         flat = delta.reshape(-1)
-        sparse = np.zeros_like(flat)
+        # Copy unselected values, not base + zeros: adding +0 can destroy a stored -0 bit.
+        # Use C order so flat indexed writes also work with Fortran/noncontiguous inputs.
+        final = np.array(base, dtype=np.result_type(base.dtype, target.dtype), order="C", copy=True)
         if k:
             # Stable ordering breaks ties by index; threshold masks could edit every tied parameter.
             indices = np.argsort(-np.abs(flat), kind="stable")[:k]
-            sparse[indices] = flat[indices]
-        final = base + sparse.reshape(base.shape)
+            values = target.reshape(-1)[indices]
+            changed = values != final.reshape(-1)[indices]
+            final.reshape(-1)[indices[changed]] = values[changed]
         edited = int(np.count_nonzero(final != base))
         return final, {
             "total_weights": int(base.size),
@@ -112,13 +115,26 @@ class WeightSpaceProgrammer:
         }:
             raise ValueError("Only ordinary floating-point 2D parameters are supported")
         original = parameter.detach().cpu().clone()
-        base = original.float().numpy()
+        # Preserve F64 exactly; promote BF16/F16 weights through F32 before one final cast.
+        # A higher-precision caller direction may promote intermediate NumPy arithmetic further.
+        base = original.numpy() if original.dtype == torch.float64 else original.float().numpy()
         candidate = self.surgical_directional_ablation(base, direction, strength)
         edited, stats = self.sparse_topk_edit(base, candidate, edited_fraction)
-        with torch.no_grad():
-            parameter.copy_(torch.as_tensor(edited, device=parameter.device, dtype=parameter.dtype))
-        stats["edited_weights"] = int(torch.count_nonzero(parameter.detach().cpu() != original))
+        candidate_tensor = torch.as_tensor(edited, dtype=original.dtype)
+        # A rounded-away edit must not flip signed zeros or otherwise change equal-value bytes.
+        candidate_tensor = torch.where(candidate_tensor == original, original, candidate_tensor)
+        if not torch.isfinite(candidate_tensor).all():
+            raise FloatingPointError("Nonfinite rounded edit; model was not changed")
+        delta_norm = float(torch.linalg.vector_norm(candidate_tensor.double() - original.double()))
+        base_norm = float(torch.linalg.vector_norm(original.double()))
+        stats.update(
+            edited_weights=int(torch.count_nonzero(candidate_tensor != original)),
+            frobenius_norm_delta=delta_norm,
+            relative_norm_delta=delta_norm / base_norm if base_norm else 0.0,
+        )
         stats["actual_sparsity_percentage"] = 100 * stats["edited_weights"] / original.numel()
+        with torch.no_grad():
+            parameter.copy_(candidate_tensor.to(parameter.device))
         return {"parameter_name": parameter_name, "original": original, "stats": stats}
 
     @staticmethod

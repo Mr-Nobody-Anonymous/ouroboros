@@ -31,6 +31,7 @@
   "data": {
     "train": "data/train.json",
     "validation": "data/validation.json",
-    "anchors": "data/anchors.json"
+    "anchors": "data/anchors.json",
+    "test": "data/test.json"
   }
 }

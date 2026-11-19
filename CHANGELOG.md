@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.3.0 — measured reversible weight experiments (2026-11-19, pre-release)
+
+### Added
+
+- Bounded read-only safetensors metadata/value inspection, including BF16/nonfinite handling, without Torch/model loading.
+- Explicit single-matrix trials with paired baseline/candidate inference, measured improvement/retention gates and actual rounded entry/norm/payload-byte limits.
+- Unconditional selected-parameter/flags/Torch-RNG restoration, accepted-only data-only sparse patch exports and exact target-bound application/reversal APIs.
+- `weights inspect`, `demo`, `trial`, `verify-patch` and `evaluate-patch` CLI commands, JSON templates and a real 2×2 Torch mechanical fixture.
+- Shared frozen offline `LocalCausalLM` loader/inference for both direct trials and PEFT SFT.
+- Optional disjoint `data.test`, blocked from proposals/promotion and evaluated once after completed/budget-limited selection, with explicit failure/skipped/not-configured states.
+- Weight-edit documentation and refreshed architecture/training/security/storage/agent/research implementation guidance.
+
+### Fixed
+
+- Validate complete prediction sequences before exact-match scoring; reject wrong cardinality/types rather than silently truncating `zip`.
+- Preserve unedited F64 values/signed-zero bytes, including non-C-layout inputs; use at least F32 arithmetic for low-precision weights and measure the actual rounded result.
+- Enclose curriculum callbacks/validation in the generation rollback boundary; persist terminal proposer/verifier/conflicting-label failures and last-stage evidence.
+- Keep completed training metrics when candidate evaluation fails.
+- Fail closed on malformed, extra-file, corrupt, mismatched, over-budget or rehashed inconsistent patch inputs before live application.
+
+### Limits
+
+These are mechanical/tooling improvements, not pretrained capability gains or an Astra replication. Direct trials own one tensor, not arbitrary callback side effects; patch hashes bind that target, not the whole model/author/license. Adapter-only checkpoints cannot capture arbitrary base-weight edits. Dense RAM costs, trusted callbacks, quantized/GPU limitations and repeated-validation overfitting remain explicit. See [release notes](docs/RELEASE_NOTES_0_3_0.md) and [testing](docs/TESTING.md).
+
 ## 0.2.0 — measured adaptation and reproducibility (2026-11-19)
 
 ### Added

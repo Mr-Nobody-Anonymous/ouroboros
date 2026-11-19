@@ -1,0 +1,22 @@
+{
+  "model": {
+    "model_name_or_path": "../models/local-causal-lm",
+    "device": "cpu",
+    "torch_dtype": "float32",
+    "max_new_tokens": 16
+  },
+  "edit": {
+    "parameter_name": "model.layers.0.mlp.down_proj.weight",
+    "edited_fraction": 0.00016,
+    "strength": 0.25,
+    "max_relative_norm": 0.05,
+    "forgetting_threshold": 0.0,
+    "improvement_threshold": 0.01,
+    "seed": 42
+  },
+  "direction_file": "data/direction.example.json",
+  "validation": "data/validation.json",
+  "output_dir": "../outputs/weight-trials",
+  "provenance": "REPLACE_WITH_ACTUAL_LOCAL_MODEL_REVISION_AND_DIRECTION_PROVENANCE",
+  "license": "REPLACE_WITH_ACTUAL_BASE_MODEL_LICENSE"
+}

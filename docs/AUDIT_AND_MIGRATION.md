@@ -37,7 +37,7 @@ Audit baseline: repository commit `97181d38a12438c1a5c9db753a3552e5edf48539`, No
 
 1. Install the minimal package with `pip install -e '.[dev]'`. Heavy LLM training is an explicit `train` extra.
 2. Run `ouroboros demo` for measured plumbing tests. Old `--generations/--domain/--simulate` invocations warn and route to that demo; they are not math evaluations.
-3. For real models, supply local safetensors/tokenizer files and separate training/validation/replay data via `examples/local_sft.json`.
+3. For real models, supply local safetensors/tokenizer files and separate training/validation/replay data via `examples/local_sft.json`. In 0.3, optional `data.test` is disjoint from every selection split and evaluated once after selection, never used for proposals/promotion. Reusing it to choose future runs still leaks information.
 4. Old metadata-only adapter directories are **not valid new checkpoints**. Re-run a real training/export or import real tensors with verified provenance; no tensor content can be reconstructed from a configuration JSON.
 5. `SelfEvaluator` no longer supplies fabricated baseline numbers. Provide measured scores/predictions; exact match replaces permissive substring matching.
 6. Judges, generators and verifiers must be explicit. Fake success/fallback APIs now raise instead of pretending to complete work. Tied preferences abstain.
@@ -45,4 +45,10 @@ Audit baseline: repository commit `97181d38a12438c1a5c9db753a3552e5edf48539`, No
 8. Run `ouroboros repos sync`/`verify` for the seven pinned submodules and five preserved source snapshots. Read the integration status before treating a clone as executable functionality.
 9. Use the artifact register/verify tools only for files actually present and licensed. Git LFS installation was not completed in this sandbox: a release-asset download failed with `EOF`, and the exact cause was not established. Source attributes/scripts are prepared; no LFS upload is claimed.
 
-See [training](TRAINING.md), [storage/releases](STORAGE_AND_RELEASES.md), and [test evidence](TESTING.md). The research and engineering infrastructure is substantially more honest and usable, but it is not a substitute for independent scientific evaluation.
+## The 0.3 extension
+
+[Measured weight trials](WEIGHT_EDITING.md) now make numeric inspection and direct edits explicit runnable experiments, with accepted-only sparse data exports, unconditional restoration and separate exact apply/reverse operations. This is not Astra's discovered patch, an automatic layer/direction selector, an LLM benchmark gain or proof of semantic weight understanding. Norm/entry limits and a passing fixture do not establish locality. Target hashes bind one tensor, not every weight, the author or licensing rights; callbacks are trusted and dense copies need RAM.
+
+Keep direct trials separate from adapter-only SFT snapshots/exports, which cannot undo or serialize arbitrary base-weight edits. An omitted test split remains backward-compatible and explicitly reported as absent; using final results to tune another run would compromise that separation. Old v0.1.0/v0.2.0 releases remain historical and unchanged rather than being silently overwritten with this source.
+
+See [training](TRAINING.md), [storage/releases](STORAGE_AND_RELEASES.md), and [test evidence](TESTING.md). The research and engineering infrastructure is more auditable, but it is not a substitute for independent scientific evaluation.

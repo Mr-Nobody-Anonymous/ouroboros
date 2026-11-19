@@ -10,59 +10,87 @@ ruff check ouroboros tests scripts
 ruff format --check ouroboros tests scripts
 python scripts/check_docs.py
 ouroboros run --config examples/local_sft.json --check-only
+ouroboros weights trial --config examples/weight_trial.json --check-only
 ouroboros demo --generations 3
 ouroboros repos verify  # after initializing the pinned submodules
 python scripts/verify_artifacts.py
+python -m pip check
 python -m build
 ```
 
-Optional local-LM integration tests:
+Optional Torch/direct-edit and local-LM tests:
 
 ```bash
 pip install -e '.[train]' -c constraints/ml-tested.txt
-HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python -m pytest -q -m ml
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python -m pytest -q
+# Or select only optional tests with: python -m pytest -q -m ml
+ouroboros weights demo
 ```
 
-`pytest` runs the full suite; unittest discovery runs the smaller public-API smoke suite only. The [CI workflow](../.github/workflows/ci.yml) tests minimal Python 3.10/3.11/3.12 environments plus a separate Python 3.11 CPU local-LM job. CI results are distinct from commands run locally and should not be claimed passed until observed.
+`pytest` runs the full suite; unittest discovery runs the smaller public-API smoke suite. The [CI workflow](../.github/workflows/ci.yml) tests minimal Python 3.10/3.11/3.12 plus a separate Python 3.11 CPU ML job. Remote CI conclusions are distinct from local observations and must be checked before being claimed.
 
-## Local verification performed
+## Local verification performed for 0.3.0
 
-On **2026-11-19**, Python 3.11 in the Arena checkout returned **125 passed, 3 expected PEFT warnings** for the full suite. A separate fresh environment with **no Torch/Transformers/PEFT installed** returned **119 passed, 6 ML tests deselected**. Unittest compatibility discovery returned **14 passed**. Ruff lint/format, documentation/catalogue checks, source verification (**12/12**), example configuration validation and source/wheel builds also passed locally. These observations are not claims about unobserved remote CI jobs or other Python/GPU configurations.
+On **2026-11-19**, Python 3.11.2 in the Arena checkout returned:
 
-The integration environment uses NumPy 2.4.6, PyTorch 2.5.1 (CUDA libraries installed but **no CUDA device available**), Transformers 4.57.6, PEFT 0.18.1 and Accelerate 1.15.0. A tiny GPT-2/tokenizer and a tiny Llama model are generated locally; **no pretrained weights are downloaded**. The upstream PEFT Conv1D fan-in/fan-out adjustment warning is expected for GPT-2 and not a benchmark result.
+| Check | Observed result |
+| --- | --- |
+| Full offline suite | **195 passed**, 3 expected PEFT warnings |
+| Fresh no-Torch/Transformers/PEFT environment | **168 passed**, 27 ML tests deselected |
+| Unittest compatibility discovery | **14 passed** |
+| Ruff lint/format | Passed (47 Python files formatted) |
+| Owned Markdown / research metadata | **30 documents / 33 references**, consistent |
+| Source inventory | **12/12 verified**, seven submodules + five snapshots |
+| Artifact registry | **0 files / 0 bytes**; no remote-LFS availability claim |
+| Config checks / workflow YAML / shell syntax / dependency consistency | Passed |
+
+The integration environment uses NumPy 2.4.6, PyTorch 2.5.1 (CUDA libraries installed but **no CUDA device available**), Transformers 4.57.6, PEFT 0.18.1 and Accelerate 1.15.0. Tiny random GPT-2/tokenizer and Llama models are generated locally; **no pretrained weights or benchmark corpora are downloaded**. PEFT's GPT-2 Conv1D fan-in/fan-out adjustment warnings are expected. The standalone loader also emits Transformers' `torch_dtype` deprecation notice, not a failed inference result. `pip check` passed in the ML and fresh minimal/package environments.
 
 Checks exercise:
 
-- Numerical LoRA gradients, loss measurement, frozen base tensors and exact rollback state.
+- Numerical LoRA gradients, measured loss, frozen base tensors and exact rollback state.
 - Prompt/EOS/padding label handling, context/sequence budgets, real safetensors export and reload predictions.
-- Measured promotion and plateau rejection; real rollback on training and checkpoint-export failure.
-- Deterministic seeded predictions/losses/parameters, per-run artifact isolation and checksum tamper detection.
-- Data schema, conflicting targets, normalized split contamination, verified proposals and final-batch replay ratios.
-- No substring-credit bug (`1` is not `10`), no invented baselines, finite scores, original/latest forgetting and strict improvement gates.
-- Exact sparse edit counts with tied magnitudes/zero budgets, TIES/DARE/SLERP edge cases and reversible actual PyTorch edits.
-- Explicit copied decoder-layer candidates with correct layer counts/cache indices and a real forward pass.
+- Measured promotion/plateau rejection and rollback on curriculum, training, evaluation and checkpoint-export failures, with durable stage/training evidence.
+- Seeded predictions/losses/parameters, per-run isolation and checksum tamper detection.
+- Schema, conflicting targets, normalized split contamination, verified proposals and final-batch replay ratios.
+- Disjoint optional final test: no baseline/proposer/training/promotion use; one post-selection call; budget-limited selection, absent/failed/skipped/interrupted states and nonzero CLI failure behavior.
+- Complete prediction-vector type/cardinality checks before scoring; `1` not matching `10`; no invented baselines; original/latest retention and strict positive improvement.
+- Bounded numeric inspection with no Torch, BF16/nonfinite decoding, oversized/invalid headers and offset rejection, plus short-prefix reads of a synthetic sparse file.
+- Accepted/rejected Torch trials across F16/F32/F64/BF16, exact entry/norm/payload-byte gates, zero edits, plateau rejection, cancellation, paired/restored Torch RNG, heterogeneous training flags and export failure.
+- Exact patch apply/reverse, wrong-state/target refusal, indices/shape/dtype/checksum/norm validation, rehashed inconsistent payloads, extra files and symlinks. Unedited F64 values and **signed-zero bytes** remain intact, including Fortran-layout NumPy input.
+- Real shared bare-loader inference, local runtime parameter listing and a measured random-GPT-2 edit trial that correctly rejects zero improvement and restores the target.
+- Exact sparse budgets with ties/zero, TIES/DARE/SLERP edge cases, copied decoder-layer candidates with cache indices and a real forward pass.
 - Confidence not overriding wrong answers, explicit judge/verifier requirements and abstention on tied preferences.
-- Code proposal hashes/patches without source execution and rejection of dangerous arithmetic-language constructs.
-- Actual-byte Pareto retention, preview behavior and preservation of foreign, unknown, corrupt and symlinked paths.
-- Bridge refusal to claim execution when missing or not explicitly authorized, source lock consistency, documentation/catalogue integrity and release/artifact tooling.
+- Code proposal hashes without source execution; rejection of dangerous arithmetic-language constructs.
+- Actual-byte Pareto retention/preview and preservation of foreign, unknown, corrupt and symlinked paths; bridge refusal to invent execution.
 
-The measured demo trains a tiny color-label classifier from a baseline that predicts one label to perfect accuracy on four simple held-out prompts, then rejects plateau candidates. This is intentionally trivial **plumbing evidence**, not a 50-point improvement in real LLM mathematics or a generalization study.
+## Standalone CLI smoke workflows
+
+These also ran outside pytest:
+
+1. **NumPy training:** three generations produced `[promoted, rejected, rejected]`; the four-record final fixture scored macro accuracy 1.0 after selection. Checkpoint reload/evaluation also scored 1.0, and retention preview changed no files.
+2. **2×2 Torch edit fixture:** one entry repaired `repair: 0.0 → 1.0` while `retention` stayed 1.0. The live model was restored; the accepted sparse safetensors payload was **216 bytes**. No-Torch CLI verification/inspection succeeded, and explicit application/reversal on a matching fixture was exact.
+3. **Random local GPT-2:** generated files, listed actual matrices, inspected one using the core CLI, and tested a ten-entry edit against an unreachable canonical label. Baseline/candidate scores were both zero, so the trial correctly **rejected** it, restored the live tensor and exported no patch. This checks control flow, not math learning.
+
+Both demos are intentionally trivial mechanical evidence, **not pretrained LLMs, a generalization study, Astra reproduction or a large math improvement**. Public color-pattern/test fixtures are not scientifically independent capability benchmarks.
+
+## Distribution checks
+
+The current-code Python source distribution was extracted without Git metadata or upstream trees: **167 core tests passed**, one Git-provenance release-builder test was correctly skipped, and 27 ML tests were deselected. Documentation validation passed and explicitly listed omitted upstream references instead of treating them as broken owned files. Rebuilding a release with a commit identity requires a Git checkout.
+
+The wheel's Python modules were checked against source bytes, installed **non-editably** into a separate no-Torch environment and invoked outside the source tree. The three-generation demo, final-test result, checkpoint reload/evaluation, config checks, data-only patch verification/inspection and signed-zero regression smoke passed. Wheel/sdist inventories exclude model payloads and upstream trees. These checks are distinct from the deterministic Git-provenance core archive's checksum/content manifest and from actual remote asset publication. Builds are not a PyPI upload.
 
 ## Not performed / not established
 
 - No MATH-500, GSM8K, IFEval, GPQA or other full pretrained-model capability benchmark.
-- No Astra/Qwen patch reproduction, 27B self-rewriting run, or proof of semantic weight understanding.
+- No Astra/Qwen patch reproduction, 27B self-rewriting run or proof of semantic weight understanding.
 - No learned SEAL/EvoTIDE outer-loop RL, default DPO/GRPO training or learned minimax adversary.
-- No CUDA/QLoRA performance, memory or convergence validation.
-- No real EasyEdit ROME/MEMIT run, multi-model mergekit merge or full WeightBench benchmark.
-- No execution of DGM's Docker/API-dependent evolution loop or the optional container policy.
-- No recovery or successful upload of the historical missing 600 MB payload. Local artifact checks cannot prove remote LFS availability.
-- No claim that an engineering threshold gate replaces pre-registration, multiple seeds, uncertainty, side-effect tests or a never-consulted final test set.
+- No CUDA/QLoRA/direct-GPU performance, memory or convergence validation; direct quantized edits are refused.
+- No actual EasyEdit ROME/MEMIT run, multi-model mergekit merge or full WeightBench benchmark.
+- No execution of DGM's Docker/API-dependent loop or the optional container policy.
+- No isolation of arbitrary trusted callback writes to other tensors/files; trial ownership is limited to the selected tensor, flags and Torch RNG.
+- No proof that a small serialized patch is cheap in dense RAM/compute, or that target hashes establish full-model identity, author authenticity or licensing rights.
+- No recovery/upload of a missing historical 600 MB payload. Local artifact checks cannot prove remote LFS availability.
+- No claim that an engineering gate replaces pre-registration, multiple seeds, uncertainty, side-effect tests or genuinely unseen final data. Repeated retuning on final results would invalidate its intended role.
 
-## Distribution checks
-
-A built source archive was extracted without Git metadata or any upstream trees: **118 core tests passed**, one release-builder provenance test was appropriately skipped, and six ML tests were deselected. Its documentation checker explicitly reports unavailable upstream reference trees rather than confusing their absence with a broken owned file. Rebuilding a release with a commit identity still requires a Git checkout.
-
-The built wheel was installed into a separate non-editable environment and invoked outside the source directory. The three-generation CLI demo promoted the first measured improvement, rolled back both plateaus, reloaded and evaluated the saved checkpoint, and previewed retention without deletion. No model downloads were involved.
-
-The most important change is evidential: tests now check real state and failure behavior instead of making simulated score increases look like successful LLM training.
+The important change is evidential: tests exercise real state and failure behavior instead of making simulated score increases look like successful LLM training.

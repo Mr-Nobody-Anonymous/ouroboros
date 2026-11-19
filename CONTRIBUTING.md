@@ -14,7 +14,9 @@ ruff format --check ouroboros tests scripts
 python scripts/check_docs.py
 ```
 
-Optional real local-LM tests need the `train` extra. They generate a tiny causal LM/tokenizer locally and do not download checkpoints. Keep those tests marked `ml` so minimal installations remain lightweight.
+For a no-Torch environment run `python -m pytest -q -m 'not ml'`. Core safetensors inspection/patch-format tests must work there. Optional Torch/direct-edit and local-LM tests need the `train` extra, with the tested versions in `constraints/ml-tested.txt`. Tiny causal LMs/tokenizers are generated locally without pretrained downloads; mark all Torch-dependent tests `ml` so minimal installations remain lightweight.
+
+Check both `ouroboros run --config examples/local_sft.json --check-only` and `ouroboros weights trial --config examples/weight_trial.json --check-only`. A schema check must not imply that a real model exists or that a direction matches its target.
 
 ## Standards
 
