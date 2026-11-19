@@ -1,0 +1,20 @@
+name: Upload PR Documentation
+
+on:
+  workflow_run:
+    workflows: ["Build PR Documentation"]
+    types:
+      - completed
+
+permissions: {}
+
+jobs:
+  build:
+    # skip on forks, the secrets used below only exist in the main repo
+    if: github.repository == 'huggingface/peft'
+    uses: huggingface/doc-builder/.github/workflows/upload_pr_documentation.yml@145b9d4f6ab65ad3af87c66773b2c43294e52446  # main
+    with:
+      package_name: peft
+    secrets:
+      hf_token: ${{ secrets.HF_DOC_BUILD_PUSH }}
+      comment_bot_token: ${{ secrets.COMMENT_BOT_TOKEN }}

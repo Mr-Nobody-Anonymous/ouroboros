@@ -1,0 +1,111 @@
+#  Copyright 2026-present the HuggingFace Inc. team.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License governing permissions and limitations under the License.
+
+import pytest
+import torch
+from transformers import AutoModelForQuestionAnswering, AutoModelForTokenClassification
+
+from peft import BOFTConfig, IA3Config, LoraConfig, PrefixTuningConfig, VeraConfig, get_peft_model
+
+from .testing_common import PeftCommonTester
+from .testing_utils import hub_online_once
+
+
+# Note: models from peft-internal-testing are just the safetensors versions of hf-internal-testing. The auto classes
+# add the token classification / question answering head to the same backbone.
+PEFT_TOKEN_CLS_MODELS_TO_TEST = [
+    "peft-internal-testing/tiny-random-BertForSequenceClassification",
+    "peft-internal-testing/tiny-random-RobertaForSequenceClassification",
+]
+
+PEFT_QA_MODELS_TO_TEST = PEFT_TOKEN_CLS_MODELS_TO_TEST
+
+
+def _all_configs(task_type):
+    return [
+        (LoraConfig, {"task_type": task_type, "target_modules": None}),
+        (IA3Config, {"task_type": task_type, "target_modules": None, "feedforward_modules": None}),
+        (BOFTConfig, {"task_type": task_type, "target_modules": None}),
+        (VeraConfig, {"task_type": task_type, "target_modules": None, "r": 8}),
+    ]
+
+
+TOKEN_CLS_CONFIGS = _all_configs("TOKEN_CLS")
+QA_CONFIGS = _all_configs("QUESTION_ANS")
+
+
+class TestTokenClassificationModels(PeftCommonTester):
+    r"""
+    Tests for `PeftModelForTokenClassification`, which overrides `add_adapter` to add its head to `modules_to_save`.
+    Most of the functionality is already covered by the other model tests.
+    """
+
+    transformers_class = AutoModelForTokenClassification
+
+    def prepare_inputs_for_testing(self):
+        input_ids = torch.tensor([[1, 1, 1], [1, 2, 1]]).to(self.torch_device)
+        attention_mask = torch.tensor([[1, 1, 1], [1, 0, 1]]).to(self.torch_device)
+        return {"input_ids": input_ids, "attention_mask": attention_mask}
+
+    @pytest.mark.parametrize("model_id", PEFT_TOKEN_CLS_MODELS_TO_TEST)
+    @pytest.mark.parametrize("config_cls,config_kwargs", TOKEN_CLS_CONFIGS)
+    @pytest.mark.parametrize("dtype", [torch.float16, torch.bfloat16])
+    def test_add_adapter_no_autocast_adapter_dtype(self, model_id, config_cls, config_kwargs, dtype):
+        self._test_add_adapter_no_autocast_adapter_dtype(model_id, config_cls, config_kwargs.copy(), dtype=dtype)
+
+
+class TestQuestionAnsweringModels(PeftCommonTester):
+    r"""
+    Tests for `PeftModelForQuestionAnswering`, which overrides `add_adapter` to add its head to `modules_to_save`. Most
+    of the functionality is already covered by the other model tests.
+    """
+
+    transformers_class = AutoModelForQuestionAnswering
+
+    def prepare_inputs_for_testing(self):
+        input_ids = torch.tensor([[1, 1, 1], [1, 2, 1]]).to(self.torch_device)
+        attention_mask = torch.tensor([[1, 1, 1], [1, 0, 1]]).to(self.torch_device)
+        return {"input_ids": input_ids, "attention_mask": attention_mask}
+
+    @pytest.mark.parametrize("model_id", PEFT_QA_MODELS_TO_TEST)
+    @pytest.mark.parametrize("config_cls,config_kwargs", QA_CONFIGS)
+    @pytest.mark.parametrize("dtype", [torch.float16, torch.bfloat16])
+    def test_add_adapter_no_autocast_adapter_dtype(self, model_id, config_cls, config_kwargs, dtype):
+        self._test_add_adapter_no_autocast_adapter_dtype(model_id, config_cls, config_kwargs.copy(), dtype=dtype)
+
+
+class TestPrefixTuning:
+    @pytest.mark.parametrize("model_id", PEFT_TOKEN_CLS_MODELS_TO_TEST)
+    @pytest.mark.parametrize(
+        "model_cls,task_type",
+        [(AutoModelForTokenClassification, "TOKEN_CLS"), (AutoModelForQuestionAnswering, "QUESTION_ANS")],
+    )
+    def test_prefix_tuning_forward_with_labels(self, model_id, model_cls, task_type):
+        # For these task types, prefix tuning inspects the forward signature to determine where to pass the prefix
+        # cache. This can be the forward of the task model but it can also be the forward of the backbone as a
+        # fallback. As past_key_values was renamed in Transformers to cache, we need to ensure that the signature check
+        # is updated in all places (see #4165). This test ensures that we cover this by using models that hit the
+        # fallback.
+        with hub_online_once(model_id):
+            base_model = model_cls.from_pretrained(model_id, num_labels=2, ignore_mismatched_sizes=True)
+            config = PrefixTuningConfig(task_type=task_type, num_virtual_tokens=4)
+            model = get_peft_model(base_model, config)
+            input_ids = torch.tensor([[2, 3, 4]])
+            if task_type == "TOKEN_CLS":
+                labels = {"labels": torch.tensor([[0, 1, 0]])}
+            else:
+                labels = {"start_positions": torch.tensor([0]), "end_positions": torch.tensor([1])}
+
+            outputs = model(input_ids=input_ids, attention_mask=torch.ones_like(input_ids), **labels)
+            assert outputs.loss is not None
+            assert torch.isfinite(outputs.loss)

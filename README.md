@@ -76,8 +76,27 @@ Located in the [`papers/`](papers/) directory:
    * *Self-Rewarding Language Models* ([arXiv:2401.10020](https://arxiv.org/abs/2401.10020))
    * *SPIN: Self-Play Fine-Tuning Converts Weak to Strong* ([arXiv:2401.01335](https://arxiv.org/abs/2401.01335))
 4. **[Automated AI Discovery](papers/Automated_Self_Evolution_AI_Scientist.md)**:
-   * *The AI Scientist: Towards Fully Automated Open-Ended Scientific Discovery* ([arXiv:2408.06292](https://arxiv.org/abs/2408.06292))
+   * *The AI Scientist: Automated Discovery* ([arXiv:2408.06292](https://arxiv.org/abs/2408.06292))
    * *Darwinian Evolution of LLM Topologies* (Sakana AI, 2024)
+5. **[PEFT, Self-Instruct & Representation Engineering](papers/PAPERS_INDEX.md)**:
+   * *LoRA & QLoRA* ([arXiv:2106.09685](https://arxiv.org/abs/2106.09685), [arXiv:2305.14314](https://arxiv.org/abs/2305.14314))
+   * *Self-Instruct: Aligning Language Models with Self-Generated Data* ([arXiv:2212.10560](https://arxiv.org/abs/2212.10560))
+   * *Representation Engineering: Steering Vectors* ([arXiv:2310.01405](https://arxiv.org/abs/2310.01405))
+   * *DeepSeekMath & GRPO: Critic-Free Policy Optimization* ([arXiv:2402.03300](https://arxiv.org/abs/2402.03300))
+
+---
+
+## 🔬 Comparative Analysis of Cloned Repositories
+
+| Framework | Core Mechanism | Mathematical Formulation | Role in Ouroboros |
+| :--- | :--- | :--- | :--- |
+| **[EasyEdit](external/EasyEdit)** | Localized MLP memory editing | Closed-form $\Delta W = (v - W_0 k)\frac{k^T C^{-1}}{k^T C^{-1} k}$ | Surgical factual corrections without retraining |
+| **[mergekit](external/mergekit)** | Weight tensor merging & arithmetic | SLERP, TIES sign election, DARE random mask & rescale | Combining specialized model vectors & frankenmerging |
+| **[SEAL](external/SEAL)** | Self-adapting language models (MIT) | Self-edits via SFT & outer RL loop | Autonomous self-adaptation & optimization directive generation |
+| **[peft](external/peft)** | Low-rank decomposition (LoRA/QLoRA) | $\Delta W = \frac{\alpha}{r}(B \cdot A)$ | Generation-to-generation parameter fine-tuning |
+| **[trl](external/trl)** | Reinforcement learning & alignment | DPO loss & GRPO relative group advantage | Self-rewarding policy optimization |
+| **[repeng](external/repeng)** | Dynamic activation steering | $x_l' = x_l + c \cdot v_{PCA}$ | Non-destructive runtime cognitive steering |
+| **[self-instruct](external/self-instruct)** | Autonomous task bootstrapping | ROUGE-L diversity filtering & task synthesis | Generating self-correction curricula |
 
 ---
 
@@ -93,7 +112,11 @@ ouroboros-tuner/
 │   │   ├── evaluator.py            # Multi-domain benchmark engine & anti-catastrophic forgetting
 │   │   ├── task_arithmetic.py      # Task vectors (θ_0 + λτ), unlearning (-βτ), DARE, and SLERP
 │   │   ├── architecture_mutator.py # Layer stacking, attention head scaling, activation steering & pruning
-│   │   └── self_rewarding.py       # Self-rewarding rubric, LLM-as-a-judge, DPO dataset generation
+│   │   ├── self_rewarding.py       # Self-rewarding rubric, LLM-as-a-judge, DPO dataset generation
+│   │   ├── anchor_memory.py        # Golden Anchor Memory Replay preventing entropy collapse (MAD)
+│   │   ├── adversarial_critic.py   # Dual-agent Generator vs. Skeptic adversarial stress testing
+│   │   ├── code_mutator.py         # Autonomous loss function & hyperparameter code mutation
+│   │   └── pareto_pruner.py        # Automated Pareto-optimal checkpoint pruning to preserve disk space
 │   ├── pipeline/
 │   │   └── self_loop.py            # Recursive evolution loop orchestrator
 │   ├── integrations/
@@ -103,15 +126,21 @@ ouroboros-tuner/
 │   └── cli.py                      # Command-line entrypoint
 ├── external/
 │   ├── EasyEdit/                   # Cloned knowledge editing repository
-│   └── mergekit/                   # Cloned model weight merging & arithmetic repository
+│   ├── mergekit/                   # Cloned model weight merging & arithmetic repository
+│   ├── SEAL/                       # Cloned MIT CSAIL self-adapting language model framework
+│   ├── peft/                       # Cloned Hugging Face parameter-efficient fine-tuning
+│   ├── trl/                        # Cloned transformer reinforcement learning & self-rewarding
+│   ├── repeng/                     # Cloned representation engineering & activation steering
+│   └── self-instruct/              # Cloned self-instruct bootstrapping engine
 ├── papers/
 │   ├── PAPERS_INDEX.md             # Complete literature taxonomy & mapping
+│   ├── SEAL_and_Recent_Literature.md # MIT SEAL, MoE-CL, MAD Nature 2024, & SIA
 │   ├── ROME_and_MEMIT.md           # Factual editing mathematical breakdown
 │   ├── Task_Arithmetic_and_Weight_Vectors.md # Weight vector algebra & DARE formulation
 │   ├── Self_Rewarding_and_SPIN.md  # DPO & self-rewarding mathematical breakdown
 │   └── Automated_Self_Evolution_AI_Scientist.md # Topology & code self-mutation
 ├── tests/
-│   └── test_pipeline.py            # Comprehensive 9-test unit suite
+│   └── test_pipeline.py            # Comprehensive 11-test unit suite
 ├── requirements.txt
 └── README.md
 ```

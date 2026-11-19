@@ -1,5 +1,5 @@
 """
-Core weight manipulation, adapter fine-tuning, architecture mutation, and self-evaluation modules.
+Core weight manipulation, adapter fine-tuning, architecture mutation, self-evolution, and memory modules.
 """
 from .weight_editor import WeightEditor
 from .adapter_engine import AdapterEngine
@@ -8,6 +8,10 @@ from .evaluator import SelfEvaluator
 from .task_arithmetic import TaskArithmeticEngine
 from .architecture_mutator import ArchitectureMutator
 from .self_rewarding import SelfRewardingEngine
+from .anchor_memory import AnchorMemoryBank
+from .adversarial_critic import AdversarialCritic
+from .code_mutator import CodeMutator
+from .pareto_pruner import ParetoCheckpointPruner
 
 __all__ = [
     "WeightEditor",
@@ -16,5 +20,9 @@ __all__ = [
     "SelfEvaluator",
     "TaskArithmeticEngine",
     "ArchitectureMutator",
-    "SelfRewardingEngine"
+    "SelfRewardingEngine",
+    "AnchorMemoryBank",
+    "AdversarialCritic",
+    "CodeMutator",
+    "ParetoCheckpointPruner"
 ]
