@@ -49,6 +49,12 @@ capability result.
 | Ruff lint / format | Clean; **123 files** formatted |
 | Owned docs / references | Checker OK; **52 references** |
 
+Remote CI for **`9409d08`** ([push run 44754054133](https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44754054133))
+passed **all seven jobs**: core on Python 3.10/3.11/3.12, `mcp`, `discovery-scope`,
+`local-lora` and the actual `pretrained-self-edit` job; `pretrained-discovery-360m` is skipped
+by the existing workflow on this branch, so no study was resumed. The local numbers above come
+from this machine and are not inferred from CI.
+
 The same pass also produced the new scientific artifacts: the owned dataset
 (`research data`), a clean pretrained foundation run (`research run`), the frozen
 selection comparison (`research compare-selection`) and the follow-up path check
