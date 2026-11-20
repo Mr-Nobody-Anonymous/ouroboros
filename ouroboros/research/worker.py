@@ -170,9 +170,13 @@ def execute(job):
     operation = job["operation"]
     recipe = from_dict(Recipe, job["recipe"]) if job["recipe"] else None
     if operation == "research":
-        from .researcher import local_proposal
+        from .researcher import local_proposal, local_proposal_v2
 
-        result = local_proposal(job["extra"], model_config, budget, job["seed"])
+        extra = job["extra"]
+        if extra.get("researcher_schema") in ("v2", "v3", "v4"):
+            result = local_proposal_v2(extra, model_config, budget, job["seed"])
+        else:
+            result = local_proposal(extra, model_config, budget, job["seed"])
     elif operation == "distill":
         from ..lab.backend import ResearchCausalLM
 

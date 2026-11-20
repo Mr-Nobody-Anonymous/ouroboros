@@ -476,6 +476,253 @@ def test_followup_recipe_keeps_the_candidate_family_structure_and_weights():
         Recipe(family="data_reweight", target_modules=["q_proj"], steps=1, learning_rate=0.001)
 
 
+def test_magnitude_selection_design_is_new_and_discriminating():
+    """G6: v2 must have its own hash, separate a magnitude gap, and keep v1 frozen."""
+    from ouroboros.research.contracts import identity
+    from ouroboros.research.selection import (
+        compare_magnitude,
+        design,
+        design_magnitude,
+    )
+
+    v1, v2 = design(), design_magnitude()
+    assert identity(v1) != identity(v2)
+    assert v2["noise_floor"] == 0.02 and v2["metric"].startswith("measured practice")
+    assert "supersedes" in v2 and v1["decision_rule"].startswith("one-sided paired problem")
+
+    # Episodes where both arms always improve (so the v1 statistic ties) but one arm improves
+    # more. The magnitudes must be separable; this is a machinery check, never evidence.
+    episodes = []
+    for index in range(20):
+        strong_delta = 0.30 + (index % 3) * 0.01
+        # The stronger family alternates position, so "take the first proposal" is right only
+        # by chance while a magnitude-aware policy can learn which family pays.
+        strong_first = index % 2 == 0
+        first = {"ordinal": 0, "family": "lora_sft", "baseline": 0.0, "practice": strong_delta}
+        second = {"ordinal": 1, "family": "data_reweight", "baseline": 0.0, "practice": 0.11}
+        episodes.append(
+            {
+                "experiment_id": f"fixture-{index:03d}",
+                "candidates": [first, second] if strong_first else [second, first],
+            }
+        )
+    result = compare_magnitude(episodes, frozen=v2)
+    assert result["status"] == "estimated"
+    comparison = result["primary_minus_null"]
+    # UCB matches the proposal-order baseline when the strong family happens to come first and
+    # wins whenever it does not, so the pattern is "never worse, sometimes better" -- exactly
+    # the shape a win/loss statistic cannot see.
+    assert comparison["episodes_null_better"] == 0
+    assert comparison["episodes_primary_better"] >= len(episodes) // 2
+    assert comparison["median_difference"] > 0
+    assert result["decision"] == "policy_better_on_replay"
+    # The design refuses a re-tuned alpha or a policy name it does not own.
+    with pytest.raises(ValueError):
+        design_magnitude(primary="posterior_optimistic")
+    with pytest.raises(ValueError):
+        design_magnitude(noise_floor=0.9)
+
+
+def test_researcher_schema_is_declared_and_validated(tmp_path):
+    """G4: v2 is opt-in; an unknown schema is refused before a run starts."""
+    import json as _json
+
+    from ouroboros.research.contracts import load_config
+
+    original = config_fixture(tmp_path)
+    base = _json.loads(original.read_text())
+    # Data paths are relative to the config file, so the variants live beside it.
+    data = {key: str((original.parent / value).absolute()) for key, value in base["data"].items()}
+    for schema, ok in (("v1", True), ("v2", True), ("v3", True), ("v4", True), ("v5", False)):
+        value = {
+            **base,
+            "data": data,
+            "researcher": {"kind": "local_model", "schema": schema},
+        }
+        path = original.parent / f"config-{schema}.json"
+        path.write_text(_json.dumps(value))
+        if ok:
+            assert load_config(path)[0]["researcher"]["schema"] == schema
+        else:
+            with pytest.raises(ValueError):
+                load_config(path)
+
+
+def test_short_proposal_schema_repair_and_host_mapping():
+    """G4: the v2 interface is smaller, repairs only syntax, and logs host-filled fields."""
+    import json as _json
+
+    from ouroboros.research.researcher import (
+        HOST_FILLED_FIELDS,
+        _v2_to_proposal,
+        proposal_schema,
+        proposal_schema_v2,
+        repair_json,
+    )
+
+    v1, v2 = proposal_schema(), proposal_schema_v2()
+    assert len(_json.dumps(v2)) * 3 < len(_json.dumps(v1))
+    assert v2["required"] == [
+        "action",
+        "family",
+        "steps",
+        "learning_rate",
+        "rank",
+        "target_modules",
+        "claim",
+        "confidence",
+    ]
+
+    # Format-only repair: fences, prose, trailing commas are removed; nothing is invented.
+    assert repair_json('```json\n{"a": 1,}\n```')[0] == '{"a": 1}'
+    assert repair_json('Sure: {"a": 1}')[0] == '{"a": 1}'
+    fixed, notes, truncated = repair_json('{"a": 1, "b": [1, 2}')
+    assert truncated and "unbalanced_and_unrecoverable" in notes and fixed.endswith("[1, 2}")
+    assert repair_json('{"a": "open')[2] is True
+
+    context = {
+        "diagnosis": {
+            "evidence": [
+                {
+                    "id": "ev-1",
+                    "measurement": {"scores": {"carry_add": 0.2, "carry_add_carry": 0.0}},
+                }
+            ]
+        },
+        "train_domains": ["carry_add"],
+    }
+    host_filled = []
+    proposal = _v2_to_proposal(
+        {
+            "action": "experiment",
+            "family": "data_reweight",
+            "steps": 40,
+            "learning_rate": 0.001,
+            "rank": 8,
+            "target_modules": ["q_proj"],
+            "claim": "Reweighting the weakest domain may help",
+            "confidence": 0.3,
+        },
+        context=context,
+        budget=None,
+        host_filled=host_filled,
+    )
+    from ouroboros.research.contracts import Proposal
+
+    parsed = Proposal.parse(proposal)
+    assert parsed.action == "experiment"
+    assert parsed.recipes[0]["target_modules"] == ["q_proj"]
+    assert parsed.recipes[0]["domain_weights"] == {"carry_add_carry": 2}
+    assert "domain_weights" in host_filled
+    assert set(HOST_FILLED_FIELDS) >= {"alpha", "optimizer", "schedule", "weight_decay"}
+
+    # v3 quantises every number into an enum, so a degenerate digit run cannot be emitted.
+    from ouroboros.research.researcher import LEARNING_RATES_V3, _v3_to_v2, proposal_schema_v3
+
+    v3 = proposal_schema_v3()
+    assert v3["properties"]["steps"]["enum"] == [20, 50, 100]
+    assert v3["properties"]["rank"]["enum"] == [2, 4, 8, 16]
+    assert set(v3["properties"]["learning_rate"]["enum"]) == set(LEARNING_RATES_V3)
+    assert v3["properties"]["confidence_percent"]["maximum"] == 100
+    assert not {"steps", "rank", "learning_rate"} & {
+        key for key, value in v3["properties"].items() if value.get("type") == "number"
+    }
+    mapped = _v3_to_v2(
+        {
+            "action": "experiment",
+            "family": "lora_sft",
+            "steps": 50,
+            "learning_rate": "lr_2e4",
+            "rank": 4,
+            "target_modules": ["q_proj"],
+            "claim": "try a smaller rank",
+            "confidence_percent": 35,
+        }
+    )
+    assert mapped["learning_rate"] == 0.0002 and mapped["confidence"] == 0.35
+
+    # v4 removes the last free-text surface: the claim becomes a declared choice.
+    from ouroboros.research.researcher import CLAIM_KINDS, _v4_to_v3, proposal_schema_v4
+
+    v4 = proposal_schema_v4()
+    assert "claim" not in v4["properties"] and "claim_kind" in v4["required"]
+    assert set(v4["properties"]["claim_kind"]["enum"]) == set(CLAIM_KINDS)
+
+    class Budget:
+        max_steps = 60
+
+    # The step menu can never express an experiment the budget cannot pay for.
+    assert proposal_schema_v4(Budget())["properties"]["steps"]["enum"] == [20, 40, 60]
+    assert all(step <= 60 for step in proposal_schema_v4(Budget())["properties"]["steps"]["enum"])
+    assert all(
+        value.get("type") != "string" or "enum" in value or "items" in value
+        for value in v4["properties"].values()
+    )
+    converted = _v4_to_v3(
+        {
+            "action": "experiment",
+            "family": "distill_sft",
+            "steps": 100,
+            "learning_rate": "lr_1e4",
+            "rank": 2,
+            "target_modules": ["v_proj"],
+            "claim_kind": "capacity",
+            "confidence_percent": 0,
+        }
+    )
+    assert converted["claim"] == CLAIM_KINDS["capacity"][1]
+    assert converted["claim_kind"] == "capacity"
+
+    # An abstention stays an abstention: no recipe can be smuggled in.
+    abstain = _v2_to_proposal(
+        {
+            "action": "abstain",
+            "family": "lora_sft",
+            "steps": 1,
+            "learning_rate": 0.001,
+            "rank": 1,
+            "target_modules": ["q_proj"],
+            "claim": "Evidence is insufficient",
+            "confidence": 0.1,
+        },
+        context=context,
+        budget=None,
+        host_filled=[],
+    )
+    assert abstain["action"] == "abstain" and not abstain["recipes"]
+
+
+def test_staged_profile_holds_out_the_carry_composition():
+    """G3: training never crosses the carry boundary; every evaluation role does."""
+    import re
+
+    from ouroboros.research.dataset import PROFILES, build
+
+    roles = build(seed=501, profile="staged")
+    assert {sample.domain for sample in roles["train"]} == {"carry_add"}
+    assert set(PROFILES["staged"]["domains"]) - set(PROFILES["staged"]["train_domains"]) == {
+        "carry_add_carry"
+    }
+    for role in ("practice", "validation", "reserved", "final", "robustness"):
+        assert {sample.domain for sample in roles[role]} == {"carry_add", "carry_add_carry"}
+
+    def operands(sample):
+        body = sample.instruction.split(". ", 1)[1]
+        return [int(value) for value in re.findall(r"\d+", body)][:2]
+
+    for sample in roles["train"]:
+        left, right = operands(sample)
+        assert left % 10 + right <= 9, "training must never carry"
+        assert str(left + right) == sample.target
+    for role in ("validation", "reserved", "final"):
+        for sample in roles[role]:
+            left, right = operands(sample)
+            carries = left % 10 + right >= 10
+            assert carries == (sample.domain == "carry_add_carry")
+            assert str(left + right) == sample.target
+    assert len({sample.instruction for sample in roles["train"]}) == len(roles["train"])
+
+
 class TwoCheckpointExecutor(ScriptedExecutor):
     """Fixture training that exports three checkpoints; only the earliest is strong."""
 

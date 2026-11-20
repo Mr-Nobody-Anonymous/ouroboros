@@ -255,11 +255,24 @@ class ResearchData:
                         "Training/follow-up labels need explicit provenance verification"
                     )
             self.roles[name] = samples
-        domains = {s.domain for s in self.roles["train"]}
-        if len(domains) > 32:
+        train_domains = {s.domain for s in self.roles["train"]}
+        if not train_domains or len(train_domains) > 32:
             raise ValueError("At most 32 domains are supported in the bounded foundation")
-        if any({s.domain for s in rows} != domains for rows in self.roles.values()):
-            raise ValueError("All roles must cover the same nonempty domains")
+        # Evaluation roles may be *wider* than training (a declared compositional holdout) but
+        # never narrower: a hidden role that dropped a domain could hide a failure.
+        every = {s.domain for rows in self.roles.values() for s in rows}
+        for name, rows in self.roles.items():
+            present = {s.domain for s in rows}
+            if name in ("train", "followup"):
+                if present != train_domains:
+                    raise ValueError("Training and follow-up roles must cover one domain set")
+            elif present != every:
+                raise ValueError("Every evaluation role must cover every domain in the dataset")
+        self.split = {
+            "train_domains": sorted(train_domains),
+            "held_out": sorted(every - train_domains),
+            "declared": bool(every - train_domains),
+        }
         if sum(len(s.instruction.split()) for rows in self.roles.values() for s in rows) > 250000:
             raise ValueError("Question-overlap screening exceeds its 250000-word allocation budget")
         from .data_quality import question_overlap
@@ -346,8 +359,15 @@ def load_config(path):
         "local_model",
     ):
         raise ValueError("Explicit host_reference or local_model researcher required; no fallback")
-    if set(researcher) - {"kind", "model_path", "max_new_tokens"}:
+    if set(researcher) - {"kind", "model_path", "max_new_tokens", "schema", "draft", "context"}:
         raise ValueError("Unknown researcher fields")
+        raise ValueError("Unknown researcher fields")
+    if researcher.get("context", "full") not in ("full", "minimal"):
+        raise ValueError("Unknown researcher context scope; declare full or minimal")
+    if not isinstance(researcher.get("draft", True), bool):
+        raise ValueError("The draft stage is declared as a boolean before the run")
+    if researcher.get("schema", "v1") not in ("v1", "v2", "v3", "v4"):
+        raise ValueError("Unknown researcher schema; declare v1 to v4 before the run")
     if researcher["kind"] == "local_model":
         researcher["model_path"] = str(
             (

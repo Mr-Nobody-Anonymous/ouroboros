@@ -236,8 +236,8 @@ def parser():
     dataset.add_argument(
         "--profile",
         default="standard",
-        choices=("standard", "power", "focused", "compact"),
-        help="Role sizes: standard 380, power 490 (bigger hidden roles), focused 460 (two domains), compact 144",
+        choices=("standard", "power", "focused", "staged", "compact"),
+        help="Role sizes: standard 380, power 490 (bigger hidden roles), focused 460 (two domains), staged 560 (held-out composition), compact 144",
     )
     dataset.add_argument("--verify", action="store_true", help="Verify an existing dataset instead")
     selection = research_ops.add_parser(
@@ -246,6 +246,12 @@ def parser():
     selection.add_argument("--database")
     selection.add_argument("--fixture", action="store_true", help="Synthetic machinery check only")
     selection.add_argument("--min-episodes", type=int, default=20)
+    selection.add_argument(
+        "--design",
+        choices=("binary_v1", "magnitude_v2"),
+        default="binary_v1",
+        help="Frozen design: v1 win/loss statistic, or v2 signed magnitude with UCB arm policy",
+    )
     selection.add_argument("--alpha", type=float, default=0.05)
     selection.add_argument("--output", help="Directory for the frozen selection design")
     foundation_run = research_ops.add_parser(
@@ -525,8 +531,9 @@ def main(argv=None):
                 emit(result)
             elif args.research_operation == "compare-selection":
                 from .research.memory import ExperimentMemory
-                from .research.selection import analyse, compare_fixture
+                from .research.selection import analyse, analyse_magnitude, compare_fixture
 
+                magnitude = args.design == "magnitude_v2"
                 if args.fixture:
                     result = compare_fixture(min_episodes=args.min_episodes)
                 else:
@@ -534,7 +541,7 @@ def main(argv=None):
                         raise ValueError("compare-selection needs --database or --fixture")
                     memory = ExperimentMemory(args.database, readonly=True)
                     try:
-                        result = analyse(
+                        result = (analyse_magnitude if magnitude else analyse)(
                             memory,
                             alpha=args.alpha,
                             min_episodes=args.min_episodes,

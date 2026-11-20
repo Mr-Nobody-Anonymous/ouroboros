@@ -411,6 +411,91 @@ that a 50-step LoRA saturates (host control also reaches 1.000 practice), the re
 templates. The honest reading is: *the pipeline works end to end on a narrow task*; the open
 scientific question (G3) — a broader task where the gain is not saturation — is unchanged.
 
+### A non-saturated task with a declared compositional holdout (G3)
+
+The `focused` chain above proved the plumbing on a saturated task. The `staged` profile asks the
+scientific question instead: it trains on **two-digit plus one-digit addition that never carries**
+and evaluates on **both** halves of that task, so half of every evaluation role is a composition
+the model never saw. The operand space is large (`tens 1–9 × units 0–9 × addend 1–9`), the answer
+function is identical across halves, and the admission screen reports zero visible/hidden n-gram
+collisions — the split is in the *carry event*, not in the wording.
+
+Run `g3-staged-01` (seed 501, fresh data, `checkpoint_selection: practice_macro_accuracy`):
+
+| quantity | baseline | candidate (`lora_sft`, 50 steps) |
+| --- | --- | --- |
+| practice, in-distribution (`carry_add`) | 0.000 | 0.250 / 0.300 (two seeds) |
+| practice, **held-out** (`carry_add_carry`) | 0.000 | **0.000 / 0.000** |
+| validation (80) | 0.000 / 0.000 | 0.4375 / **0.000** |
+| reserved (80) | 0.000 / 0.000 | 0.350 / **0.000** |
+| final (80) | 0.000 / 0.000 | 0.325 / **0.000** |
+| robustness (40, perturbed) | 0.000 / 0.000 | 0.525 / **0.000** |
+| retention (40, four-cell) | — | passed (no forgetting) |
+| answers truncated, validation | 63.75 % | 0.00 % |
+
+`state: completed`, `full_gate_passed: true`, 1201 s, two checkpoints promoted. The candidate was
+not lucky: checkpoint selection picked the 50-step export in all four trainings (the 30-step
+export scored 0.000–0.025).
+
+**The measurement is the result, and it is unambiguous.** The candidate learned the answer
+*format* (truncation 63.75 % → 0 %) and a **partial** in-distribution arithmetic skill (0.325–0.525
+depending on the role) — the first non-saturated learning this repository has measured. It
+transferred **nothing** to the held-out composition: exactly 0.000 on every gate, at both seeds.
+So the honest claim is narrow and real: *this model, at this budget, learns the composition it is
+trained on and does not compose the carry rule.*
+
+**What the gates did with that.** They promoted it, because the gate statistic is pooled over
+domains and the "no domain worse than baseline" floor is satisfied by 0.000. That is not a bug in
+the gate — it is the gate answering the question it was given ("did it improve reproducibly
+without forgetting?"), and the answer was yes on the in-distribution half. It *is* evidence that
+the current gate set does not test compositional transfer, so a future run that wants to claim
+transfer needs a declared holdout criterion (e.g. a minimum held-out delta at every seed) frozen
+*before* the run. Adding that criterion now, after seeing 0.000, would be retro-fitting; it is
+therefore specified in [the tier-1 plan](TIER1_PLAN.md#g3--a-task-family-where-the-gain-is-not-saturation)
+as the next predeclared design rather than applied to this result.
+
+### Independent model proposal (G4)
+
+The local 135M proposer has now been run eight times against the real target model. The first two
+runs (`g4-local-01/02`) failed the *interface*: the full schema plus a 256-token budget let the
+model degenerate inside a schema slot and exhaust the budget, so no proposal could be parsed.
+
+Four interface iterations were then measured, each with a fresh seed and a fresh output directory,
+each change made only after reading the previous failure:
+
+| run | interface | tokens | closed / repaired | the model's answer |
+| --- | --- | --- | --- | --- |
+| `g4-local-02` | v1: full schema, 256 | 256 (cut) | no | degenerate digit run inside `target_modules` → abstain path |
+| `g4-local-03` | v2: short schema, free-text draft → transcribe | 111 | yes, `eos`, 0 repairs | `abstain`; the draft had looped (“The training data contains…” ×96 tokens) and the transcription copied it |
+| `g4-local-04` | v2: short schema, no draft | 160 (cut) | no | digits run to exhaustion inside `confidence` |
+| `g4-local-05` | v3: every number an enum | 84 | yes, `eos`, 0 repairs | `abstain`, `confidence_percent: 0`, `claim: "v_proj"` |
+| `g4-local-06` | v3 + minimal context | 160 (cut) | no | **`experiment`**: `distill_sft`, 100 steps, `lr_1e4`, rank 2, `v_proj`+`c_attn` — then digits to exhaustion inside the free-text `claim` |
+| `g4-local-07` | v4: claim is a declared choice, minimal context | 86 | yes, `eos`, 0 repairs | **`experiment`**: `distill_sft`, rank 2, `lr_1e4`, `v_proj`+`c_attn`, claim `format_truncation`, 100 steps → **rejected by the host**: exceeds the 60-step budget |
+| `g4-local-08` | v4 with the step menu derived from the budget | 84 | yes, `eos`, 0 repairs | `abstain`, `confidence_percent: 0` |
+
+**Both halves of G4 are now measured, and they point in opposite directions.**
+
+*The interface half is closed.* `g4-local-07` is a complete, schema-valid, self-closing proposal
+from a 135M model in 86 tokens with zero repairs: action, family, rank, learning rate, modules and
+an evidence-claim all chosen by the model. Three design rules got there, each forced by an observed
+failure: numbers must be **enums** (a free number field becomes a digit run), free text must be a
+**choice among declared claims** (the same degeneration reappears in any unbounded string), and
+**menus must be derived from the budget** (the interface should not be able to express an unpayable
+experiment).
+
+*The capability half is not closed.* The same interface yields `experiment` with a wide context and
+`abstain` with a budget-sized menu, `confidence_percent` is 0 in every run, and the claim is
+asserted rather than argued from the evidence IDs. That is not a decoding artefact: the shape is
+now constrained so tightly that only a *choice* remains, and the choice is unstable and
+unjustified. So `autonomous_improvement_demonstrated` stays `false` — correctly, and now for a
+measured reason rather than an assumed one.
+
+The handoff is therefore explicit: **swap the researcher, keep the interface.** `schema: v4`,
+`context: minimal`, `draft: false` is frozen for the next attempt, and a stronger researcher model
+should be run behind exactly that interface so the comparison is about the model and not the
+serialisation. Prompt tuning of the 135M proposer is not a promising direction — five runs now
+show it flipping between two extremes on the same evidence.
+
 ### Checkpoint selection (G11): declared, practice-only, sealed
 
 Until now only the final checkpoint of a training run was ever evaluated, so an intervention
@@ -507,8 +592,8 @@ issues or a changelog entry.
 | --- | --- |
 | G1 | **Closed for the plumbing, negative for promotion.** A clean pretrained run now completes on owned data (numbers above) and the follow-up/retention path has executed. What remains is *scientific*: with 30 validation problems the exact test cannot go below 2⁻⁹ unless more problems separate the arms, so the α = 0.05/44 gate needs a bigger validation role (G7) before a candidate can pass. |
 | G2 | **Closed, with limits stated.** The owned dataset exists (380 unique prompts, 5 domains, 8 independent roles, hashed manifest, verification and tamper detection) and is used by the run above. It is template-generated and not a benchmark; a semantically harder task family is still missing (G3). |
-| G3 | **Open scientifically, closed for the gate chain.** A two-domain `focused` profile now carries a host candidate through **all five gates** — validation 0.000→0.933, reserved →0.500, final →0.842, robustness →0.975, retention 1.000→1.000 — with two promoted checkpoints (`g3-focused-02`, verified, ledger-bound). The task is saturated and template-based, so this demonstrates plumbing, not capability; the five-domain candidate still fails at the reserved gate. The five-domain candidate (0.000 → 0.192 at validation, p = 2e-5) was still rejected at the reserved gate on per-seed reproducibility (0.0078 / 0.0020 vs α = 0.001136), so a broader task remains unsolved. |
-| G4 | **No independent model proposal of demonstrated value.** Executed: the local proposer on the real 135M model ran out of its 256-token budget and degenerated inside a schema slot, so the controller abstained (`fallback_used: false`). Closing it needs a proposer that emits a short, valid recipe — a smaller schema, a stronger researcher model, or a repair loop that is still host-owned. |
+| G3 | **Open scientifically, with the first non-saturated measurement.** On a declared carry-composition holdout (`g3-staged-01`, seed 501) a candidate learned the answer format and partial in-distribution arithmetic (validation 0.000 → 0.4375) and transferred **exactly 0.000** to the held-out composition at every gate and both seeds. The pooled gates still promoted it, which shows the gate set does not test compositional transfer; a holdout criterion is specified as the next predeclared design rather than applied after the fact. Closed for the gate chain: a two-domain `focused` run carries a candidate through all five gates (0.933 / 0.500 / 0.842 / 0.975 / retention 1.000→1.000, two promoted checkpoints), and the five-domain candidate still fails at the reserved gate (0.0078 / 0.0020 vs α = 0.001136). |
+| G4 | **Interface closed, capability open — both measured.** Eight executed runs against the real target. The interface failure is fixed by three rules forced by observed degeneration: numeric fields become enums, free text becomes a choice among declared claims, and menus are derived from the budget. `g4-local-07` is a complete, self-closing, repair-free proposal from a 135M model in 86 tokens. The capability is not fixed: the same interface flips between `experiment` and `abstain` with the context, `confidence_percent` is always 0, and the claim is asserted rather than argued. Next: a stronger researcher behind the frozen `v4` interface. |
 | G5 | **Not executed.** No weight-space or architectural edit has been run through this gate chain. The gates, holdout ledger, plan/seal machinery and rollback all exist; what is missing is the wiring between the lab/discovery edit path (its own evaluator, its own data) and these gates. That integration is milestone D, and it cannot reuse the consumed 360M/135M prompts. |
 | G6 | **Executed, null, mechanism identified.** 20 real episodes were collected and replayed under the frozen design (hash unchanged): primary and null tied in 20/20 episodes (p = 1.0) because both candidate families beat the baseline in every episode, so the binary posterior could not separate them. Decision `not_established`, reported as a null. A discriminating design (magnitude-based statistic or families with different success rates) is the next predeclared step; no policy claim is made now. |
 | G7 | **Power is characterized, replication is still thin.** With the power profile the exact per-seed test needs ≥ 10 separating problems to beat α = 0.001136; observed counts were 7 vs 9 and 11 vs 12, and doubling the training role at a fixed step budget hurt. Two seeds and one machine remain: more seeds and larger hidden roles are the next step, and no variance estimate over seeds should be quoted from two of them. |

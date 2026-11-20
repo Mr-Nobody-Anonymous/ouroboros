@@ -84,6 +84,7 @@ def preflight(config, data, *, check_model=True):
         "checked_only": True,
         "data_sha256": data.fingerprint(),
         "role_counts": {k: len(v) for k, v in data.roles.items()},
+        "domain_split": data.split,
         "question_overlap_screen": data.quality,
         "model_files": files,
         "auxiliary_model_files": inventories,
@@ -478,7 +479,13 @@ def _run(config, data, checked, config_path):
             generated = executor.run(
                 "research",
                 model=model,
-                extra={"context": context, "max_new_tokens": researcher.get("max_new_tokens", 256)},
+                extra={
+                    "context": context,
+                    "max_new_tokens": researcher.get("max_new_tokens", 256),
+                    "researcher_schema": researcher.get("schema", "v1"),
+                    "use_draft": researcher.get("draft", True),
+                    "context_scope": researcher.get("context", "full"),
+                },
             )
             report["proposal_origin"] = (
                 "same-target-model"
