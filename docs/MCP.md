@@ -40,7 +40,7 @@ Stdout belongs exclusively to the protocol; errors/logging go to stderr. `status
 | `verify_patch(patch)` | Bounded data-only patch verification; never applies/reverses it |
 | `list_self_edit_reports(directory="outputs/self-edit")` | At most 100 immediate run-report paths, with a bounded directory scan; not a generic filesystem browser |
 | `read_self_edit_report(report)` | A `self_edit.json` of the expected kind, at most 1 MiB; not arbitrary file reading |
-| `research_tools()` | The 18-action/7-operation research catalogue, required fields, formulae and explicit gaps; no model load |
+| `research_tools()` | The 19-action/7-operation research catalogue (including structural JSON schemas), required fields, formulae and explicit gaps; no model load |
 | `check_lab_config(config)` | Research schema/split/fingerprint/settings check; no reserved/final questions/labels or damage location returned |
 | `verify_edit_bundle(bundle)` | Data-only full-state-bound multi-tensor bundle verification; never applies it |
 | `list_lab_reports(directory="outputs/research")` | At most 100 immediate `lab.json` paths; no raw observation/held-out file browsing |

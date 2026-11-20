@@ -47,6 +47,10 @@ def render(root=ROOT):
         )
     lines += [
         "",
+        "## Local engineering follow-up",
+        "",
+        "The [editor/experiment guide](../docs/EDITOR_EXPERIMENTS.md) records schema-constrained commands, actual graded-practice contrasts, stop-token fixes and measured negative/partial results. These are tooling changes, not new paper results, full parity or a reproduced capability gain.",
+        "",
         "## Corrections and reading policy",
         "",
         "- The Astra/Qwen source is an MIT CSAIL research blog post, not a Harvard arXiv paper. The reported 7.9% to 48.1% change is +40.2 percentage points, not a local result or a guarantee.",

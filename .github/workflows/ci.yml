@@ -39,7 +39,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-      - run: python -m pip install -e '.[dev,train,math]' -c constraints/ml-tested.txt
+      - run: python -m pip install -e '.[dev,train,math,structured]' -c constraints/ml-tested.txt
       - run: python -m pytest -q -m ml
       - run: python -m pytest -q tests/test_lab_config_metrics.py
         env:
@@ -57,7 +57,7 @@ jobs:
       - run: python -m pip check
   pretrained-self-edit:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
       HF_HUB_OFFLINE: '1'
       TRANSFORMERS_OFFLINE: '1'
@@ -68,11 +68,14 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-      - run: python -m pip install -e '.[llm,smoke]' -c constraints/ml-tested.txt
+      - run: python -m pip install -e '.[llm,smoke,structured]' -c constraints/ml-tested.txt
       # Explicit GitHub-only, pinned/hash-checked pretrained data; no upstream plugin execution.
       - run: python scripts/run_pretrained_smoke.py --workdir outputs/pretrained-smoke --fetch
       # Same receipt-verified model, but model-authored JSON attempts and scripted tool integration are labelled separately.
       - run: python scripts/run_research_smoke.py --workdir outputs/research-smoke --model-dir outputs/pretrained-smoke/models/smollm2
+      # Fixed arithmetic/copy practice, adequate answer budget, actual schema-constrained commands.
+      # A/B is registered first; no script fallback and no gain required for a passing test.
+      - run: python scripts/run_research_experiment.py --workdir outputs/research-interface --model-dir outputs/pretrained-smoke/models/smollm2 --compare-unconstrained --turns 8 --max-seconds 240
       - run: python -m pip check
       - uses: actions/upload-artifact@v6
         if: always()
@@ -82,6 +85,9 @@ jobs:
             outputs/pretrained-smoke/pretrained_summary.json
             outputs/pretrained-smoke/outputs/self-edit/*/self_edit.json
             outputs/pretrained-smoke/models/smollm2/ouroboros_model.json
+            outputs/research-interface/interface_plan.json
+            outputs/research-interface/experiment_summary.json
+            outputs/research-interface/outputs/*/*/lab.json
             outputs/research-smoke/research_summary.json
             outputs/research-smoke/outputs/*/*/lab.json
           if-no-files-found: warn

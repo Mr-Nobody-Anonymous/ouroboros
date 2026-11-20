@@ -16,7 +16,7 @@ ouroboros self-edit --config ouroboros-lab/self_edit.json --check-only
 ouroboros self-edit --config ouroboros-lab/self_edit.json
 ```
 
-Use a **new** project/model destination; existing paths are refused, not overwritten. `init` works from an installed wheel too: its five small JSON resources (including the research config) are packaged, not read from a source-checkout-only `examples/` path. Config paths resolve relative to the config file, not the current directory. The install script also supports `--profile core`, `--profile research` (adds the math grader), `--profile train`, `--dev`, a custom `--venv`, and `--dry-run`.
+Use a **new** project/model destination; existing paths are refused, not overwritten. `init` works from an installed wheel too: its eight small JSON resources (including separate research data/config) are packaged, not read from a source-checkout-only `examples/` path. Config paths resolve relative to the config file, not the current directory. The install script also supports `--profile core`, `--profile research` (adds Math-Verify and schema-constrained research commands), `--profile train`, `--dev`, a custom `--venv`, and `--dry-run`.
 
 The tested ML constraints target Python 3.10–3.12. On a newer interpreter choose a supported Python or deliberately opt into `--unconstrained`; that combination has not been validated here. PyTorch packages can be several GB depending on the wheel, and inference/conversion need a few GB of free RAM. A small serialized patch is not a small dense-memory operation. A CPU-specific PyTorch wheel can reduce installation size; follow PyTorch's own platform instructions rather than installing random wheels.
 

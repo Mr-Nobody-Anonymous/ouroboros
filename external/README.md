@@ -22,4 +22,8 @@ Use `ouroboros repos sync` to fetch locked submodules and `ouroboros repos verif
 
 The complete lockfile is [sources.lock.json](sources.lock.json). Original upstream licenses remain in their checkouts/snapshots. No broad relicensing is implied. In particular the original WSP logs mix CC BY 4.0 data/artifacts, MIT scripts, GPL-3.0 quoted MinAtar source, and underlying benchmark licenses; inspect their LICENSE before redistribution. WSP-Scope has no license grant at this pin.
 
+## Separately installed optional packages
+
+The lockfile's `optional_installed_package_reviews` records **LM Format Enforcer 0.11.3**, MIT, actually cloned/read at `817f944fcc8851917c40300a47f62d1defc3ffc3`. Its [source receipt](../docs/evidence/structured-decoder-source.json) lists inspected files and owned tests. Ouroboros uses the separately installed package's Transformers prefix API with an owned action schema; no upstream code is copied into a thirteenth preserved source tree. `repos sync/verify` still cover only the twelve `sources` above, not an absent development cache or the installed wheel. Syntax filtering is not numeric/policy validation, a useful editing strategy or an upstream-suite result.
+
 See [integration setup](../docs/INTEGRATIONS.md) and the [repository analysis](../analysis/REPOSITORY_DEEP_DIVE.md). Do not delete vendored data or rewrite unknown provenance merely to make a clone smaller. Source updates and deliberate patches should be separately reviewed and re-locked.

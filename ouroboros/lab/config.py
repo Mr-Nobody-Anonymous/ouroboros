@@ -62,6 +62,42 @@ class Sampling:
             raise ValueError("thinking_end must be a bounded nonempty marker")
 
 
+def normalize_editor(editor=None):
+    """Keep editor decoding/sampling separate from answer generation, for API and CLI alike."""
+    editor = (
+        {"mode": "model", **({} if editor is None else editor)}
+        if isinstance(editor, (dict, type(None)))
+        else editor
+    )
+    allowed = {"mode", "max_new_tokens", "actions", "decoding", "sampling"}
+    if not isinstance(editor, dict) or set(editor) - allowed:
+        raise ValueError("Invalid editor fields")
+    if editor.get("mode") not in ("model", "scripted"):
+        raise ValueError(
+            "editor.mode must be model or scripted; scripted is NOT autonomous self-editing"
+        )
+    integer("editor.max_new_tokens", editor.get("max_new_tokens", 512), 16, 12000)
+    decoding = editor.get("decoding", "unconstrained")
+    if decoding not in ("unconstrained", "json_schema"):
+        raise ValueError("editor.decoding must be unconstrained or json_schema")
+    values = editor.get("sampling", {})
+    if not isinstance(values, dict):
+        raise ValueError("editor.sampling must be a Sampling object encoded as JSON")
+    try:
+        sampling = Sampling(**values)
+    except TypeError as exc:
+        raise ValueError(f"Invalid editor.sampling: {exc}") from exc
+    if decoding == "json_schema" and sampling.thinking:
+        raise ValueError(
+            "JSON-schema commands require editor.sampling.thinking=false; answer thinking is separate"
+        )
+    if editor["mode"] == "scripted" and decoding != "unconstrained":
+        raise ValueError("Scripted actions are not schema-decoded model replies")
+    if editor["mode"] == "model" and "actions" in editor:
+        raise ValueError("Model editor cannot be given scripted actions")
+    return {"max_new_tokens": 512, **editor, "decoding": decoding, "sampling": asdict(sampling)}
+
+
 @dataclass(frozen=True)
 class LabPolicy:
     max_sessions: int = 1
@@ -70,6 +106,7 @@ class LabPolicy:
     max_edit_actions: int = 40
     max_seconds: int = 300
     max_invalid_actions: int = 3
+    max_repeated_actions: int = 3
     max_model_parameters: int = 300_000_000
     max_model_bytes: int = 1024**3
     max_matrix_elements: int = 8_000_000
@@ -106,6 +143,7 @@ class LabPolicy:
             "max_edit_actions": (1, 200),
             "max_seconds": (1, 86_400),
             "max_invalid_actions": (1, 20),
+            "max_repeated_actions": (2, 20),
             "max_model_parameters": (1, 100_000_000_000),
             "max_model_bytes": (1, 256 * 1024**3),
             "max_matrix_elements": (1, 512_000_000),
@@ -192,15 +230,7 @@ def load_lab_config(path, *, workspace=None):
         raise ValueError("Lab requires ordinary floating weights and at most 32768 answer tokens")
     if values["grader"] not in ("exact", "boxed_math"):
         raise ValueError("grader must be exact or boxed_math (optional math-verify dependency)")
-    editor = values["editor"]
-    if not isinstance(editor, dict) or set(editor) - {"mode", "max_new_tokens", "actions"}:
-        raise ValueError("Invalid editor fields")
-    if editor.get("mode") not in ("model", "scripted"):
-        raise ValueError(
-            "editor.mode must be model or scripted; scripted is NOT autonomous self-editing"
-        )
-    integer("editor.max_new_tokens", editor.get("max_new_tokens", 512), 16, 12000)
-    editor = {"max_new_tokens": 512, **editor}
+    editor = normalize_editor(values["editor"])
     input_hashes = {str(path): file_sha256(path)}
     actions = None
     if editor["mode"] == "scripted":
@@ -267,6 +297,8 @@ def lab_config_summary(config):
         "policy": asdict(config["policy"]),
         "sampling": asdict(config["sampling"]),
         "editor_mode": config["editor"]["mode"],
+        "editor_decoding": config["editor"]["decoding"],
+        "editor_sampling": config["editor"]["sampling"],
         "grader": config["grader"],
         "damaged_copy_experiment": config["damage"] is not None,
         "counts": {

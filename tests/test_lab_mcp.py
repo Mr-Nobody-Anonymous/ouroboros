@@ -34,7 +34,7 @@ def test_research_default_tools_are_read_only_and_do_not_expose_labels_or_raw_fi
         catalog = unpack(await server.call_tool("research_tools", {}))
         assert "add" in catalog["weight_operations"] and "contrast" in catalog["actions"]
         config = unpack(await server.call_tool("check_lab_config", {"config": "research_lab.json"}))
-        assert config["counts"] == {"train": 2, "validation": 4, "test": 2}
+        assert config["counts"] == {"train": 18, "validation": 18, "test": 18}
         assert "Rome" not in json.dumps(config) and "capital of" not in json.dumps(config)
         reports = unpack(await server.call_tool("list_lab_reports", {}))
         assert reports["reports"] == ["outputs/research/id/lab.json"]
@@ -87,7 +87,7 @@ def test_research_execution_binds_data_not_only_config_and_uses_fixed_offline_co
         )
         assert kwargs["env"]["HF_HUB_OFFLINE"] == kwargs["env"]["HF_DATASETS_OFFLINE"] == "1"
         assert kwargs["stdin"] == asyncio.subprocess.DEVNULL and "shell" not in kwargs
-        practice = root / "practice.json"
+        practice = root / "research_practice.json"
         practice.write_text(practice.read_text() + "\n")
         with pytest.raises(Exception, match="changed"):
             await server.call_tool("run_research_lab", {"config": "research_lab.json"})

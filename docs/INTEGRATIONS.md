@@ -38,7 +38,9 @@ The [Research Lab](RESEARCH_LAB.md) unifies the frozen-editor/target protocol, b
 
 Three relevant trees were actually initialized at their locked commits in this phase: original WSP logs, WeightBench and lm-evaluation-harness. The experiment 8 scripts/protocol/license and harness CLI were inspected; their projection/intervention, final-box grading and separate-evaluation contracts informed owned modules, with [attribution/license scope](../THIRD_PARTY_NOTICES.md). No author script, upstream agent, paid provider or full benchmark was executed. Four other submodules may be absent; no new 12/12 verification is implied.
 
-The real Q4_1-derived 135M model produced **zero valid research actions in two replies**. The separately scripted 16-action integration changed 1,152 entries across two tensors, scored 0→0/rejected, restored. Real CLI and official-SDK stdio MCP execution/readback also succeeded as plumbing; no autonomous circuit discovery, benchmark gain, 27B/vision experiment or arbitrary-Python sandbox is claimed.
+The initial Q4_1-derived 135M model produced **zero valid research actions in two replies**. The separately scripted 16-action integration changed 1,152 entries across two tensors, scored 0→0/rejected, restored. Real CLI and official-SDK stdio MCP execution/readback also succeeded as plumbing; no autonomous circuit discovery, benchmark gain, 27B/vision experiment or arbitrary-Python sandbox is claimed.
+
+The follow-up adds an optional installed **LM Format Enforcer 0.11.3** command decoder. Its upstream source was cloned/read at `817f944fcc8851917c40300a47f62d1defc3ffc3` (MIT), not merely linked. Ouroboros adapts the Transformers prefix API with an owned schema, public-state-bound enums and stop-token alignment. No upstream code is vendored or substituted for model edit choices, and target answers stay unconstrained. This package review is recorded separately from the twelve preserved/submodule trees in the [source receipt](evidence/structured-decoder-source.json); [experiments and limits](EDITOR_EXPERIMENTS.md).
 
 ## EasyEdit: explicit call, separate environment
 

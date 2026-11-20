@@ -12,7 +12,7 @@ The CPU integration tests use PyTorch 2.5.1, Transformers 4.57.6, PEFT 0.18.1 an
 
 Provision a **local** causal-LM directory before running. It needs a compatible Transformers config, safetensors weights and tokenizer files. Downloads are not performed by Ouroboros. Follow the model's license/model card. Arbitrary Hub IDs, custom remote Python code and pickle `.bin` weights are intentionally not loaded by the core backend.
 
-For no-gradient, frozen-editor multi-tensor experiments use the separate [Research Lab](RESEARCH_LAB.md), not the SFT config/backend. `python scripts/install.py --profile research` includes inference, MCP, GGUF smoke conversion and the explicit Math-Verify grader, but not PEFT. Local labelled dataset conversion is `ouroboros lab import-data`; it records source/license assertions, never independently verifies labels or licenses.
+For no-gradient, frozen-editor multi-tensor experiments use the separate [Research Lab](RESEARCH_LAB.md), not the SFT config/backend. `python scripts/install.py --profile research` includes inference, MCP, GGUF smoke conversion and the explicit Math-Verify/structured-editor dependencies, but not PEFT. Local labelled dataset conversion is `ouroboros lab import-data`; it records source/license assertions, never independently verifies labels or licenses.
 
 ## Dataset schema
 

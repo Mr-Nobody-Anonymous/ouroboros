@@ -39,7 +39,7 @@ def main(argv=None):
     if args.profile != "core":
         extras += ["llm", "smoke"]
     if args.profile == "research":
-        extras += ["math"]
+        extras += ["math", "structured"]
     if args.profile == "train":
         extras += ["train"]
     if args.dev:

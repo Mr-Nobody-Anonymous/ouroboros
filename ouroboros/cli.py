@@ -151,6 +151,7 @@ def doctor():
             "huggingface_hub",
             "gguf",
             "math_verify",
+            "lmformatenforcer",
         )
     }
     lfs = shutil.which("git-lfs") is not None
@@ -174,10 +175,12 @@ def doctor():
                 packages[name] for name in ("torch", "transformers", "safetensors")
             ),
             "boxed_math_grader": packages["math_verify"],
+            "structured_research_commands": packages["lmformatenforcer"],
         },
         "install_hints": {
             "self_edit": "python -m pip install -e '.[llm]' -c constraints/ml-tested.txt",
             "mcp": "python -m pip install -e '.[mcp]'",
+            "structured_commands": "python -m pip install -e '.[structured]'",
             "github_smoke_model": "python -m pip install -e '.[llm,smoke]' -c constraints/ml-tested.txt",
         },
     }
@@ -231,6 +234,12 @@ def parser():
     )
     lab_run.add_argument("--config", required=True)
     lab_run.add_argument("--check-only", action="store_true")
+    lab_diagnose = lab_ops.add_parser(
+        "diagnose",
+        help="Measure practice readiness only; never generate reserved/final answers or edits",
+    )
+    lab_diagnose.add_argument("--config", required=True)
+    lab_diagnose.add_argument("--check-only", action="store_true")
     lab_verify = lab_ops.add_parser(
         "verify-bundle", help="Verify an accepted full-state-bound patch without Torch"
     )
@@ -443,14 +452,20 @@ def main(argv=None):
                 from .lab.config import lab_config_summary, load_lab_config
 
                 config = load_lab_config(args.config)
-                if args.lab_operation == "run" and args.check_only:
+                if args.lab_operation in ("run", "diagnose") and args.check_only:
                     emit(lab_config_summary(config))
                 else:
-                    from .lab.runner import evaluate_configured_bundle, run_configured_lab
+                    from .lab.runner import (
+                        evaluate_configured_bundle,
+                        run_configured_diagnosis,
+                        run_configured_lab,
+                    )
 
                     emit(
                         run_configured_lab(config)
                         if args.lab_operation == "run"
+                        else run_configured_diagnosis(config)
+                        if args.lab_operation == "diagnose"
                         else evaluate_configured_bundle(
                             config, args.bundle, split=args.split, seed=args.seed
                         )

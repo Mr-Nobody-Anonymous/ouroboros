@@ -6,9 +6,9 @@
 <p align="center"><strong>A small model. Its own weights. Every edit measured.</strong></p>
 <p align="center">Diagnose → Inspect → Edit → Compare → Keep or Undo</p>
 
-Ouroboros is a local research toolkit for bounded model adaptation. Run a small LLM that **chooses edits to its own weights**, or use the new **frozen-editor Research Lab** for model-authored JSON actions, multi-tensor numerical programs, instrumented reads and controlled experiments. A separate host measures candidates, rejects plateaus/regressions and records the evidence. No API key or GPU is required for the small CPU quickstart.
+Ouroboros is a local research toolkit for bounded model adaptation. Run a small LLM that **chooses edits to its own weights**, or use the new **frozen-editor Research Lab** for model-authored JSON actions, multi-tensor numerical programs, instrumented reads and controlled experiments. Schema-constrained commands and practice-readiness diagnostics make failures inspectable rather than silently manufacturing success. A separate host measures candidates, rejects plateaus/regressions and records the evidence. No API key or GPU is required for the small CPU quickstart.
 
-**Not magic self-improvement:** generated Python is never executed, the tiny pretrained model did **not** author useful research actions, and a completed run can correctly accept **nothing**. LoRA training, replay and reversible patches remain separate, usable paths.
+**Not magic self-improvement:** generated Python is never executed, the tiny pretrained model has **not** discovered a beneficial research edit, and a completed run can correctly accept **nothing**. LoRA training, replay and reversible patches remain separate, usable paths.
 
 [Research Lab](docs/RESEARCH_LAB.md) · [Paper gap checklist](docs/PAPER_PARITY.md) · [Small-LLM guide](docs/SELF_EDITING.md) · [MCP](docs/MCP.md) · [Test evidence](docs/TESTING.md) · [Research](papers/PAPERS_INDEX.md)
 
@@ -56,7 +56,7 @@ The old finite-menu loop was **not** the self-rewriting paper's workflow. The [s
 The new `lab` path adds:
 
 - **Frozen editor / edited target separation**, independent base-reset sessions and an operator-private damage fixture.
-- **18 research actions / 7 numerical operators:** hidden/MLP/attention/logprob reads, measured contrasts, writer ranking, atomic multi-tensor projections/clipping/entry/bias/low-rank edits, and saved alternatives. Dense flat edits support ranks 1–32; architecture/element limits still apply.
+- **19 research actions / 7 numerical operators:** hidden/MLP/attention/logprob reads, measured contrasts, writer ranking, atomic multi-tensor projections/clipping/entry/bias/low-rank edits, and saved alternatives. Dense flat edits support ranks 1–32; architecture/element limits still apply.
 - **Paired seeded sampling**, boxed-math grading, cut/repetition diagnostics, problem-clustered uncertainty, random/no-op/layer controls and strength sweeps.
 - **Sealed once-only reserved validation**, confirm/withdraw, a fixed evaluation plan and separate final testing.
 - **Full-model-bound exact reversible bundles**, explicit local dataset import, a plan-first external benchmark driver, JSON CLI and allowlisted MCP execution.
@@ -66,10 +66,15 @@ python scripts/install.py --profile research
 # Reuse the project/model provisioned above; init also created this config:
 ouroboros lab tools
 ouroboros lab run --config ouroboros-lab/research_lab.json --check-only
+ouroboros lab diagnose --config ouroboros-lab/research_lab.json  # practice only
 ouroboros lab run --config ouroboros-lab/research_lab.json
 ```
 
-**Measured, not simulated:** the 135M editor made two real generations but produced **0 valid actions**. A separately labelled scripted run completed 16 actions/10 forward requests and changed **1,152 entries in two tensors**; reserved accuracy **0.0→0.0**, rejected/restored. A real official-SDK MCP child also ran the research workflow. [Evidence and runnable guide →](docs/RESEARCH_LAB.md)
+**Initial measurement:** the 135M editor made two real generations but produced **0 valid actions**. A separately labelled scripted run completed 16 actions/10 forward requests and changed **1,152 entries in two tensors**; reserved accuracy **0.0→0.0**, rejected/restored. A real official-SDK MCP child also ran the research workflow. [Historical evidence →](docs/RESEARCH_LAB.md)
+
+**Editor/experiment fixes:** optional JSON-schema token filtering (not scripted edit choices), compact reproducible prompts, metered repair feedback, corrected stop tokens, actual graded-output contrasts with full-input checks, practice-only `lab diagnose`, independent sampling and no-progress stops.
+
+**Measured follow-up:** with identical initial prompts, unconstrained decoding produced **0 valid commands in 4 replies**; schema decoding produced **3 valid inventory calls in 3 replies**, then stopped as `stalled`. **Neither authored an edit or demonstrated a gain.** Real CLI/MCP and explicitly host-driven contrast/refusal checks passed separately. [Results, evidence and reproduction →](docs/EDITOR_EXPERIMENTS.md)
 
 **Still missing:** a persistent isolated arbitrary-Python kernel, vLLM/tensor-parallel serving, vision/game/Go/diffusion task adapters, and actual 27B/paper/standard-benchmark reproduction. Tests and APIs cannot substitute for those experiments; **full paper parity and capability gains are not claimed**.
 
@@ -114,7 +119,7 @@ ouroboros run --config examples/local_sft.json
 | Surface | What is implemented |
 | --- | --- |
 | Same-model smoke | Constrained model-selected trials, strict measured gates, reversible accepted chains; still a finite menu |
-| Research Lab | Frozen editor, model-generated closed-language programs, multi-tensor tools/controls, sealed checks, independent sessions and final test; tiny model failed action authorship |
+| Research Lab | Frozen editor, model-generated closed-language programs, multi-tensor tools/controls, sealed checks, independent sessions and final test; optional schema-constrained commands and graded practice diagnostics, not guaranteed useful edits |
 | Local SFT | Completion-masked Transformers/PEFT LoRA, replay anchors, original/latest retention and adapter rollback; GPU QLoRA untested |
 | Weight tools | Bounded inspection, one-matrix trials plus atomic research programs and exact target-/full-state-bound sparse bundles |
 | Agent access | JSON CLI, packaged `init`, dependency doctor, read-only-default stdio MCP, explicitly allowlisted execution |
@@ -134,7 +139,7 @@ ouroboros repos sync    # explicit source fetch, not upstream execution
 ouroboros repos verify
 ```
 
-Core operation does not require those checkouts. The additional pretrained smoke source is pinned independently in [model provisioning code](ouroboros/model_files.py); only its model data/license are used.
+Core operation does not require those checkouts. The additional pretrained smoke source is pinned independently in [model provisioning code](ouroboros/model_files.py); only its model data/license are used. The optional command decoder was also actually cloned/read; its [separate package-source receipt](docs/evidence/structured-decoder-source.json) does not imply another vendored tree or upstream test run.
 
 ## Develop and verify
 
@@ -150,7 +155,7 @@ python scripts/run_pretrained_smoke.py --workdir outputs/pretrained-smoke --fetc
 python scripts/run_research_smoke.py --workdir outputs/research-smoke --model-dir outputs/pretrained-smoke/models/smollm2
 ```
 
-**Verified:** 321 local tests; fresh no-Torch/package checks; all six jobs passed on both push and PR runs for the research implementation, including actual pretrained execution. [CI](.github/workflows/ci.yml) separates Python 3.10/3.11/3.12 core, offline ML/math grading, MCP protocol and pretrained smoke. See [testing](docs/TESTING.md) for exact commits/run links and limitations.
+**Current follow-up verification:** **390 local tests passed**; a fresh no-Torch core+MCP install passed **274**, with 24 explicit optional skips and 92 ML tests deselected. Real pretrained paired/CLI/MCP/contrast checks are reported separately from unit fixtures. [CI](.github/workflows/ci.yml) separates Python 3.10/3.11/3.12 core, offline ML/math/structured generation, MCP protocol and pretrained execution. See [testing](docs/TESTING.md) for current distribution/remote status, exact commits/run links and historical results—not an assumption that an earlier green run validates later edits.
 
 ## Storage, releases, and license
 

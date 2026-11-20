@@ -38,12 +38,12 @@ def test_packaged_research_project_check_cli_and_tools_do_not_import_torch(tmp_p
     config = load_lab_config(path)
     summary = lab_config_summary(config)
     assert summary["valid"] and not summary["model_loaded"]
-    assert summary["counts"] == {"train": 2, "validation": 4, "test": 2}
+    assert summary["counts"] == {"train": 18, "validation": 18, "test": 18}
     assert summary["editor_mode"] == "model"
     assert "Rome" not in json.dumps(summary) and "capital of" not in json.dumps(summary)
     assert main(["lab", "run", "--config", str(path), "--check-only"]) == 0
     assert json.loads(capsys.readouterr().out)["valid"]
-    code = "from ouroboros.cli import main; from ouroboros.lab.patches import verify_bundle; import sys; assert main(['lab','run','--config',sys.argv[1],'--check-only']) == 0; assert main(['lab','tools']) == 0; assert 'torch' not in sys.modules; assert 'transformers' not in sys.modules"
+    code = "from ouroboros.cli import main; from ouroboros.lab.patches import verify_bundle; import sys; assert main(['lab','run','--config',sys.argv[1],'--check-only']) == 0; assert main(['lab','tools']) == 0; assert main(['lab','diagnose','--config',sys.argv[1],'--check-only']) == 0; assert 'torch' not in sys.modules; assert 'transformers' not in sys.modules"
     subprocess.run([sys.executable, "-c", code, str(path)], check=True, capture_output=True)
 
 
@@ -91,7 +91,9 @@ def test_lab_config_approvals_bind_splits_actions_and_workspace_paths(tmp_path):
     path = root / "research_lab.json"
     original = load_lab_config(path, workspace=root)
     digest = input_fingerprint(original)
-    (root / "practice.json").write_text((root / "practice.json").read_text() + "\n")
+    (root / "research_practice.json").write_text(
+        (root / "research_practice.json").read_text() + "\n"
+    )
     with pytest.raises(ValueError, match="changed"):
         input_fingerprint(original)
     assert input_fingerprint(load_lab_config(path, workspace=root)) != digest

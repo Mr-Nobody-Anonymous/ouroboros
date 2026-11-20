@@ -70,8 +70,35 @@ def _positions(length, last, stride):
     return list(range(start, length, stride))
 
 
-def read_states(backend, *, policy, kind, texts, modules=(), pooling="mean", last=1, stride=1):
+class ReadTextTooLong(ValueError):
+    """A contrast must not silently measure a prefix that may omit the completion."""
+
+    def __init__(self, text_index, tokens, limit):
+        self.text_index, self.tokens, self.limit = text_index, tokens, limit
+        super().__init__(
+            f"Full-text contrast requires every complete input: text {text_index} has {tokens} "
+            f"tokens, effective read limit is {limit}. No hidden reads or direction were made. "
+            "Use shorter examples or explicitly raise max_read_tokens within model context before "
+            "a new experiment; no input or completion was trimmed."
+        )
+
+
+def read_states(
+    backend,
+    *,
+    policy,
+    kind,
+    texts,
+    modules=(),
+    pooling="mean",
+    last=1,
+    stride=1,
+    require_full_text=False,
+):
     import torch
+
+    if type(require_full_text) is not bool:
+        raise ValueError("require_full_text must be boolean")
 
     if kind not in ("hidden", "mlp_input", "attention", "logprobs"):
         raise ValueError("Unknown read kind")
@@ -110,6 +137,25 @@ def read_states(backend, *, policy, kind, texts, modules=(), pooling="mean", las
             layer_indices.append(int(match.group(1)))
         if not layer_indices:
             raise ValueError("Choose attention layer modules")
+
+    def token_ids(text):
+        return backend.tokenizer(text, add_special_tokens=True, return_token_type_ids=False)[
+            "input_ids"
+        ]
+
+    read_limit = min(policy.max_read_tokens, backend.context_size)
+    if require_full_text:
+        # Preflight the whole cohort before installing hooks or doing ANY forward. Otherwise a
+        # later overlong success could silently leave us measuring only short failed outputs.
+        encoded_texts = []
+        for index, text in enumerate(texts):
+            tokens = token_ids(text)
+            if len(tokens) > read_limit:
+                raise ReadTextTooLong(index, len(tokens), read_limit)
+            encoded_texts.append(tokens)
+    else:
+        # Ordinary raw-state reads retain their explicit, reported prefix-truncation behavior.
+        encoded_texts = (token_ids(text) for text in texts)
     config = getattr(backend.model.config, "text_config", backend.model.config)
     vocabulary = getattr(config, "vocab_size", None)
     handles, rows, elements = [], [], 0
@@ -150,12 +196,8 @@ def read_states(backend, *, policy, kind, texts, modules=(), pooling="mean", las
         if kind in ("hidden", "mlp_input"):
             handles = [model_modules[name].register_forward_hook(hook(name)) for name in modules]
         with frozen_eval(backend.model):
-            for index, text in enumerate(texts):
-                encoded = backend.tokenizer(
-                    text, add_special_tokens=True, return_token_type_ids=False
-                )
-                tokens = encoded["input_ids"]
-                current_length = min(len(tokens), policy.max_read_tokens, backend.context_size)
+            for index, tokens in enumerate(encoded_texts):
+                current_length = min(len(tokens), read_limit)
                 if current_length < 2:
                     raise ValueError("A read needs at least two tokens")
                 ids = torch.tensor(
@@ -248,6 +290,7 @@ def read_states(backend, *, policy, kind, texts, modules=(), pooling="mean", las
     return {
         "kind": kind,
         "pooling": pooling,
+        "truncation_policy": "reject" if require_full_text else "prefix_with_report",
         "elements": elements,
         "texts": rows,
         "note": "Teacher-forced raw text, no sampled generation. Reads use the requested target weights, not the clean editor.",
@@ -270,6 +313,7 @@ def measure_direction(copy, backend, *, module, failing, successful, last=0):
         modules=[module],
         pooling="mean",
         last=last,
+        require_full_text=True,
     )
     vectors = np.asarray([row["modules"][module]["values"] for row in result["texts"]])
     direction = WeightSpaceProgrammer.contrastive_direction(
@@ -284,6 +328,7 @@ def measure_direction(copy, backend, *, module, failing, successful, last=0):
         "failing_texts": len(failing),
         "successful_texts": len(successful),
         "unit_norm": float(np.linalg.norm(direction)),
+        "read_tokens_truncated": sum(row["tokens_truncated"] for row in result["texts"]),
         "measurement": result,
         "interpretation": "Measured group-mean difference, not proof of a causal repetition direction.",
     }

@@ -245,3 +245,140 @@ def test_read_failures_remove_all_hooks_and_report_truncation(research_backend, 
     with pytest.raises(RuntimeError, match="forward failed"):
         read_states(backend, policy=LabPolicy(), kind="hidden", texts=["a b c"], modules=[name])
     assert len(module._forward_hooks) == count
+
+
+def test_model_stop_tokens_not_tokenizer_start_tokens_control_generation(
+    research_backend, monkeypatch
+):
+    import torch
+
+    from ouroboros.backends.tokens import align_generation_tokens
+
+    backend = research_backend
+    backend.tokenizer.eos_token = "[UNK]"  # reproduce the old converted SmolLM2 mismatch in memory
+    backend.generation_tokens = align_generation_tokens(backend.model, backend.tokenizer)
+    assert backend.generation_tokens["tokenizer_eos_before"] == 1
+    assert backend.tokenizer.eos_token_id == 2
+    before = model_fingerprint(backend.model)
+    captured = {}
+
+    def generated(**kwargs):
+        captured.update(kwargs)
+        tokens = backend.tokenizer.encode("a b", add_special_tokens=False) + [2]
+        return torch.cat(
+            [kwargs["input_ids"], torch.tensor([tokens], device=backend.device)], dim=1
+        )
+
+    monkeypatch.setattr(backend.model, "generate", generated)
+    row = backend.generate_records(
+        [{"prompt": "a", "seed": 1}], sampling=Sampling(), max_new_tokens=3
+    )[0]
+    assert captured["eos_token_id"] == [2] and captured["pad_token_id"] == 0
+    assert row["text"] == "a b" and not row["cut"] and row["finish_reason"] == "eos"
+    assert model_fingerprint(backend.model) == before
+
+
+def test_practice_contrast_action_combines_real_llama_hooks_with_graded_source_records(
+    research_backend, monkeypatch
+):
+    from ouroboros.data import DatasetBundle, Sample
+    from ouroboros.lab.session import LabSession
+
+    backend = research_backend
+    dataset = DatasetBundle(
+        [Sample("a b", "a b"), Sample("c d", "c d")],
+        [Sample("warm a", "a")],
+        test=[Sample("cool b", "b")],
+    )
+
+    # Explicit scripted completion fixture; hidden reads below are actual random-Llama forwards.
+    def generated(requests, **kwargs):
+        return [
+            {"text": "a b", "new_tokens": 2, "cut": False, "thinking_closed": True}
+            for request in requests
+        ]
+
+    monkeypatch.setattr(backend, "generate_records", generated)
+    copy = WorkingCopy(backend.model, LabPolicy(max_read_tokens=32))
+    session = LabSession(backend, copy, dataset, sampling=Sampling(), grader="exact")
+    before = model_fingerprint(backend.model)
+    result = session.act({"action": "contrast_practice", "module": "model.layers.0", "ids": [0, 1]})
+    assert result["available"] and result["direction_id"] == "d0" and result["dimension"] == 16
+    assert result["unit_norm"] == pytest.approx(1.0) and result["read_tokens_truncated"] == 0
+    assert result["measurement"]["kind"] == "hidden" and len(result["measurement"]["texts"]) == 2
+    assert (
+        len(result["practice_records"]) == 2
+        and sum(r["correct"] for r in result["practice_records"]) == 1
+    )
+    assert (
+        result["counters"]["forward_calls"] == 2 and result["counters"]["generated_sequences"] == 2
+    )
+    assert model_fingerprint(backend.model) == before
+
+
+@pytest.mark.parametrize("limit_source", ["policy", "model_context"])
+def test_contrast_preflights_every_complete_text_before_any_forward_or_hook(
+    research_backend, monkeypatch, limit_source
+):
+    from ouroboros.lab.instrumentation import ReadTextTooLong
+
+    backend = research_backend
+    policy = LabPolicy(max_read_tokens=2 if limit_source == "policy" else 256)
+    if limit_source == "model_context":
+        monkeypatch.setattr(backend, "context_size", 2)
+    copy = WorkingCopy(backend.model, policy)
+    module = dict(backend.model.named_modules())["model.layers.0"]
+    hooks = dict(module._forward_hooks)
+    before = model_fingerprint(backend.model)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("No forward, including for the earlier short group, is allowed")
+
+    monkeypatch.setattr(backend.model, "forward", forbidden)
+    with pytest.raises(ReadTextTooLong, match="No hidden reads or direction") as error:
+        measure_direction(
+            copy, backend, module="model.layers.0", failing=["a b"], successful=["c d a b"]
+        )
+    assert (error.value.text_index, error.value.tokens, error.value.limit) == (1, 4, 2)
+    assert not copy.directions and dict(module._forward_hooks) == hooks
+    assert model_fingerprint(backend.model) == before
+
+
+def test_practice_contrast_keeps_grades_but_refuses_a_completion_truncated_by_read_budget(
+    research_backend, monkeypatch
+):
+    from ouroboros.data import DatasetBundle, Sample
+    from ouroboros.lab.session import LabSession
+
+    backend = research_backend
+    dataset = DatasetBundle(
+        [Sample("a b", "a b"), Sample("c d", "c d")],
+        [Sample("warm a", "a")],
+        test=[Sample("cool b", "b")],
+    )
+
+    # Scripted answers isolate the truncation boundary; no pretrained inference/gain is claimed.
+    def generated(requests, **kwargs):
+        return [
+            {"text": "a b", "new_tokens": 2, "cut": False, "thinking_closed": True}
+            for request in requests
+        ]
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("Overlong contrast must not read a prompt-only prefix")
+
+    monkeypatch.setattr(backend, "generate_records", generated)
+    monkeypatch.setattr(backend.model, "forward", forbidden)
+    copy = WorkingCopy(backend.model, LabPolicy(max_read_tokens=2))
+    session = LabSession(backend, copy, dataset, sampling=Sampling(), grader="exact")
+    before = model_fingerprint(backend.model)
+    result = session.act({"action": "contrast_practice", "module": "model.layers.0", "ids": [0, 1]})
+    assert not result["available"] and not result["read_performed"]
+    assert "no input or completion was trimmed" in result["reason"]
+    assert result["read_limit_tokens"] == 2 and result["overlong_text_tokens"] == 4
+    assert sum(row["correct"] for row in result["practice_records"]) == 1
+    assert [row["text"] for row in result["practice_records"]] == ["a b", "a b"]
+    assert result["counters"]["forward_calls"] == 2  # failed read attempt remains metered
+    assert result["counters"]["invalid_actions"] == 0
+    assert "measurement" not in result and "direction_id" not in result and not copy.directions
+    assert model_fingerprint(backend.model) == before

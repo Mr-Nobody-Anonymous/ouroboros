@@ -132,5 +132,17 @@
       "notes": "Agent source-code evolution. Requires Docker, benchmark assets and API access; does not itself edit LLM weights.",
       "revision": "a565fd2d1dca504ef5104a7cc0f3bdc4ab9b4fd2"
     }
+  ],
+  "optional_installed_package_reviews": [
+    {
+      "name": "lm-format-enforcer",
+      "version": "0.11.3",
+      "url": "https://github.com/noamgat/lm-format-enforcer",
+      "cloned_revision": "817f944fcc8851917c40300a47f62d1defc3ffc3",
+      "license": "MIT",
+      "receipt": "docs/evidence/structured-decoder-source.json",
+      "integration": "Optional separately installed Transformers prefix decoder, owned closed action schema and independent host checks; no upstream code vendored.",
+      "verification_scope": "Cloned/source-inspected in local development; receipt and owned integration tests are preserved. Not a thirteenth preserved source tree; repos sync/verify still cover only sources[]. Upstream test suite not executed."
+    }
   ]
 }

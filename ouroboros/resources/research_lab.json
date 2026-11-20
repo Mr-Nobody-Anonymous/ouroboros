@@ -4,27 +4,44 @@
     "model_name_or_path": "models/smollm2",
     "device": "cpu",
     "torch_dtype": "float32",
-    "max_new_tokens": 32,
+    "max_new_tokens": 128,
     "prompt_format": "chat"
   },
   "policy": {
     "max_sessions": 1,
-    "max_turns": 6,
-    "max_forward_calls": 4,
-    "max_edit_actions": 4,
-    "max_seconds": 240,
-    "max_invalid_actions": 2,
-    "cpu_threads": 2
+    "max_turns": 16,
+    "max_forward_calls": 12,
+    "max_edit_actions": 8,
+    "max_seconds": 600,
+    "max_invalid_actions": 4,
+    "cpu_threads": 2,
+    "diagnosis_problems": 18,
+    "max_problems_per_call": 18,
+    "max_history_chars": 6000,
+    "max_repeated_actions": 3
   },
-  "sampling": {"temperature": 0.0, "thinking": false},
-  "editor": {"mode": "model", "max_new_tokens": 192},
+  "sampling": {
+    "temperature": 0.0,
+    "thinking": false
+  },
+  "editor": {
+    "mode": "model",
+    "max_new_tokens": 384,
+    "decoding": "json_schema",
+    "sampling": {
+      "temperature": 0.3,
+      "thinking": false,
+      "top_p": 0.95,
+      "top_k": 20
+    }
+  },
   "grader": "exact",
   "data": {
-    "train": "practice.json",
-    "validation": "validation.json",
-    "test": "test.json"
+    "train": "research_practice.json",
+    "validation": "research_validation.json",
+    "test": "research_test.json"
   },
   "output_dir": "outputs/research",
   "license": "Apache-2.0 (verify the model card and distribution license before reuse)",
-  "provenance": "Local SmolLM2-135M-Instruct; use an explicit model receipt. Public plumbing fixtures, not a benchmark or a claim that a 135M model can author useful JSON weight programs. Abstention and invalid-action termination are valid outcomes."
+  "provenance": "Receipt-verified local SmolLM2-135M-Instruct (Q4_1-derived). Fixed owned arithmetic/copy diagnostic fixtures, not a benchmark. Practice-only pilots informed task/format suitability; targets and exact grading are unchanged. Schema-constrained model commands are not scripted edits. Strict cut/gain/retention gates remain; no guaranteed gain."
 }

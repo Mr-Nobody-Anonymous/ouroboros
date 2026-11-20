@@ -27,6 +27,11 @@ TOOLS = {
         "optional": ["weights", "last"],
         "purpose": "Store a unit failing-minus-successful hidden-state mean direction, referenced as d0, d1, ...",
     },
+    "contrast_practice": {
+        "required": ["module", "ids"],
+        "optional": ["weights", "last"],
+        "purpose": "Generate and grade practice answers, then measure actual failing-minus-correct completions. No invented positive/negative examples; unavailable when either cohort is empty.",
+    },
     "writers": {
         "required": ["name", "direction"],
         "optional": ["limit"],
@@ -113,10 +118,15 @@ OPERATIONS = {
 
 
 def capabilities():
+    from .action_schema import action_schema
+
     return {
         "kind": "ouroboros-research-tools",
-        "schema_version": 1,
+        "schema_version": 2,
         "actions": TOOLS,
+        "editor_action_schema": action_schema(),
+        "sealed_action_schema": action_schema(sealed=True),
+        "decoding_note": "Optional json_schema filters model tokens, not edit choices or promotion. Structural grammar is a subset; all host shape/protection/numeric/budget checks still run.",
         "weight_operations": OPERATIONS,
         "action_format": "One JSON object: action plus required/optional fields; optional rationale string <=2000 chars. No Python or file paths.",
         "weights": "original = starting target (damaged in repair), edited = current candidate; neither mutates editor reasoning weights.",
@@ -137,5 +147,27 @@ def capabilities():
             "arbitrary persistent Python execution or an OS sandbox",
             "vLLM/tensor-parallel serving, quantized-weight mutation or vision model loading",
             "autonomous mastery of every WeightBench/blog task or demonstrated paper benchmark gains",
+        ],
+    }
+
+
+def compact_guide():
+    """Signatures, not the complete schema/catalogue, belong in the model's limited context."""
+    return {
+        "actions": {
+            name: ",".join(spec.get("required", []))
+            + (" [" + ",".join(spec["optional"]) + "]" if spec.get("optional") else "")
+            for name, spec in TOOLS.items()
+        },
+        "operations": {
+            name: ",".join(spec["required"])
+            + (" [" + ",".join(spec["optional"]) + "]" if spec.get("optional") else "")
+            for name, spec in OPERATIONS.items()
+        },
+        "semantics": "[] denotes optional fields, not literal JSON. ids are zero-based practice indices. weights=original/edited/both (both only for test). read.kind=hidden/mlp_input/attention/logprobs. project subtracts strength times the measured direction's column projection; use top_columns or columns. All edits remain temporary and must pass strict reserved improvement/retention.",
+        "examples": [
+            {"action": "inventory", "limit": 4},
+            {"action": "test", "ids": [0, 1], "weights": "both"},
+            {"action": "withdraw"},
         ],
     }

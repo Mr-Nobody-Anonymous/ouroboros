@@ -304,3 +304,27 @@ def test_application_rechecks_the_norm_policy_before_copying(circuit, tmp_path):
     with pytest.raises(ValueError, match="norm budget"):
         apply_weight_patch(circuit[0], result["patch"])
     assert torch.equal(original, circuit[0].weight)
+
+
+@pytest.mark.ml
+def test_streamed_tensor_hash_preserves_existing_patch_and_model_fingerprint_format():
+    import hashlib
+    import json
+
+    torch = pytest.importorskip("torch")
+    from ouroboros.core.weight_trials import _tensor_hash
+
+    for dtype in (torch.float16, torch.bfloat16, torch.float32, torch.float64, torch.int64):
+        for value in (
+            torch.arange(24).reshape(2, 3, 4).to(dtype).transpose(0, 2),
+            torch.tensor(2).to(dtype),
+            torch.empty(0).to(dtype),
+        ):
+            contiguous = value.detach().cpu().contiguous()
+            header = json.dumps(
+                {"shape": list(value.shape), "dtype": str(value.dtype)}, sort_keys=True
+            ).encode()
+            old_hash = hashlib.sha256(
+                header + b"\0" + contiguous.reshape(-1).view(torch.uint8).numpy().tobytes()
+            ).hexdigest()
+            assert _tensor_hash(value) == old_hash

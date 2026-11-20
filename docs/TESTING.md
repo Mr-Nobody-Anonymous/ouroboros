@@ -21,7 +21,7 @@ python -m build
 Optional Torch/direct-edit and local-LM tests:
 
 ```bash
-pip install -e '.[train]' -c constraints/ml-tested.txt
+pip install -e '.[dev,train,mcp,smoke,math,structured]' -c constraints/ml-tested.txt
 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python -m pytest -q
 # Or select only optional tests with: python -m pytest -q -m ml
 ouroboros weights demo
@@ -29,7 +29,44 @@ ouroboros weights demo
 
 `pytest` runs the full suite; unittest discovery runs the smaller public-API smoke suite. The [CI workflow](../.github/workflows/ci.yml) tests minimal Python 3.10/3.11/3.12 plus a separate Python 3.11 CPU ML job. Remote CI conclusions are distinct from local observations and must be checked before being claimed.
 
-## Local verification performed for 0.5 research development
+## Current editor/experiment follow-up
+
+This is a new verification of the follow-up described in [editor experiments](EDITOR_EXPERIMENTS.md), not a reuse of the initial 321-test delivery below. Tests were run serially with pretrained work to avoid repeating the OOM pilot.
+
+| Local check | Observed result |
+| --- | --- |
+| Full offline suite | **390 passed**, three expected PEFT warnings, 11.70 seconds |
+| Fresh installer-created core+MCP, no Torch/Transformers/PEFT/GGUF/Math-Verify/decoder | **274 passed, 24 optional skips, 92 ML deselected**, 6.20 seconds |
+| Compatibility unittest discovery | **14 passed** |
+| Ruff lint/format | Passed; **88 Python files** formatted |
+| Owned Markdown / research catalogue | **36 documents / 33 references**, consistent |
+| Compile / workflow YAML / shell syntax / `pip check` / config/check-only / whitespace | Passed |
+
+The research profile and a fresh core profile were actually installed with `--dev`; no model was downloaded by the installer. The full environment additionally contains PEFT for SFT tests. The 24 lightweight-environment skips are one optional Math-Verify check and 23 optional decoder-parser cases, not disabled host validation. The optional structured package is **LM Format Enforcer 0.11.3** / interegular 0.3.3; other tested ML pins remain in [the constraints](../constraints/ml-tested.txt). Core/check-only/catalogue imports remain dependency-light.
+
+Additional regression coverage includes public-state-bound enums and large-domain fallback, an actual random-Llama schema-constrained generation, no silent decoder fallback, model/tokenizer stop alignment, independent editor/answer sampling, exact parse/field-error feedback, latest-error preservation, no-progress termination, generated-but-budget-failed reply archives, real practice cohorts, no manufactured successes, full-input contrast preflight/refusal before any hidden forward, practice-record/hidden-measurement separation, hash-format compatibility and prompt/baseline/source-equality checks in the comparison driver. Stub completions/runner tests are explicitly labelled, not pretrained evidence.
+
+### Actual pretrained follow-up, separately from fixtures
+
+All completed comparisons used the same receipt-verified **Q4_1-derived float32 SmolLM2-135M** (134,515,008 parameters), not recovered original precision. [Reviewed measurements and source-bound plans](evidence/research-interface-local.json) distinguish:
+
+- **Structural grammar comparison 02:** unconstrained 0 parsed/valid in four replies; schema five parsed, one valid inventory / four negative-offset rejections. Its dynamic elapsed-time prompt difference was discovered and disclosed; not a clean identical-prompt causal comparison.
+- **State-bound schema-only follow-up 03:** three parsed/host-valid inventory calls, zero invalid, then host `stalled`; not a paired comparison.
+- **Matched-prompt paired comparison 04:** the initial prompt SHA-256 is identical in both conditions. Unconstrained **0 parsed / 0 valid of four**; schema **3 parsed / 3 valid inventory / 0 invalid of three**, then host `stalled`. Both baseline **1/18 correct**, cuts **2/18**, zero edits/changed entries/practice comparison actions/accepted patches. Full restoration/source checks passed, final test not used for promotion. Fixed condition order/seed/public fixtures and repeated development runs do not establish a general capability gain or isolate model size.
+
+Real **CLI `lab diagnose`** generated 18 practice answers only; zero editor/edits/reserved/final generations, restoration/source true. Real **official-SDK stdio MCP** initialized/discovered 12 tools/checked config/catalogue, ran model/schema commands and read back a completed report: three valid inventory calls, stalled, no edits/gain, restored/source unchanged. Explicitly **host-driven** `contrast_practice` generated 18 real answers (one correct / 17 incorrect), measured one correct + four failed completions into a 576-D unit direction with zero truncated inputs, and refused the SAME cohorts at a two-token read limit **before any hidden forward**. Zero edits/held-out inference; no causal or autonomous-gain claim. [CLI evidence](evidence/research-diagnose-cli-local.json) · [MCP evidence](evidence/mcp-structured-editor-local.json) · [contrast/refusal evidence](evidence/research-graded-contrast-local.json).
+
+The earlier OOM-killed comparison 01 remains **incomplete**, with interrupted-condition restoration unverified. Its failure is preserved, not counted as a pass or erased by later completed runs. Full-text contrast refusal was added after the inventory-only paired run; plans bind tested snapshots and the later direct pretrained tool check covers that fix.
+
+### Follow-up distribution and GitHub status
+
+The follow-up **0.5 wheel/sdist were rebuilt**. A non-editable wheel was installed in a separate environment without Torch, Transformers, MCP, GGUF, Math-Verify or the decoder, then invoked outside the checkout. Eight packaged JSON resources, the 19-action catalogue, run/diagnose check-only, missing-decoder refusal without a traceback/fallback, exact module source bytes, the structured extra/pin and license inventory all passed. No heavy modules were imported.
+
+The extracted sdist, without Git/upstream trees or Torch/MCP/Math-Verify/decoder, returned **261 passed, 27 expected skips, 92 ML deselected** in 3.08 seconds. The extra skips are the two absent MCP test modules and Git-only release-provenance test. Its docs checker passed with the omitted source trees explicitly reported. The archives contain owned guides, tests, evidence and fixtures, **not weights, GGUF, environments, run outputs or upstream trees**. `pip check` passed in the research, fresh core+MCP and minimal wheel environments. These are local build/install checks, not a PyPI/release upload.
+
+**Remote status:** these follow-up changes have not yet been verified on GitHub. The historical green runs below identify their own commits and do not validate later edits.
+
+## Initial 0.5 research delivery (historical snapshot)
 
 On **2026-11-19**, the new tree returned **321 passed** in 10.80 seconds (three expected PEFT warnings), not reused 0.4 results. Unittest compatibility: **14 passed**. Ruff lint/format: **79 Python files**; owned Markdown/research checks: **35 documents / 33 references**. Compile, `pip check`, config/CLI and whitespace checks passed. No pytest case downloads pretrained models/data.
 

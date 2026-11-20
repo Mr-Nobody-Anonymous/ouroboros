@@ -37,7 +37,7 @@ class ResearchCausalLM(LocalCausalLM):
             )
         return format_prompt(instruction)
 
-    def generate_records(self, requests, *, sampling, max_new_tokens=None):
+    def generate_records(self, requests, *, sampling, max_new_tokens=None, json_schema=None):
         import torch
         from transformers import LogitsProcessor, LogitsProcessorList
 
@@ -45,6 +45,30 @@ class ResearchCausalLM(LocalCausalLM):
         integer("generation token budget", budget, 1, 32768)
         if not isinstance(requests, list) or not requests:
             raise ValueError("Nonempty generation requests required")
+        structured = None
+        if json_schema is not None:
+            from .action_schema import require_structured_decoder
+
+            require_structured_decoder()
+            from lmformatenforcer import CharacterLevelParserConfig, JsonSchemaParser
+            from lmformatenforcer.integrations.transformers import (
+                build_token_enforcer_tokenizer_data,
+                build_transformers_prefix_allowed_tokens_fn,
+            )
+
+            if sampling.thinking:
+                raise ValueError("Structured command generation cannot contain a thinking preamble")
+            if not hasattr(self, "_action_tokenizer_data"):
+                self._action_tokenizer_data = build_token_enforcer_tokenizer_data(self.tokenizer)
+                # The enforcer and generate() must agree on every model-declared stop token.
+                self._action_tokenizer_data.eos_token_id = list(
+                    self.generation_tokens["eos_token_ids"]
+                )
+            structured = (
+                JsonSchemaParser,
+                CharacterLevelParserConfig,
+                build_transformers_prefix_allowed_tokens_fn,
+            )
         results = []
         with frozen_eval(self.model) as devices:
             for request in requests:
@@ -79,18 +103,28 @@ class ResearchCausalLM(LocalCausalLM):
                             return scores
 
                     kwargs["logits_processor"] = LogitsProcessorList([PresencePenalty()])
+                if structured is not None:
+                    parser_type, parser_config, build_prefix = structured
+                    parser = parser_type(
+                        json_schema,
+                        config=parser_config(
+                            force_json_field_order=True,
+                            max_consecutive_whitespaces=2,
+                            max_json_array_length=256,
+                        ),
+                    )
+                    kwargs["prefix_allowed_tokens_fn"] = build_prefix(
+                        self._action_tokenizer_data, parser
+                    )
                 output = self.model.generate(
                     **inputs,
                     **kwargs,
                     max_new_tokens=budget,
                     pad_token_id=self.tokenizer.pad_token_id,
-                    eos_token_id=self.tokenizer.eos_token_id,
+                    eos_token_id=self.generation_tokens["eos_token_ids"],
                 )
                 tokens = output[0, prompt_length:].tolist()
-                eos = self.model.generation_config.eos_token_id
-                eos_ids = set(eos if isinstance(eos, list) else [eos]) if eos is not None else set()
-                if self.tokenizer.eos_token_id is not None:
-                    eos_ids.add(self.tokenizer.eos_token_id)
+                eos_ids = set(self.generation_tokens["eos_token_ids"])
                 stopped = bool(tokens and tokens[-1] in eos_ids)
                 # Keep thinking delimiters even when tokenizers mark them as special tokens.
                 visible = tokens[:-1] if stopped else tokens
@@ -102,6 +136,8 @@ class ResearchCausalLM(LocalCausalLM):
                         "cut": len(tokens) >= budget and not stopped,
                         "thinking_closed": not sampling.thinking or sampling.thinking_end in text,
                         "finish_reason": "eos" if stopped else "length",
+                        "prompt_tokens": prompt_length,
+                        "decoding": "json_schema" if structured is not None else "unconstrained",
                     }
                 )
         return results

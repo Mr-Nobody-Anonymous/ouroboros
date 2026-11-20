@@ -12,6 +12,7 @@ from pathlib import Path
 
 from ouroboros.config import ModelConfig
 from ouroboros.core.checkpoints import atomic_json
+from ouroboros.data import DatasetBundle, load_samples
 from ouroboros.lab.backend import ResearchCausalLM
 from ouroboros.lab.config import LabPolicy, Sampling, load_lab_config
 from ouroboros.lab.runner import run_lab
@@ -61,6 +62,7 @@ def github_evidence(summary):
             "withdrawn",
             "budget_exhausted",
             "script_exhausted",
+            "stalled",
         }:
             raise ValueError("Unexpected research evidence status")
         if any(type(value) not in (int, float, bool, str) for value in safe[section].values()):
@@ -89,6 +91,12 @@ def main(argv=None):
     receipt = verify_model_files(model_path)
     init_project(root)
     config = load_lab_config(root / "research_lab.json")
+    # Preserve the historical plumbing fixture; the improved experiment has its own data/script.
+    config["dataset"] = DatasetBundle(
+        load_samples(root / "practice.json"),
+        load_samples(root / "validation.json"),
+        test=load_samples(root / "test.json"),
+    )
     model = ModelConfig(model_name_or_path=str(model_path), prompt_format="chat", max_new_tokens=12)
     policy = LabPolicy(
         max_turns=24,
@@ -187,6 +195,7 @@ def main(argv=None):
     atomic_json(root / "tool_actions.json", actions)
     raw_config = json.loads((root / "research_lab.json").read_text())
     raw_config.update(
+        data={"train": "practice.json", "validation": "validation.json", "test": "test.json"},
         model=asdict(model),
         policy=asdict(policy),
         editor={"mode": "scripted", "actions": "tool_actions.json", "max_new_tokens": 96},

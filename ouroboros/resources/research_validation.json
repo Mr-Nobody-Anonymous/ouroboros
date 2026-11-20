@@ -1,0 +1,128 @@
+[
+  {
+    "instruction": "What is 4 + 5? Reply with only the integer.",
+    "target": "9",
+    "domain": "addition",
+    "source": "Ouroboros owned fixed arithmetic diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "What is 8 + 6? Reply with only the integer.",
+    "target": "14",
+    "domain": "addition",
+    "source": "Ouroboros owned fixed arithmetic diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "What is 23 + 39? Reply with only the integer.",
+    "target": "62",
+    "domain": "addition",
+    "source": "Ouroboros owned fixed arithmetic diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "What is 57 + 28? Reply with only the integer.",
+    "target": "85",
+    "domain": "addition",
+    "source": "Ouroboros owned fixed arithmetic diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "What is 11 - 3? Reply with only the integer.",
+    "target": "8",
+    "domain": "subtraction",
+    "source": "Ouroboros owned fixed arithmetic diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "What is 17 - 9? Reply with only the integer.",
+    "target": "8",
+    "domain": "subtraction",
+    "source": "Ouroboros owned fixed arithmetic diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "What is 64 - 29? Reply with only the integer.",
+    "target": "35",
+    "domain": "subtraction",
+    "source": "Ouroboros owned fixed arithmetic diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "What is 81 - 46? Reply with only the integer.",
+    "target": "35",
+    "domain": "subtraction",
+    "source": "Ouroboros owned fixed arithmetic diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "What is 2 * 7? Reply with only the integer.",
+    "target": "14",
+    "domain": "multiplication",
+    "source": "Ouroboros owned fixed arithmetic diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "What is 5 * 9? Reply with only the integer.",
+    "target": "45",
+    "domain": "multiplication",
+    "source": "Ouroboros owned fixed arithmetic diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "What is 12 * 9? Reply with only the integer.",
+    "target": "108",
+    "domain": "multiplication",
+    "source": "Ouroboros owned fixed arithmetic diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "What is 16 * 13? Reply with only the integer.",
+    "target": "208",
+    "domain": "multiplication",
+    "source": "Ouroboros owned fixed arithmetic diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "Repeat the following word exactly and output nothing else: harbor",
+    "target": "harbor",
+    "domain": "copying",
+    "source": "Ouroboros owned fixed copy diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "Repeat the following word exactly and output nothing else: teapot",
+    "target": "teapot",
+    "domain": "copying",
+    "source": "Ouroboros owned fixed copy diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "Repeat the following word exactly and output nothing else: violet",
+    "target": "violet",
+    "domain": "copying",
+    "source": "Ouroboros owned fixed copy diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "Repeat the following word exactly and output nothing else: planet",
+    "target": "planet",
+    "domain": "copying",
+    "source": "Ouroboros owned fixed copy diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "Repeat the following word exactly and output nothing else: bridge",
+    "target": "bridge",
+    "domain": "copying",
+    "source": "Ouroboros owned fixed copy diagnostic fixture; not a benchmark",
+    "verified": true
+  },
+  {
+    "instruction": "Repeat the following word exactly and output nothing else: marble",
+    "target": "marble",
+    "domain": "copying",
+    "source": "Ouroboros owned fixed copy diagnostic fixture; not a benchmark",
+    "verified": true
+  }
+]

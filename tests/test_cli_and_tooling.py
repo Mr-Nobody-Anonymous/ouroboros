@@ -56,6 +56,15 @@ def test_source_inventory_labels_reference_and_unknown_origins():
     assert sum(s["mode"] == "submodule" for s in sources) == 7
     assert all(s["revision"] is None for s in sources if s["mode"] == "vendored")
     assert next(s for s in sources if s["name"] == "WSP-Scope")["integration"] == "paper-only"
+    lock = json.loads((ROOT / "external/sources.lock.json").read_text())
+    reviews = lock["optional_installed_package_reviews"]
+    assert len(reviews) == 1 and reviews[0]["name"] == "lm-format-enforcer"
+    for item in reviews:
+        receipt = json.loads((ROOT / item["receipt"]).read_text())
+        for field in ("version", "cloned_revision", "license"):
+            assert item[field] == receipt[field]
+        assert item["url"] == receipt["repository"]
+        assert not receipt["vendored"] and not receipt["source_code_copied"]
 
 
 def test_artifact_register_is_real_idempotent_and_not_upload(tmp_path):
@@ -104,6 +113,14 @@ def test_artifact_registration_cannot_write_through_symlinks(tmp_path, symlink_p
 
 def test_documentation_and_research_catalogue_are_consistent():
     assert check(ROOT)["research_references"] == 33
+    catalogue = json.loads((ROOT / "papers/research.json").read_text())
+    for paper in catalogue["papers"]:
+        if "local_engineering_follow_up" in paper:
+            follow_up = paper["local_engineering_follow_up"]
+            assert (ROOT / follow_up["guide"]).is_file() and (
+                ROOT / follow_up["evidence"]
+            ).is_file()
+            assert not follow_up["capability_gain_claimed"] and not paper["reproduced_here"]
 
 
 def test_empty_manifest_is_not_fake_600mb():

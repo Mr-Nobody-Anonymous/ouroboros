@@ -174,7 +174,7 @@ def test_model_file_inventory_does_not_allow_paths_python_or_pickle(name):
 
 
 @pytest.mark.parametrize(
-    "profile,extras", [("llm", "mcp,llm,smoke"), ("research", "mcp,llm,smoke,math")]
+    "profile,extras", [("llm", "mcp,llm,smoke"), ("research", "mcp,llm,smoke,math,structured")]
 )
 def test_install_plan_and_cli_missing_files_fail_without_side_effects(
     tmp_path, capsys, profile, extras

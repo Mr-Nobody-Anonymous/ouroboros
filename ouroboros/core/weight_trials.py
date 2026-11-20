@@ -81,9 +81,13 @@ def _tensor_hash(tensor):
     header = json.dumps(
         {"shape": list(tensor.shape), "dtype": str(tensor.dtype)}, sort_keys=True
     ).encode()
-    return hashlib.sha256(
-        header + b"\0" + tensor.reshape(-1).view(torch.uint8).numpy().tobytes()
-    ).hexdigest()
+    # Incremental hashing preserves the format exactly, without allocating/concatenating two
+    # full Python byte strings for large embeddings on every editor integrity check.
+    digest = hashlib.sha256()
+    digest.update(header)
+    digest.update(b"\0")
+    digest.update(memoryview(tensor.reshape(-1).view(torch.uint8).numpy()))
+    return digest.hexdigest()
 
 
 def _seed(torch, seed, devices):

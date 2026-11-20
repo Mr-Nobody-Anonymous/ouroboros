@@ -28,6 +28,10 @@ The optional `boxed_math` grader calls installed **Math-Verify 0.9.0** (Hugging 
 
 The external evaluation driver was checked against EleutherAI's **lm-evaluation-harness** CLI at `d6de81643928d653435c431bae19945d41d32520` (MIT). It invokes a **separately installed trusted executable** only with explicit permission; it does not vendor, automatically install or certify that executable's revision, tasks or datasets. **WeightBench** at `2acd60172fc9758eb9030b1cab4a2ff29be5c993` is a cloned/inspected reference, not an executed benchmark integration. See [integration boundaries](docs/INTEGRATIONS.md).
 
+## Optional structured-command decoder
+
+The `structured` extra calls **Noam Gat's LM Format Enforcer 0.11.3** ([source](https://github.com/noamgat/lm-format-enforcer), MIT, Copyright (c) 2023 Noam Gat). Its source was actually cloned/reviewed at `817f944fcc8851917c40300a47f62d1defc3ffc3`: JSON schema/parser configuration, token enforcement/caching and the Transformers prefix integration. Ouroboros adapts that public API with an owned closed action schema, public-state-bound enums, cached tokenizer data, model-EOS alignment and independent host validation. No library code is copied/vendored; installed dependencies and their transitive packages retain their licenses. [Review receipt](docs/evidence/structured-decoder-source.json), [usage and limitations](docs/EDITOR_EXPERIMENTS.md). Grammar filtering is not an edit-quality or safety guarantee.
+
 ## Pretrained smoke model
 
 The optional smoke provisioner clones [simonw/llm-smollm2](https://github.com/simonw/llm-smollm2) at `afed0963b3a8bcca17c83f451a161eb2edbc59fe`, reads its known hash/size model data and license, and never executes its plugin. The data originates from **HuggingFaceTB/SmolLM2-135M-Instruct**, redistributed as a **QuantFactory Q4_1 GGUF** and dequantized into float32 safetensors. Original precision is not recovered. The model's Apache-2.0 notice/license, source attribution, conversion and output hashes are recorded with the separately provisioned receipt. No model weights are distributed in this source repository/release.

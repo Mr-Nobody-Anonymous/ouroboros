@@ -5,6 +5,7 @@ from pathlib import Path
 
 from ..config import ModelConfig
 from ..core.checkpoints import file_sha256
+from .tokens import align_generation_tokens
 
 
 def format_prompt(instruction):
@@ -62,7 +63,8 @@ class LocalCausalLM:
         self.tokenizer = AutoTokenizer.from_pretrained(
             str(path), local_files_only=True, trust_remote_code=False
         )
-        if self.tokenizer.pad_token_id is None:
+        missing_pad = self.tokenizer.pad_token_id is None
+        if missing_pad:
             if self.tokenizer.eos_token_id is None:
                 raise ValueError("Tokenizer requires a pad or EOS token")
             self.tokenizer.pad_token = self.tokenizer.eos_token
@@ -84,6 +86,9 @@ class LocalCausalLM:
         self.model = AutoModelForCausalLM.from_pretrained(str(path), **kwargs)
         if not model_config.use_qlora:
             self.model.to(self.device)
+        self.generation_tokens = align_generation_tokens(
+            self.model, self.tokenizer, reset_pad=missing_pad
+        )
         self.model.requires_grad_(False)
         self.context_size = getattr(
             self.model.config,
@@ -106,6 +111,7 @@ class LocalCausalLM:
                 p.numel() for p in self.model.parameters() if p.requires_grad
             ),
             "model_config": dict(self.config.__dict__),
+            "generation_tokens": dict(self.generation_tokens),
         }
 
     def render_prompt(self, instruction):
@@ -183,7 +189,7 @@ class LocalCausalLM:
                     do_sample=False,
                     max_new_tokens=self.config.max_new_tokens,
                     pad_token_id=self.tokenizer.pad_token_id,
-                    eos_token_id=self.tokenizer.eos_token_id,
+                    eos_token_id=self.generation_tokens["eos_token_ids"],
                 )
                 continuation = outputs[0, inputs.input_ids.shape[1] :]
                 answers.append(

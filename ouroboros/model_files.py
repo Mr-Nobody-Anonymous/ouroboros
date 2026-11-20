@@ -237,6 +237,9 @@ def fetch_smoke_model(directory):
             trust_remote_code=False,
             dtype=torch.float32,
         )
+        from .backends.tokens import align_generation_tokens
+
+        generation_tokens = align_generation_tokens(model, tokenizer)
         model.save_pretrained(output, safe_serialization=True)
         tokenizer.save_pretrained(output)
         shutil.copyfile(clone / "LICENSE", output / "LICENSE")
@@ -253,6 +256,7 @@ def fetch_smoke_model(directory):
                 "license_metadata": "apache-2.0",
                 "source": SMOKE_SOURCE,
                 "conversion": "Q4_1 GGUF -> float32 safetensors with Transformers; NOT recovered original precision",
+                "generation_tokens": generation_tokens,
                 "bytes": sum((output / name).stat().st_size for name in hashes),
                 "files": hashes,
             },

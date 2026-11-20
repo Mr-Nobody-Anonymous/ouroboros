@@ -12,7 +12,16 @@
 - `lab tools/run/verify-bundle/evaluate/import-data/benchmark` CLI, packaged research config, reviewed scripted example, research installer profile, five new read-only MCP tools and allowlisted `run_research_lab`; research approvals bind config/data/script bytes, both run tools share one lock.
 - Source-linked feature-by-feature paper audit, usage/security/architecture/attribution updates, API/CLI/MCP local evidence and expanded protocol/ML/distribution CI.
 
-### Observed, not a paper reproduction
+### Editor reliability follow-up
+
+- Optional LM Format Enforcer 0.11.3 command decoding, bounded public name/id/paging enums, smaller tool signatures, persistent latest feedback, metered JSON/field-error repair and independent editor sampling. Nineteen total actions now include actual graded-practice contrasts, without invented successful outputs.
+- `lab diagnose` practice-only readiness, fixed 18/18/18 arithmetic/copying fixtures, larger fixed answer/editor budgets, no-progress `stalled` status and a source-bound interface-comparison script/CI step. Dynamic elapsed time stays out of editor context; initial prompt hashes must match for paired evidence. Older self-edit/scripted fixtures and strict gates remain separate/unchanged.
+- Full-input contrast preflight refuses overlong texts before any hidden forward, rather than silently omitting completion content. Practice grades/completions survive separately from hidden measurements, including bounded unavailable feedback. Explicit host-driven pretrained checks cover both a real graded-output direction and refusal on the same cohorts at an insufficient read limit.
+- Correct model-declared EOS versus converted tokenizer start-token mismatch, in-memory alignment without overwriting old receipts, and corrected metadata for newly provisioned conversions.
+- Streaming tensor-buffer hashes preserve the existing patch/full-state hash format while removing large transient Python byte copies; per-turn report flushing and budget-exhausted reply archives improve failure diagnostics. Hard OOM termination remains external and can prevent final integrity proof.
+- [Detailed changes, negative pilots and measured comparisons](docs/EDITOR_EXPERIMENTS.md). Better syntax is not demonstrated pretrained weight improvement.
+
+### Initial observation, not a paper reproduction
 
 The real Q4_1-derived 134,515,008-parameter editor made two generations, **zero valid actions**, stopped at the invalid-action budget. The **separate scripted integration** completed 16 actions/10 forwards, edited 1,152 entries across two tensors and was **rejected at reserved accuracy 0→0**. Exact restoration/source checks passed. Real CLI and official-SDK stdio MCP paths ran too. No scripted fallback was substituted for the model, no pretrained gain claimed. General persistent Python/OS isolation, vLLM/tensor parallelism, dedicated vision/game/Go/diffusion adapters and actual paper/standard-benchmark replication remain missing. See [parity audit](docs/PAPER_PARITY.md) and [test evidence](docs/TESTING.md).
 
