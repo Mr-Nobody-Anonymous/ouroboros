@@ -1,6 +1,6 @@
 # A small LLM choosing edits to its own weights
 
-Ouroboros 0.4 adds a **bounded, same-model experiment**, not an unrestricted self-modifying program. The very `LocalCausalLM.model` object whose next-token logits choose an action is the object edited and evaluated. No external frontier-model proposer, generated Python, model-written promotion rule or self-assigned reward is involved.
+Ouroboros 0.4 added the **bounded, same-model finite-menu experiment** documented here; it remains available in 0.5. The very `LocalCausalLM.model` object whose next-token logits choose an action is the object edited and evaluated. No external frontier-model proposer, generated Python, model-written promotion rule or self-assigned reward is involved. The separate [0.5 Research Lab](RESEARCH_LAB.md) adds frozen-editor JSON programs, multi-tensor instrumentation/controls and the reserved-check protocol; do not confuse the two paths or their evidence.
 
 ## Install and run
 
@@ -16,7 +16,7 @@ ouroboros self-edit --config ouroboros-lab/self_edit.json --check-only
 ouroboros self-edit --config ouroboros-lab/self_edit.json
 ```
 
-Use a **new** project/model destination; existing paths are refused, not overwritten. `init` works from an installed wheel too: its four small JSON resources are packaged, not read from a source-checkout-only `examples/` path. Config paths resolve relative to the config file, not the current directory. The install script supports `--profile core`, `--profile train`, `--dev`, a custom `--venv`, and `--dry-run`.
+Use a **new** project/model destination; existing paths are refused, not overwritten. `init` works from an installed wheel too: its five small JSON resources (including the research config) are packaged, not read from a source-checkout-only `examples/` path. Config paths resolve relative to the config file, not the current directory. The install script also supports `--profile core`, `--profile research` (adds the math grader), `--profile train`, `--dev`, a custom `--venv`, and `--dry-run`.
 
 The tested ML constraints target Python 3.10–3.12. On a newer interpreter choose a supported Python or deliberately opt into `--unconstrained`; that combination has not been validated here. PyTorch packages can be several GB depending on the wheel, and inference/conversion need a few GB of free RAM. A small serialized patch is not a small dense-memory operation. A CPU-specific PyTorch wheel can reduce installation size; follow PyTorch's own platform instructions rather than installing random wheels.
 

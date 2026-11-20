@@ -4,13 +4,13 @@
 
 <h1 align="center">Ouroboros</h1>
 <p align="center"><strong>A small model. Its own weights. Every edit measured.</strong></p>
-<p align="center">Choose → Edit → Evaluate → Keep or Undo</p>
+<p align="center">Diagnose → Inspect → Edit → Compare → Keep or Undo</p>
 
-Ouroboros is a local research toolkit for bounded model adaptation. A small LLM can use **its own logits to choose an edit to its own weights**; a separate, deterministic controller measures the candidate, rejects plateaus/regressions, and records what happened. No API key or GPU is required for the CPU quickstart.
+Ouroboros is a local research toolkit for bounded model adaptation. Run a small LLM that **chooses edits to its own weights**, or use the new **frozen-editor Research Lab** for model-authored JSON actions, multi-tensor numerical programs, instrumented reads and controlled experiments. A separate host measures candidates, rejects plateaus/regressions and records the evidence. No API key or GPU is required for the small CPU quickstart.
 
-**Not magic self-improvement:** the edit menu is host-defined, generated Python is never executed, and a completed experiment can correctly accept **nothing**. Existing LoRA training, replay, reversible patches and source/research tools remain available.
+**Not magic self-improvement:** generated Python is never executed, the tiny pretrained model did **not** author useful research actions, and a completed run can correctly accept **nothing**. LoRA training, replay and reversible patches remain separate, usable paths.
 
-[Self-edit guide](docs/SELF_EDITING.md) · [MCP](docs/MCP.md) · [Architecture](docs/SELF_EVOLVING_ARCHITECTURE.md) · [Test evidence](docs/TESTING.md) · [Research](papers/PAPERS_INDEX.md)
+[Research Lab](docs/RESEARCH_LAB.md) · [Paper gap checklist](docs/PAPER_PARITY.md) · [Small-LLM guide](docs/SELF_EDITING.md) · [MCP](docs/MCP.md) · [Test evidence](docs/TESTING.md) · [Research](papers/PAPERS_INDEX.md)
 
 ## Run a small LLM
 
@@ -32,7 +32,7 @@ ouroboros self-edit --config ouroboros-lab/self_edit.json
 
 This uses **SmolLM2-135M-Instruct**, dequantized from a Q4_1 distribution—not the original full-precision checkpoint. The source commit, GGUF checksum, conversion and output hashes are recorded. Model weights/caches stay out of Git. Review the Apache-2.0 model license before reuse. See [installation, original Hub weights, and troubleshooting](docs/SELF_EDITING.md).
 
-The current **0.4 development code lives on the linked branch / [PR #1](https://github.com/Mr-Nobody-Anonymous/ouroboros/pull/1)**, not the historical default branch or the existing v0.3 release. Install this source rather than an unrelated similarly named PyPI package.
+The current **0.5 development code lives on the linked branch / [PR #1](https://github.com/Mr-Nobody-Anonymous/ouroboros/pull/1)**, not the historical default branch or the existing v0.3 release. Install this source rather than an unrelated similarly named PyPI package.
 
 ### What happens during a run?
 
@@ -49,6 +49,30 @@ The source model files are never overwritten. Accepted patches, if any, are save
 
 A real **134,515,008-parameter** pretrained model selected two edits, each changing **884 weights** in one MLP matrix. Both candidates were measured, rejected on a plateau, and restored. **No capability gain or accepted patch is claimed.** The four-example strict exact-match smoke test scored zero even for verbose factually correct answers, so it is not a useful general-capability benchmark. [Recorded results and caveats →](docs/SELF_EDITING.md#observed-pretrained-run)
 
+## The paper's missing tools, together in one lab
+
+The old finite-menu loop was **not** the self-rewriting paper's workflow. The [source-linked audit](docs/PAPER_PARITY.md) lists **24 self-rewriting comparisons plus the eight MIT/blog experiments**, marking implemented, partial, missing and unrun separately.
+
+The new `lab` path adds:
+
+- **Frozen editor / edited target separation**, independent base-reset sessions and an operator-private damage fixture.
+- **18 research actions / 7 numerical operators:** hidden/MLP/attention/logprob reads, measured contrasts, writer ranking, atomic multi-tensor projections/clipping/entry/bias/low-rank edits, and saved alternatives. Dense flat edits support ranks 1–32; architecture/element limits still apply.
+- **Paired seeded sampling**, boxed-math grading, cut/repetition diagnostics, problem-clustered uncertainty, random/no-op/layer controls and strength sweeps.
+- **Sealed once-only reserved validation**, confirm/withdraw, a fixed evaluation plan and separate final testing.
+- **Full-model-bound exact reversible bundles**, explicit local dataset import, a plan-first external benchmark driver, JSON CLI and allowlisted MCP execution.
+
+```bash
+python scripts/install.py --profile research
+# Reuse the project/model provisioned above; init also created this config:
+ouroboros lab tools
+ouroboros lab run --config ouroboros-lab/research_lab.json --check-only
+ouroboros lab run --config ouroboros-lab/research_lab.json
+```
+
+**Measured, not simulated:** the 135M editor made two real generations but produced **0 valid actions**. A separately labelled scripted run completed 16 actions/10 forward requests and changed **1,152 entries in two tensors**; reserved accuracy **0.0→0.0**, rejected/restored. A real official-SDK MCP child also ran the research workflow. [Evidence and runnable guide →](docs/RESEARCH_LAB.md)
+
+**Still missing:** a persistent isolated arbitrary-Python kernel, vLLM/tensor-parallel serving, vision/game/Go/diffusion task adapters, and actual 27B/paper/standard-benchmark reproduction. Tests and APIs cannot substitute for those experiments; **full paper parity and capability gains are not claimed**.
+
 ## Use it from an agent: MCP
 
 The optional official **Model Context Protocol** SDK provides a local **stdio** server. The installer above includes it. By default it exposes only dependency/config checks, bounded weight inspection, patch verification and report reading.
@@ -64,7 +88,7 @@ The optional official **Model Context Protocol** SDK provides a local **stdio** 
 }
 ```
 
-Running experiments requires **both** `--allow-experiments` and an explicit `--config self_edit.json` allowlist at server startup. There is no arbitrary shell, model download, patch-apply or delete tool. A subprocess timeout is not an OS security sandbox. [Tools, permissions and client setup →](docs/MCP.md)
+Running experiments requires **both** `--allow-experiments` and an explicit `--config self_edit.json` or `--lab-config research_lab.json` allowlist at server startup. Research approval binds config, dataset and scripted-action bytes. There is no arbitrary shell, model download, patch-apply or delete tool. A subprocess timeout is not an OS security sandbox. [Tools, permissions and client setup →](docs/MCP.md)
 
 ## Start lighter, or go deeper
 
@@ -89,9 +113,10 @@ ouroboros run --config examples/local_sft.json
 
 | Surface | What is implemented |
 | --- | --- |
-| Same-model editing | Constrained model-selected trials, strict measured gates, reversible accepted chains; not free-form weight-program synthesis |
+| Same-model smoke | Constrained model-selected trials, strict measured gates, reversible accepted chains; still a finite menu |
+| Research Lab | Frozen editor, model-generated closed-language programs, multi-tensor tools/controls, sealed checks, independent sessions and final test; tiny model failed action authorship |
 | Local SFT | Completion-masked Transformers/PEFT LoRA, replay anchors, original/latest retention and adapter rollback; GPU QLoRA untested |
-| Weight tools | Bounded safetensors inspection, one-matrix trials and exact target-bound sparse apply/reverse |
+| Weight tools | Bounded inspection, one-matrix trials plus atomic research programs and exact target-/full-state-bound sparse bundles |
 | Agent access | JSON CLI, packaged `init`, dependency doctor, read-only-default stdio MCP, explicitly allowlisted execution |
 | Other research primitives | Task arithmetic/TIES/DARE/SLERP, copied decoder candidates, explicit EasyEdit/mergekit bridges and review-only source proposals |
 | Evidence | Measured predictions, fingerprints, failure reports, separate final test and CI; no invented benchmark gains |
@@ -121,6 +146,8 @@ ruff format --check ouroboros tests scripts
 python scripts/check_docs.py
 # Explicit pretrained smoke; downloads only with --fetch:
 python scripts/run_pretrained_smoke.py --workdir outputs/pretrained-smoke --fetch
+# Reuses its verified model; actual and scripted research paths are labelled separately:
+python scripts/run_research_smoke.py --workdir outputs/research-smoke --model-dir outputs/pretrained-smoke/models/smollm2
 ```
 
 [CI](.github/workflows/ci.yml) separates lightweight Python 3.10/3.11/3.12 checks, offline random-LM integration, MCP protocol tests and an explicit pinned pretrained-model smoke run. See [testing](docs/TESTING.md) for observed local/GitHub results and limitations.
@@ -131,4 +158,4 @@ Models, checkpoints, environments and run outputs are ignored by default. [Stora
 
 The existing [v0.3.0 pre-release](https://github.com/Mr-Nobody-Anonymous/ouroboros/releases/tag/v0.3.0) contains core source/checksums, not these new features, models or upstream trees. Historical releases remain unchanged. [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Agent guide](AGENTS.md)
 
-Original code: [MIT](LICENSE). Third-party models/sources retain their licenses. The README emblem is AI-generated artwork. Ouroboros is experimental software, not a guarantee of safety, generalization, or indefinite self-improvement.
+Original code: [MIT](LICENSE). [Third-party attribution](THIRD_PARTY_NOTICES.md); models/sources retain their licenses. The README emblem is AI-generated artwork. Ouroboros is experimental software, not a guarantee of safety, generalization, or indefinite self-improvement.

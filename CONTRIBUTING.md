@@ -18,7 +18,9 @@ For a no-Torch environment run `python -m pytest -q -m 'not ml'`. Core safetenso
 
 `python scripts/install.py --profile train --dev` is the convenience environment setup (includes optional MCP/GGUF packages). MCP tests use the `mcp` marker and the real official SDK/stdio protocol. `init` must work from an installed wheel with no source tree. Ordinary pytest must never download pretrained data; the separate `scripts/run_pretrained_smoke.py --fetch` / GitHub job is explicitly network-enabled and checks mechanics, not a required accuracy gain. Preserve the read-only MCP default and explicit config allowlist; do not add generic execution/deletion tools.
 
-Check both `ouroboros run --config examples/local_sft.json --check-only` and `ouroboros weights trial --config examples/weight_trial.json --check-only`. A schema check must not imply that a real model exists or that a direction matches its target.
+Research Lab tests also cover multi-tensor transactions, higher-rank flat edits, instrumented reads, controls, sealed validation, independent sessions and exact full-state bundles. Keep model-authored and scripted evidence distinct; no generated-Python executor or silent scripted fallback. Use the `math` extra for real Math-Verify tests. The separate `scripts/run_research_smoke.py` reuses a receipt-verified local model and labels both modes honestly. See [paper audit](docs/PAPER_PARITY.md) and [attribution](THIRD_PARTY_NOTICES.md).
+
+Check `ouroboros lab tools`, `ouroboros lab run --config examples/research_scripted.json --check-only`, `ouroboros run --config examples/local_sft.json --check-only` and `ouroboros weights trial --config examples/weight_trial.json --check-only`. A schema check must not imply that a real model exists or that a direction matches its target.
 
 ## Standards
 

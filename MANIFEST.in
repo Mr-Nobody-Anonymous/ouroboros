@@ -1,4 +1,4 @@
-include README.md AGENTS.md LICENSE SECURITY.md CONTRIBUTING.md CHANGELOG.md
+include README.md AGENTS.md LICENSE SECURITY.md CONTRIBUTING.md CHANGELOG.md THIRD_PARTY_NOTICES.md
 include requirements.txt .gitmodules .gitignore .gitattributes
 include external/README.md external/sources.lock.json artifacts/manifest.json
 recursive-include docs *.md *.png *.json

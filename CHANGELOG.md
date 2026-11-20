@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.5.0 — frozen-editor research tools (development)
+
+### Added
+
+- A separate integrated `ouroboros.lab` workflow: frozen editor versus temporary target, actual model-generated closed-JSON actions or explicitly labelled reviewed scripts, independent base-reset sessions, fixed evaluation plan, sealed once-only reserved check, confirm/withdraw and once-only final testing.
+- 18 actions / seven numerical operators: actual hidden/MLP/logprob/opt-in-attention reads, target statistics, measured contrast directions/writer ranking, atomic multi-tensor signed projections, entries/bias additions, outlier clipping, row/column scaling and low-rank updates. Dense flat edits support ranks 1–32; matrix operators remain rank 2. Protected/tied-storage and rounded global budgets fail closed.
+- Seeded paired stochastic sampling, thinking/cut/EOS handling, explicit Math-Verify 0.9.0 last-box grading, repetition diagnostics, problem-clustered SE/sign-flips, rescues/regressions, four saved alternatives, norm-matched/no-op/layer controls and dose sweeps.
+- Accepted-only exact-byte multi-tensor bundles bound to **complete before/after model state**, verified/replayed/reversed explicitly with all-target preflight and rollback. Legacy target-only patches remain separate.
+- Explicit local math/GSM8K/DeepScaleR/Sample import with source/license/hash receipts; default-plan-only offline `lm-eval` driver with fixed arguments, opt-in execution, logs and timeout cleanup. The actual upstream benchmark remains separately installed/trusted and unrun.
+- `lab tools/run/verify-bundle/evaluate/import-data/benchmark` CLI, packaged research config, reviewed scripted example, research installer profile, five new read-only MCP tools and allowlisted `run_research_lab`; research approvals bind config/data/script bytes, both run tools share one lock.
+- Source-linked feature-by-feature paper audit, usage/security/architecture/attribution updates, API/CLI/MCP local evidence and expanded protocol/ML/distribution CI.
+
+### Observed, not a paper reproduction
+
+The real Q4_1-derived 134,515,008-parameter editor made two generations, **zero valid actions**, stopped at the invalid-action budget. The **separate scripted integration** completed 16 actions/10 forwards, edited 1,152 entries across two tensors and was **rejected at reserved accuracy 0→0**. Exact restoration/source checks passed. Real CLI and official-SDK stdio MCP paths ran too. No scripted fallback was substituted for the model, no pretrained gain claimed. General persistent Python/OS isolation, vLLM/tensor parallelism, dedicated vision/game/Go/diffusion adapters and actual paper/standard-benchmark replication remain missing. See [parity audit](docs/PAPER_PARITY.md) and [test evidence](docs/TESTING.md).
+
 ## 0.4.0 — same-model experiments and local MCP (development)
 
 ### Added

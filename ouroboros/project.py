@@ -14,7 +14,7 @@ def init_project(directory):
             "Project destination exists; choose a new directory (nothing overwritten)"
         )
     resources = files("ouroboros.resources")
-    names = ("self_edit.json", "practice.json", "validation.json", "test.json")
+    names = ("self_edit.json", "research_lab.json", "practice.json", "validation.json", "test.json")
     contents = {name: resources.joinpath(name).read_text(encoding="utf-8") for name in names}
     for content in contents.values():
         json.loads(content)
@@ -26,6 +26,19 @@ def init_project(directory):
     return {
         "project_dir": str(root),
         "config": str(root / "self_edit.json"),
+        "research_config": str(root / "research_lab.json"),
+        "research_commands": [
+            ["ouroboros", "lab", "tools"],
+            [
+                "ouroboros",
+                "lab",
+                "run",
+                "--config",
+                str(root / "research_lab.json"),
+                "--check-only",
+            ],
+            ["ouroboros", "lab", "run", "--config", str(root / "research_lab.json")],
+        ],
         "next_commands": [
             [
                 "ouroboros",

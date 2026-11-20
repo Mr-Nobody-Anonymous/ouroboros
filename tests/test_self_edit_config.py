@@ -173,7 +173,12 @@ def test_model_file_inventory_does_not_allow_paths_python_or_pickle(name):
     assert not model_file(name)
 
 
-def test_install_plan_and_cli_missing_files_fail_without_side_effects(tmp_path, capsys):
+@pytest.mark.parametrize(
+    "profile,extras", [("llm", "mcp,llm,smoke"), ("research", "mcp,llm,smoke,math")]
+)
+def test_install_plan_and_cli_missing_files_fail_without_side_effects(
+    tmp_path, capsys, profile, extras
+):
     script = Path(__file__).resolve().parents[1] / "scripts/install.py"
     target = tmp_path / "environment with spaces"
     output = subprocess.check_output(
@@ -181,7 +186,7 @@ def test_install_plan_and_cli_missing_files_fail_without_side_effects(tmp_path, 
             sys.executable,
             str(script),
             "--profile",
-            "llm",
+            profile,
             "--venv",
             str(target),
             "--dry-run",
@@ -190,7 +195,7 @@ def test_install_plan_and_cli_missing_files_fail_without_side_effects(tmp_path, 
     )
     plan = json.loads(output)
     assert not target.exists() and not plan["downloads_model"]
-    assert "[mcp,llm,smoke]" in plan["install"][5]
+    assert f"[{extras}]" in plan["install"][5]
     assert "-c" in plan["install"] and plan["tested_ml_constraints"]
     assert main(["models", "verify", "--directory", str(tmp_path)]) == 2
     assert "ouroboros:" in capsys.readouterr().err

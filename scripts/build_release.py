@@ -31,6 +31,7 @@ TOP = {
     "AGENTS.md",
     "MANIFEST.in",
     "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
     "SECURITY.md",
     "CONTRIBUTING.md",
     "CHANGELOG.md",

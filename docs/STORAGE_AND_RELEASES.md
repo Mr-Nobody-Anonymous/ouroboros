@@ -65,6 +65,12 @@ tar -C outputs/weight-trials/ACTUAL_ID -czf outputs/approved-weight-patch.tar.gz
 
 A tiny patch may not warrant LFS. Hashes do not authenticate its author, validate license assertions, bind every other tensor or prove capability gains. Dense trial snapshots/sorting/hashing still need RAM proportional to the selected matrix. **PEFT adapter-only checkpoints cannot preserve arbitrary base-weight edits.** Trial outputs are not eligible for managed checkpoint pruning, and no patch from a test fixture is registered as a production artifact by default.
 
+### Research Lab outputs are a separate format
+
+[Research Lab](RESEARCH_LAB.md) writes `lab.json`, a hashed evaluation plan, per-turn actions/observations and separate private reserved/final measurements. Accepted candidates alone export `bundle/bundle.json` plus `bundle/changes.safetensors`, with exact sparse before/after bytes and **complete model-state** hashes. Both files must stay together; they are not interchangeable with legacy `patch` files or adapter checkpoints. Data-only verification cannot certify behavior or reconstruct an external model's state hashes.
+
+Runs always restore the resident model, including accepted sessions. Replaying a bundle is an explicit separate operation against an exact matching base; damage-repair bundles expect the matching **damaged target** input, not an arbitrary clean model. Keep independent licensed source files/receipts. Sparse output size does not bound dense multi-tensor RAM, saved variants or hashing costs. Reports/artifacts may reveal private data/paths and must be reviewed before sharing; MCP summaries do not expose raw held-out files, but those files exist on the trusted host. No actual pretrained research patch was accepted or added to LFS in this phase.
+
 ## Safe checkpoint retention
 
 ```bash
@@ -83,7 +89,7 @@ python scripts/build_release.py
 # For a LOCAL preview before committing, explicitly add --allow-dirty.
 ```
 
-Version 0.3.0 produces `artifacts/releases/ouroboros-0.3.0-core.tar.gz` plus a SHA-256 file; versioning leaves the published 0.2.0 bundle unchanged. The archive contains original source, docs, tests, small examples and reference manifests, **not upstream trees, model weights, benchmark corpora, caches, credentials or virtual environments**. `RELEASE_CONTENTS.json` records file hashes, commit, scope and an explicit dirty-preview flag. Tar/gzip metadata is normalized for deterministic bytes from identical inputs.
+The builder uses the current package version: 0.5 development produces `artifacts/releases/ouroboros-0.5.0-core.tar.gz` plus a SHA-256 file. A local build is not a published 0.5 release; versioning leaves historical 0.2/0.3 assets unchanged. The archive contains original source, docs, tests, small examples and reference manifests, **not upstream trees, model weights, benchmark corpora, caches, credentials or virtual environments**. `RELEASE_CONTENTS.json` records file hashes, commit, scope and an explicit dirty-preview flag. Tar/gzip metadata is normalized for deterministic bytes from identical inputs.
 
 This is not a recovered 600 MB “complete model.” Obtain complete development sources through Git clone and pinned submodule initialization; preserved vendored sources arrive with the clone. Obtain large models/data separately under their original licenses. The Python wheel/sdist are also source distributions, not evidence of a PyPI upload or full-model release.
 

@@ -61,9 +61,9 @@
       "url": "https://rikiyat.github.io/blog/weight-space-programming/",
       "summary": "MIT CSAIL reports an Astra edit of Qwen3.5-0.8B: MATH-500 7.9% to 48.1%, with 50 forward passes and 131072 edited entries. Not a Harvard paper, not gradient training, and not an Ouroboros result.",
       "local_path": "papers/Sparks_of_Weight_Space_Programming.md",
-      "implementation_status": "reference-and-measured-edit-tools-not-reproduced",
+      "implementation_status": "instrumented-multi-tensor-tools-and-controls-not-reproduced",
       "reviewed_on": "2026-11-19",
-      "review_scope": "abstract-and-selected-methods",
+      "review_scope": "primary-blog-experiments-and-limitations-plus-cloned-exp8-code-protocol",
       "reproduced_here": false
     },
     {
@@ -123,7 +123,7 @@
       "local_path": "external/WeightBench",
       "implementation_status": "external-reference",
       "reviewed_on": "2026-11-19",
-      "review_scope": "primary-abstract",
+      "review_scope": "primary-abstract-and-cloned-readme-cli-requirements",
       "reproduced_here": false
     },
     {
@@ -150,10 +150,10 @@
       "kind": "preprint",
       "url": "https://arxiv.org/abs/2611.21885v2",
       "summary": "A 27B model reportedly gains 6.6 accuracy points on held-out math; smaller models abstain or damage themselves. Repeated practice checks are not an untouched final test. v2 dated November 18 was consulted.",
-      "local_path": "ouroboros/self_edit.py",
-      "implementation_status": "bounded-menu-experiment-not-reproduced",
+      "local_path": "ouroboros/lab/runner.py",
+      "implementation_status": "frozen-editor-research-protocol-partial-not-reproduced",
       "reviewed_on": "2026-11-19",
-      "review_scope": "abstract-and-selected-methods",
+      "review_scope": "selected-full-text-methods-algorithms-and-appendices-D-E9",
       "reproduced_here": false
     },
     {

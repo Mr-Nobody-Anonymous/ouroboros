@@ -26,7 +26,7 @@ ouroboros weights trial --config examples/weight_trial.json --check-only
 ouroboros demo --generations 3
 ```
 
-`python scripts/install.py --profile core --dev` creates the local environment with optional MCP; `--profile llm` adds same-model inference/GGUF smoke provisioning, and `--profile train` adds PEFT. `ouroboros init NEW_DIRECTORY` packages its own tiny fixtures. Run `self-edit --config CONFIG --check-only` before a real run. Model downloads are explicit `models fetch` (Hub) / `models fetch-smoke` (pinned GitHub derivative), not side effects of inference.
+`python scripts/install.py --profile core --dev` creates the local environment with optional MCP; `--profile llm` adds same-model inference/GGUF smoke provisioning, `--profile research` adds the explicit Math-Verify grader, and `--profile train` adds PEFT. `ouroboros init NEW_DIRECTORY` packages its own tiny fixtures. Run `self-edit --config CONFIG --check-only` before a real run. Model downloads are explicit `models fetch` (Hub) / `models fetch-smoke` (pinned GitHub derivative), not side effects of inference.
 
 Core dependencies include NumPy, PyYAML and safetensors, **not Torch**. `pip install -e '.[train]' -c constraints/ml-tested.txt` enables CPU Torch/direct-edit and tiny random local-LM tests without pretrained downloads. No GPU is assumed. Run the full `pytest` suite in that environment; mark new Torch-dependent tests `ml`. Check-only validates config/data, not actual model availability or target shape.
 
@@ -47,9 +47,20 @@ Core dependencies include NumPy, PyYAML and safetensors, **not Torch**. `pip ins
 - MCP defaults to local stdio read-only tools. Execution requires startup opt-in AND unchanged allowlisted configs. Do not add generic shell, download, delete, unrestricted file-read or generated-code execution tools. Path checks/offline child flags/timeouts are not an OS sandbox.
 - Mark real SDK/protocol tests `mcp`, Torch tests `ml`; ordinary pytest must never implicitly download pretrained data. scripts/run_pretrained_smoke.py requires explicit --fetch or an existing receipt-verified model and a new workdir. CI uploads JSON evidence only.
 
+## Research Lab contract (separate from the finite-menu loop)
+
+- Read docs/RESEARCH_LAB.md and docs/PAPER_PARITY.md. `lab` is the frozen-editor closed-JSON research workflow: 18 actions / seven numeric operations, not general Python or full paper parity. Model mode really generates actions; scripted mode must always stay labelled as scripted. Never substitute scripted actions after invalid model output and call it autonomous.
+- Target overlays are restored before each editor reply. Each session starts from the same original/damaged target; edits do not accumulate across sessions. Dense flat edits support ranks 1–32, matrix operations need rank 2; protection/shared-storage/rounded global budgets apply. No quantized/vision/vLLM/tensor-parallel claim.
+- Only practice prompts/references and bounded practice measurements enter conversation. `submit` seals for one reserved check; only confirm/withdraw follows. Final data are opened after the incumbent is frozen. Raw held-out artifacts and operator damage specs exist on the trusted host, not in editor feedback; filesystem isolation is external.
+- Research bundles bind complete before/after state (unlike legacy target-only patches). Data-only verification cannot reconstruct a model; explicit apply/reverse still needs an exact matching model and a dense-snapshot bound. No source overwrite or automatic bundle application in MCP/SFT.
+- The 135M research editor produced 0 valid / 2 invalid actions. The separate 16-action scripted integration changed 1,152 entries / two tensors, reserved accuracy 0→0, rejected/restored. No pretrained capability gain or paper/WeightBench/standard-benchmark reproduction. Tiny accepted Torch fixtures are not LLM evidence.
+- `lab import-data` requires explicit local reference-labelled data and source/license assertions; it does not verify them independently. `lab benchmark` is a plan-first offline command bridge to a separately installed trusted `lm-eval`, not an installed/reproduced benchmark or patched-model exporter.
+- MCP has 11 read-only tools by default. Research execution needs opt-in plus `--lab-config`; approval binds config/data/script bytes. Smoke/research children share one lock. No generic shell, notebook, arbitrary mutation or hidden-label file tool.
+
 ## Map
 
 - ouroboros/self_edit.py, model_files.py, project.py, resources/: same-model controller, explicit model provisioning and installed-package quickstart fixtures.
+- ouroboros/lab/: separate frozen-editor research programs, instrumentation, controls, sealed validation/sessions, full-state-bound bundles and explicit dataset/benchmark boundaries.
 - ouroboros/mcp_server.py: optional official-SDK stdio server, read-only default and allowlisted offline child execution.
 - ouroboros/backends/: NumPy reference classifier, shared frozen LocalCausalLM loader and optional PEFT SFT backend.
 - ouroboros/pipeline/self_loop.py: measured control flow, owned-state rollback, stage evidence and once-only post-selection final test.

@@ -89,7 +89,7 @@
       "mode": "submodule",
       "license": "CUSTOM: see LICENSE",
       "integration": "research-logs",
-      "notes": "Original experimental evidence and harness; mixed artifact licenses, not an installed trainer.",
+      "notes": "Cloned/read exp8 scripts/protocol/license; informs owned instrumentation, projections, controls and exact bundles. No upstream agent/evaluation executed; mixed licenses.",
       "revision": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f"
     },
     {
@@ -109,7 +109,7 @@
       "mode": "submodule",
       "license": "MIT",
       "integration": "external-benchmark",
-      "notes": "42-task WSP benchmark; sandbox and model/API setup required separately.",
+      "notes": "Cloned/inspected 42-task WSP reference; sandbox and model/API setup required separately. No benchmark run.",
       "revision": "2acd60172fc9758eb9030b1cab4a2ff29be5c993"
     },
     {
@@ -118,8 +118,8 @@
       "url": "https://github.com/EleutherAI/lm-evaluation-harness",
       "mode": "submodule",
       "license": "MIT",
-      "integration": "external-benchmark",
-      "notes": "Independent standard LLM evaluations. Datasets and model artifacts must be provisioned separately.",
+      "integration": "opt-in-external-benchmark-driver",
+      "notes": "Cloned/inspected CLI; owned plan-first offline fixed-argument driver. Actual installed upstream benchmark unrun; licensed datasets/model provisioned separately.",
       "revision": "d6de81643928d653435c431bae19945d41d32520"
     },
     {

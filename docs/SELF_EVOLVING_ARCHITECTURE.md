@@ -1,6 +1,6 @@
 # Self-evolving architecture: implemented control flow and research boundaries
 
-As of 2026-11-19, version 0.4 development. Read the [capability table](../README.md#capability-status) before interpreting “self-evolving.” This repository provides a bounded experimental controller, not a guarantee that a model can improve itself indefinitely.
+As of 2026-11-19, version 0.5 development. Read the [capability table](../README.md#capability-status) before interpreting “self-evolving.” This repository provides a bounded experimental controller, not a guarantee that a model can improve itself indefinitely.
 
 ## 1. Persistent state and trust boundaries
 
@@ -77,6 +77,41 @@ Each trial always restores its one matrix and enforces entry/norm/byte budgets. 
 
 `mcp_server.py` uses the optional official SDK over **stdio only**, read-only by default. It exposes bounded inspection/config/report tools; execution appears only with startup opt-in and unchanged allowlisted configs. A fixed offline-Hub child, serialized runs and a wall timeout are operational controls, not an OS sandbox. See [permissions/threat model](MCP.md).
 
+### Frozen-editor Research Lab (0.5)
+
+[`ouroboros/lab/`](../ouroboros/lab) is a third, distinct path. It does **not** mutate the finite-menu or PEFT controller into the paper's protocol. See [usage](RESEARCH_LAB.md) and the [source-linked parity audit](PAPER_PARITY.md).
+
+```text
+local clean safetensors → frozen resident editor → one JSON action per reply
+                                  ↑                         |
+                        restore owned overlays             v
+practice only → diagnosis → target-copy reads / numeric programs / paired tests
+                                  |                         |
+                       damaged target optional       saved variants / controls
+                                                            |
+                                         seal → reserved check → confirm/withdraw
+                                                            |
+                                 independent base-reset sessions / host incumbent
+                                                            |
+                               freeze selection → once-only new-seed final test
+                                                            |
+                             exact bundle / full-state and source-integrity evidence
+```
+
+- `config.py` enforces a separate research profile, signed/finite settings, disjoint required splits and config/data/script content binding for MCP. `tools.py` defines **18 closed-language actions and seven numerical operators**, not a Python execution API.
+- `backend.py` extends local inference with explicit sampling, presence/repetition penalties, thinking closure, EOS/cut records, per-problem seeds and RNG/mode preservation. Generation prompts cannot be silently truncated. Only serial single-device Transformers is implemented; no vLLM, tensor parallelism or vision loader.
+- `state.py` owns temporary target overlays and private damage; `program.py` atomically builds multi-tensor rounded programs under global entry/fraction/byte and per-tensor norm limits. Generic flat edits/clipping work on dense rank 1–32 parameters; matrix-specific operations stay rank 2. Protected embeddings/output/final-norm storage, unsupported quantization and distinct shared-storage parameters fail closed. No whole-tensor rescaling.
+- `instrumentation.py` measures actual hidden states, MLP inputs, token logprobs and opt-in attention, with selected modules, pooling/last/stride, allocation bounds and explicit read truncation. Measured contrast vectors and column ranking aid experiments; they do not establish semantic circuits.
+- `session.py` meters tool requests/edits/turns/time, keeps notes and four alternatives, supports seeded original/edited/saved comparisons, random/no-op/layer controls and independent strength sweeps. Only practice references and bounded practice outputs enter conversation.
+- `submit` irreversibly seals a session for one private reserved check; only `confirm` or `withdraw` follows. The host still rejects plateau, original/incumbent retention failures and optional significance failures. `runner.py` starts every session from the **same** target base, picks the best eligible incumbent without merging, fixes an evaluation plan before diagnosis and evaluates final data once after selection. No accepted edit is left on the resident editor.
+- `metrics.py` includes explicit Math-Verify final-box grading and problem-clustered paired deltas/SE/sign-flips; repeated answers are averaged within problem. This is not automatic multiple-testing/sequential correction, externally timestamped preregistration or semantic decontamination. SFT/menu still use their simpler engineering gates.
+- `patches.py` emits exact-byte sparse **multi-tensor bundles bound to the full before/after model state**, unlike the older target-only format. It verifies all targets before all-or-rollback application and supports exact explicit reversal or temporary use. Integrity is not author authentication, licensing approval or behavioral safety.
+- `benchmarks.py` converts explicit local labelled datasets with receipts and plans a fixed offline external `lm-eval` invocation; execution needs opt-in and a separately installed trusted tool/data. No upstream benchmark result, patched-model export or paper sampling parity is implied.
+
+CLI and MCP expose this same whole-run engine; MCP shares one execution lock for both legacy/research children. General Python execution is deliberately absent, not called a sandbox. Same-process callbacks/libraries/inputs remain trusted; full hashes can detect foreign side effects but cannot undo them. Cooperative limits do not bound in-flight kernels or memory. See [SECURITY.md](../SECURITY.md).
+
+Actual local evidence: the pretrained 135M editor produced two invalid actions, **no useful program**. Separate scripted integration edited 1,152 entries across two tensors, measured 0→0/rejected, restored. Tests also cover a mechanically accepted tiny Torch classifier, explicitly **not** an LLM. Neither establishes a pretrained gain or reproduction of the 27B/math/vision studies.
+
 ## 3. Promotion, rollback and final tests
 
 Domain scores are normalized exact-match fractions. `evaluate_samples` validates prediction cardinality and string types **before** scoring, then returns per-domain counts/scores, macro accuracy and predictions. A candidate needs positive macro-domain gain meeting `improvement_threshold`. For each domain it must remain within `forgetting_threshold` of **both** generation 0 and the latest accepted generation. Missing domains, NaN/Inf, missing loss, zero optimizer steps and checkpoint-export failure cannot promote a candidate. Equality is not progress. The weakest domain is used for diagnosis; all supplied training domains remain in the curriculum.
@@ -85,7 +120,7 @@ The snapshot/exception boundary encloses curriculum construction, training, eval
 
 With `data.test` configured, the selected live model is evaluated on it exactly once after selection completes or the generation budget is exhausted. Test scores do not promote/undo candidates or feed proposals. Training/curriculum failures skip it. A final-test error sets `final_test_failed` and a nonzero CLI exit without erasing the accepted checkpoint; interruption is persisted and reraised. No split is represented as passed when none was configured. Final inference may outlast the cooperative selection budget; external quotas are needed for a hard time limit.
 
-**Statistical limitation:** the built-in gate is a deterministic engineering gate, not a significance test. Reusing validation over generations adapts to it. For scientific claims, use genuinely unseen final data, pre-register comparisons, run multiple seeds, report uncertainty/sample counts and side effects, and compare equal compute. Rerunning while adjusting to final-test results invalidates the intended separation. Public examples are not proof of general intelligence or robust unlearning.
+**Statistical limitation:** the SFT/finite-menu gate is a deterministic engineering gate, not a significance test. Research Lab optionally adds a problem-clustered reserved significance gate, but that is not a correction for repeated session selection. Reusing validation over generations adapts to it. For scientific claims, use genuinely unseen final data, pre-register comparisons, run multiple seeds, report uncertainty/sample counts and side effects, and compare equal compute. Rerunning while adjusting to final-test results invalidates the intended separation. Public examples are not proof of general intelligence or robust unlearning.
 
 ## 4. Optional proposal and intervention surfaces
 

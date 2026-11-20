@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--profile", choices=["core", "llm", "train"], default="core")
+    parser.add_argument("--profile", choices=["core", "llm", "research", "train"], default="core")
     parser.add_argument(
         "--venv",
         default=str(ROOT / ".venv"),
@@ -38,6 +38,8 @@ def main(argv=None):
     extras = ["mcp"]
     if args.profile != "core":
         extras += ["llm", "smoke"]
+    if args.profile == "research":
+        extras += ["math"]
     if args.profile == "train":
         extras += ["train"]
     if args.dev:

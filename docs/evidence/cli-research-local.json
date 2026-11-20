@@ -1,0 +1,18 @@
+{
+  "actions": 16,
+  "base_restored": true,
+  "capability_gain_claimed": false,
+  "changed_entries": 1152,
+  "command": "ouroboros lab run --config examples/research_scripted.json",
+  "editor_mode": "scripted",
+  "final_test_status": "completed",
+  "forward_requests": 10,
+  "is_model_authored": false,
+  "kind": "ouroboros-real-cli-research-smoke",
+  "note": "Real CLI/model forwards on receipt-verified Q4_1-derived SmolLM2-135M. Actions are explicitly scripted, not autonomous model-authored programs. Public/synthetic fixtures, not a capability benchmark.",
+  "reserved_baseline_accuracy": 0.0,
+  "reserved_candidate_accuracy": 0.0,
+  "run_id": "e8944314dcc547b4b20c1b8413762afd",
+  "source_files_unchanged": true,
+  "status": "rejected"
+}

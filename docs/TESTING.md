@@ -29,7 +29,51 @@ ouroboros weights demo
 
 `pytest` runs the full suite; unittest discovery runs the smaller public-API smoke suite. The [CI workflow](../.github/workflows/ci.yml) tests minimal Python 3.10/3.11/3.12 plus a separate Python 3.11 CPU ML job. Remote CI conclusions are distinct from local observations and must be checked before being claimed.
 
-## Local verification performed for 0.4 development
+## Local verification performed for 0.5 research development
+
+On **2026-11-19**, the new tree returned **321 passed** in 10.80 seconds (three expected PEFT warnings), not reused 0.4 results. Unittest compatibility: **14 passed**. Ruff lint/format: **79 Python files**; owned Markdown/research checks: **35 documents / 33 references**. Compile, `pip check`, config/CLI and whitespace checks passed. No pytest case downloads pretrained models/data.
+
+A fresh installer-created **core+MCP environment without Torch/Transformers/PEFT/GGUF/Math-Verify** returned **246 passed, 1 expected optional-grader skip, 74 ML tests deselected**. The research profile was also actually installed into the existing ML environment, including Math-Verify 0.9.0; it did not download a model. The full stack remains Python 3.11.2 / NumPy 2.4.6 / Torch 2.5.1 / Transformers 4.57.6 / PEFT 0.18.1 / Accelerate 1.15.0 / MCP 1.30.0 / GGUF 0.19.0, plus latex2sympy2_extended 1.11.0 / ANTLR runtime 4.13.2 for the explicit math grader. No GPU is available.
+
+New regression coverage includes:
+
+- Strict offline research config, content-bound approvals, boxed Math-Verify grading, cut/open-thinking/repetition handling, matched seeds and problem-clustered SE/exact or Monte Carlo sign flips.
+- Atomic multi-tensor programs, signed/strong projections, vector/higher-rank flat edits, low-rank additions, actual rounded global count/norm/byte limits, numeric coercion/overflow refusal, protected aliases and distinct shared-storage rejection.
+- Exact full-state-bound multi-tensor bundles across FP16/BF16/FP32/FP64, signed zeros, dense snapshot bounds, malformed/rehashed/wrong-state refusal, explicit forward/reverse/temporary application and failure rollback.
+- Frozen editor replies, practice-only feedback (including bounded requested answers), sealed once-only reserved checks, explicit confirm/withdraw, independent base-reset sessions/incumbent selection, final-test ordering, RNG/training-mode/thread restoration and persisted error/interruption states.
+- Actual offline **random Llama** forwards for stochastic generation, hidden/MLP/logprob/attention hooks and bounds/cleanup. These are random fixtures, not pretrained capability evidence.
+- Official SDK/real stdio discovery/calls, 11 read-only defaults, explicit config/data/script approvals, fixed offline children, research/smoke shared-lock exclusion and cancellation cleanup.
+- Explicit local dataset imports/receipts and CLI dispatch; plan-only external evaluation, argument checks, fake-executable success/failure/timeout cleanup. **No real installed lm-eval benchmark** is inferred from a fixture executable.
+
+### Actual pretrained research API, CLI and MCP
+
+The receipt-verified **Q4_1-derived 134,515,008-parameter SmolLM2** was run on the new engine, not just a random fixture:
+
+| Path | Observation |
+| --- | --- |
+| Actual model-authored research | **2 editor generations, 0 valid actions, 2 invalid actions**, stopped at invalid-action budget; no accepted edit |
+| Separately scripted tools | **16 successful actions / 10 forward requests**, hidden/MLP/logprob reads, measured synthetic contrast/writers, multi-layer edit, saved paired tests, no-op/random/layer controls and dose sweep |
+| Actual scripted edit | **1,152 changed entries across two matrices**; reserved accuracy **0.0→0.0**, **rejected**, no bundle |
+| Norm control | Largest relative stored-dtype norm discrepancy **1.8843233596132713e-08** |
+| Full restoration/source checks | True; editor state SHA-256 `6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8` |
+| Real CLI | `lab run --config examples/research_scripted.json` completed the 16 scripted actions, rejected at 0→0, final test completed, source/restoration true |
+| Real official-SDK stdio MCP child | Initialize/list/catalogue/config/run/report-readback passed on the **model-authored** config; again 0 valid / 2 invalid actions, restored/source unchanged |
+
+[API/model evidence](evidence/research-smoke-local.json) · [CLI evidence](evidence/cli-research-local.json) · [MCP evidence](evidence/mcp-research-local.json) · [usage](RESEARCH_LAB.md) · [paper parity/gaps](PAPER_PARITY.md).
+
+The two modes are **not mixed**: no scripted fallback is substituted after the actual model fails. The public exact-match fixture/synthetic contrast is not a scientific capability or causal-discovery benchmark. No pretrained gain, standard benchmark, autonomous useful research policy or 27B/vision/game/paper replication is claimed. Raw invalid replies and full tool observations remain local ignored outputs. Only reviewed small evidence summaries are checked in.
+
+### 0.5 distribution checks
+
+A newly built **0.5 wheel/sdist** passed inventory/source-byte/resource/license checks. A non-editable wheel was installed into a separate environment with **no Torch, Transformers, MCP, GGUF or Math-Verify**, then invoked outside the source checkout. Packaged `init`, research check-only, 18-action catalogue and exact multi-tensor bundle verification passed without heavy imports. `THIRD_PARTY_NOTICES.md` is included in the wheel's license directory; owned guides, examples, tests and small evidence JSON are in the sdist. No weights, GGUF, upstream checkout trees, environments or caches are bundled.
+
+The extracted sdist with no Git/upstream sources returned **233 passed, 4 expected skips** (two missing MCP modules, optional Math-Verify and Git-only release provenance) and **74 ML tests deselected**. Its docs checker passed and explicitly reported omitted upstream references. Dependency consistency passed in the ML, fresh core+MCP and minimal wheel environments. A local test-driver initially used a newer stdlib tar extraction argument unsupported by Python 3.11.2; safe known-archive inventory/path checking fixed that driver, not product code. Builds are **not** PyPI/release publication.
+
+### 0.5 GitHub verification
+
+The updated workflow adds the actual research smoke to the pretrained job, separately reports model-authored/scripted measurements, uploads small research JSON evidence, tests the optional real math grader and keeps Python 3.10/3.11/3.12 core, no-Torch MCP and offline ML coverage. **This section is local verification until a new remote run is explicitly recorded below.** Historical 0.4 CI does not validate the new research tree.
+
+## Historical local verification performed for 0.4 development
 
 On **2026-11-19**, the active implementation returned **249 passed** (3 expected PEFT warnings) in Python 3.11.2 with the tested ML stack plus MCP 1.30.0 and GGUF 0.19.0. A **fresh installer-created core+MCP environment with no Torch/Transformers/PEFT/GGUF returned 212 passed, 37 ML tests deselected**. Unittest compatibility: 14 passed. Ruff lint/format: 58 Python files; owned Markdown/research checks: 32 documents / 33 references. Dependency consistency passed. These counts are new runs, not reused 0.3 evidence.
 
@@ -142,7 +186,7 @@ The wheel's Python modules were checked against source bytes, installed **non-ed
 - No actual EasyEdit ROME/MEMIT run, multi-model mergekit merge or full WeightBench benchmark.
 - No execution of DGM's Docker/API-dependent loop or the optional container policy.
 - No isolation of arbitrary trusted callback writes to other tensors/files; trial ownership is limited to the selected tensor, flags and Torch RNG.
-- No proof that a small serialized patch is cheap in dense RAM/compute, or that target hashes establish full-model identity, author authenticity or licensing rights.
+- No proof that a small serialized patch is cheap in dense RAM/compute. Legacy target hashes do not establish full-model identity; research bundles bind full state but still cannot authenticate authors or licensing rights.
 - No recovery/upload of a missing historical 600 MB payload. Local artifact checks cannot prove remote LFS availability.
 - No claim that an engineering gate replaces pre-registration, multiple seeds, uncertainty, side-effect tests or genuinely unseen final data. Repeated retuning on final results would invalidate its intended role.
 

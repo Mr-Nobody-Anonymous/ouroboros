@@ -1,6 +1,6 @@
 # Numeric inspection and measured weight-edit experiments
 
-This is an explicit experimental path alongside LoRA training. It does **not** reproduce Astra, infer semantics from arbitrary weights, or silently insert weight surgery into every training generation. Version 0.4 also composes these primitives in a [same-model constrained self-edit controller](SELF_EDITING.md), with final-test isolation and accepted-chain reversal; the APIs below remain independently usable.
+This is an explicit experimental path alongside LoRA training. It does **not** reproduce Astra, infer semantics from arbitrary weights, or silently insert weight surgery into every training generation. Version 0.4 also composes these primitives in a [same-model constrained self-edit controller](SELF_EDITING.md), with final-test isolation and accepted-chain reversal; the APIs below remain independently usable. The separate [0.5 Research Lab](RESEARCH_LAB.md) adds a frozen editor, bounded model-generated numeric programs, multi-tensor/activation/control tools, sealed reserved validation and **full-state-bound bundles**. The single-matrix API and target-only patch guarantees below are not silently upgraded to that new format.
 
 ## Inspect a file without loading a model
 

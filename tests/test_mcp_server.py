@@ -31,7 +31,7 @@ def test_default_tools_are_read_only_and_config_check_never_leaks_held_out_conte
     async def check():
         server = create_server(project)
         tools = await server.list_tools()
-        assert len(tools) == 6 and all(t.annotations.readOnlyHint for t in tools)
+        assert len(tools) == 11 and all(t.annotations.readOnlyHint for t in tools)
         assert "run_self_edit" not in {t.name for t in tools}
         status = unpack(await server.call_tool("status", {}))
         assert status["permissions"]["read_only"] and not status["permissions"]["experiments"]
@@ -179,7 +179,7 @@ def test_real_stdio_protocol_initialize_list_and_call_read_only_tools(project):
                 initialized = await session.initialize()
                 assert initialized.serverInfo.name == "Ouroboros"
                 tools = await session.list_tools()
-                assert len(tools.tools) == 6 and all(
+                assert len(tools.tools) == 11 and all(
                     t.annotations.readOnlyHint for t in tools.tools
                 )
                 result = await session.call_tool("status", {})

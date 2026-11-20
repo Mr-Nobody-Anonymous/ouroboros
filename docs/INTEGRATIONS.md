@@ -32,6 +32,14 @@ The independently pinned `simonw/llm-smollm2` distribution was actually cloned a
 
 The optional official Python MCP SDK powers a [stdio server](MCP.md). Read-only tools are default; explicit startup opt-in plus a config allowlist enables fixed-command offline-Hub child experiments. No cloud-app connector, HTTP service, shell tool or arbitrary generated-code executor is implied. Ordinary tests exercise actual MCP protocol initialization/tool calls without model downloads; pretrained smoke is a separately opted-in workflow.
 
+## Paper-inspired research workflow: adapted owned code
+
+The [Research Lab](RESEARCH_LAB.md) unifies the frozen-editor/target protocol, bounded model-authored JSON numerical programs, actual hidden/MLP/logprob/attention reads, multi-layer edits, norm-matched/no-op/layer controls, dose sweeps, saved alternatives, reserved seal/confirm/withdraw, independent sessions and exact full-state-bound bundles. Local dataset imports and a plan-first external benchmark driver are explicit. This is **not full paper parity**: see every feature/disposition in [the audit](PAPER_PARITY.md).
+
+Three relevant trees were actually initialized at their locked commits in this phase: original WSP logs, WeightBench and lm-evaluation-harness. The experiment 8 scripts/protocol/license and harness CLI were inspected; their projection/intervention, final-box grading and separate-evaluation contracts informed owned modules, with [attribution/license scope](../THIRD_PARTY_NOTICES.md). No author script, upstream agent, paid provider or full benchmark was executed. Four other submodules may be absent; no new 12/12 verification is implied.
+
+The real Q4_1-derived 135M model produced **zero valid research actions in two replies**. The separately scripted 16-action integration changed 1,152 entries across two tensors, scored 0→0/rejected, restored. Real CLI and official-SDK stdio MCP execution/readback also succeeded as plumbing; no autonomous circuit discovery, benchmark gain, 27B/vision experiment or arbitrary-Python sandbox is claimed.
+
 ## EasyEdit: explicit call, separate environment
 
 The bridge supports `ROME`, `MEMIT`, `MEND` and `FT` with an installed compatible `easyeditor` package and a real method-specific hyperparameter YAML.
@@ -71,7 +79,7 @@ These are preserved source references, not a single universally compatible insta
 
 ## Independent evaluation
 
-[EleutherAI's harness](../external/lm-evaluation-harness/README.md) supports standard tasks and PEFT adapters. Install it in a separate environment following its README. Provision the corresponding licensed datasets first; normal upstream invocation can otherwise download them. Its evolving CLI is not invoked automatically by the core loop. Consult `lm-eval run -h` / the pinned CLI guide rather than assuming old flags stay unchanged.
+[EleutherAI's harness](../external/lm-evaluation-harness/README.md) supports standard tasks and PEFT adapters. Install it in a separate environment following its README. Provision the corresponding licensed datasets first; normal upstream invocation can otherwise download them. Its evolving CLI is not invoked automatically by the core loop. The explicit `ouroboros lab benchmark` bridge returns a JSON plan by default; `--execute` runs fixed greedy `lm-eval run` arguments with offline flags, new outputs, logs and timeout cleanup. The command boundary was tested with a labelled fixture executable, **not a real installed harness/benchmark run**. It does not pin the executable on PATH, sandbox upstream task code, apply bundles or implement paper sampling parity. Consult `lm-eval run -h` / the reviewed revision before use.
 
 [WeightBench](../external/WeightBench/README.md) supplies an OS-level harness and task registry for weight-space programming. It requires separate setup, sandbox checks, and sometimes external agent/model access. Its 42-task benchmark results are not the same as Ouroboros's unit tests. No WeightBench benchmark run or paid model call was performed in this session.
 

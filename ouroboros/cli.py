@@ -150,6 +150,7 @@ def doctor():
             "mcp",
             "huggingface_hub",
             "gguf",
+            "math_verify",
         )
     }
     lfs = shutil.which("git-lfs") is not None
@@ -169,6 +170,10 @@ def doctor():
             "core": all(packages[name] for name in ("numpy", "yaml", "safetensors")),
             "self_edit": all(packages[name] for name in ("torch", "transformers", "safetensors")),
             "mcp": packages["mcp"],
+            "research_lab": all(
+                packages[name] for name in ("torch", "transformers", "safetensors")
+            ),
+            "boxed_math_grader": packages["math_verify"],
         },
         "install_hints": {
             "self_edit": "python -m pip install -e '.[llm]' -c constraints/ml-tested.txt",
@@ -216,6 +221,50 @@ def parser():
         action="store_true",
         help="Check schema/data without a model load or download",
     )
+    lab = commands.add_parser(
+        "lab", help="Frozen-editor research sessions, instrumented copies and multi-tensor programs"
+    )
+    lab_ops = lab.add_subparsers(dest="lab_operation", required=True)
+    lab_ops.add_parser("tools", help="JSON catalogue of data-only research actions (no model load)")
+    lab_run = lab_ops.add_parser(
+        "run", help="Run configured model-authored or labelled scripted sessions"
+    )
+    lab_run.add_argument("--config", required=True)
+    lab_run.add_argument("--check-only", action="store_true")
+    lab_verify = lab_ops.add_parser(
+        "verify-bundle", help="Verify an accepted full-state-bound patch without Torch"
+    )
+    lab_verify.add_argument("--bundle", required=True)
+    lab_eval = lab_ops.add_parser(
+        "evaluate", help="Explicit independent local reevaluation; always undo patch"
+    )
+    lab_eval.add_argument("--config", required=True)
+    lab_eval.add_argument("--bundle", required=True)
+    lab_eval.add_argument("--split", choices=["validation", "test"], default="test")
+    lab_eval.add_argument("--seed", type=int)
+    lab_import = lab_ops.add_parser(
+        "import-data", help="Convert explicit local math/GSM8K/DeepScaleR rows; never download"
+    )
+    lab_import.add_argument("--input", required=True)
+    lab_import.add_argument("--output-dir", required=True)
+    lab_import.add_argument(
+        "--format", choices=["sample", "math", "gsm8k", "deepscaler"], required=True
+    )
+    lab_import.add_argument("--source", required=True)
+    lab_import.add_argument("--license", required=True)
+    lab_import.add_argument("--domain", default="math")
+    lab_bench = lab_ops.add_parser(
+        "benchmark",
+        help="Plan an offline lm-eval call; execution requires --execute and separate installation",
+    )
+    lab_bench.add_argument("--model-dir", required=True)
+    lab_bench.add_argument("--output-dir", required=True)
+    lab_bench.add_argument("--task", action="append", required=True)
+    lab_bench.add_argument("--limit", type=int, default=100)
+    lab_bench.add_argument("--max-new-tokens", type=int, default=4096)
+    lab_bench.add_argument("--device", default="cpu")
+    lab_bench.add_argument("--timeout-seconds", type=int, default=1800)
+    lab_bench.add_argument("--execute", action="store_true")
     models = commands.add_parser(
         "models", help="Explicit model provisioning or offline checksum verification"
     )
@@ -246,6 +295,12 @@ def parser():
         action="append",
         default=[],
         help="Allowlist one self-edit config; repeat to approve more",
+    )
+    mcp.add_argument(
+        "--lab-config",
+        action="append",
+        default=[],
+        help="Allowlist a research config AND its input data/action bytes",
     )
     mcp.add_argument("--timeout-seconds", type=int, default=600)
     repos = commands.add_parser(
@@ -347,6 +402,59 @@ def main(argv=None):
             from .project import init_project
 
             emit(init_project(args.directory))
+        elif args.command == "lab":
+            if args.lab_operation == "tools":
+                from .lab.tools import capabilities
+
+                emit(capabilities())
+            elif args.lab_operation == "verify-bundle":
+                from .lab.patches import verify_bundle
+
+                emit(verify_bundle(args.bundle))
+            elif args.lab_operation == "import-data":
+                from .lab.benchmarks import import_local_data
+
+                emit(
+                    import_local_data(
+                        args.input,
+                        args.output_dir,
+                        format=args.format,
+                        source=args.source,
+                        license_name=args.license,
+                        domain=args.domain,
+                    )
+                )
+            elif args.lab_operation == "benchmark":
+                from .lab.benchmarks import execute_benchmark
+
+                emit(
+                    execute_benchmark(
+                        args.model_dir,
+                        args.output_dir,
+                        args.task,
+                        allow_execution=args.execute,
+                        timeout=args.timeout_seconds,
+                        limit=args.limit,
+                        device=args.device,
+                        max_new_tokens=args.max_new_tokens,
+                    )
+                )
+            else:
+                from .lab.config import lab_config_summary, load_lab_config
+
+                config = load_lab_config(args.config)
+                if args.lab_operation == "run" and args.check_only:
+                    emit(lab_config_summary(config))
+                else:
+                    from .lab.runner import evaluate_configured_bundle, run_configured_lab
+
+                    emit(
+                        run_configured_lab(config)
+                        if args.lab_operation == "run"
+                        else evaluate_configured_bundle(
+                            config, args.bundle, split=args.split, seed=args.seed
+                        )
+                    )
         elif args.command == "models":
             from .model_files import fetch_model, fetch_smoke_model, verify_model_files
 
@@ -378,6 +486,7 @@ def main(argv=None):
                 args.workspace,
                 allow_experiments=args.allow_experiments,
                 approved_configs=args.config,
+                approved_lab_configs=args.lab_config,
                 timeout_seconds=args.timeout_seconds,
             ).run(transport="stdio")
         elif args.command == "demo":
