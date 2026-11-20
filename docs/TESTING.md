@@ -97,6 +97,23 @@ withheld retention measurement). The worker now returns only its training record
 process; that path is covered by the protocol test that asserts every `followup` is followed
 by an `evaluate` call. A clean real-model rerun is still required before quoting any result.
 
+### Follow-up verification environment
+
+The catalogue/paper-writing follow-up was verified after the sandbox reset, in a
+dependency-light environment (NumPy, safetensors, PyYAML, pytest, Ruff, MCP — **no Torch**):
+
+| Check | Result |
+| --- | --- |
+| Foundation protocol tests (now 34) | **34 passed** |
+| `-m 'not ml'` | **325 passed, 24 expected optional skips, 115 deselected** |
+| Compatibility unittest | **14 passed** |
+| Ruff lint / format, docs checker | Clean; 52 references |
+| Real-model loop tests | **not re-run** — no Torch in this environment |
+
+The **463-test** full-suite figure belongs to the earlier Torch/PEFT environment at `9dc6aa6`
+and is not reused for this follow-up. Nothing about the catalogue change can affect the
+real-model tests, but that is reasoning, not a measurement.
+
 ## Current discovery results and evidence follow-up
 
 The **complete original 360M study has now been reviewed**, not inferred from passing CI:

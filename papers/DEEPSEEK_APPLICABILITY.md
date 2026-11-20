@@ -21,6 +21,19 @@ Machine-readable form (validated by tests, emitted by `ouroboros research deepse
   batched stdout was truncated, and no appendix was read end-to-end — so a mechanism may be
   described here more coarsely than in the paper.
 
+**Where this review lives in the repository.** Each of the 19 repositories has its own
+catalogue entry in [`research.json`](research.json) (with `deepseek_repo`, a review scope and
+an explicit local status), a BibTeX record in [`references.bib`](references.bib), and a row in
+[the research index](PAPERS_INDEX.md). A test
+(`test_every_reviewed_deepseek_repository_is_present_in_the_repo_writing`) fails if a reviewed
+repository lacks a catalogue/bibliography entry or if a listed title is missing from the index,
+so this writing cannot silently drift from the machine-readable matrix.
+
+Upstream **PDFs, extracted text and repository clones are not redistributed**: they were
+reviewed from a temporary, hash-pinned cache and remain under the upstream repositories' own
+licenses (code MIT per `LICENSE-CODE`, model/technical material under the DeepSeek model
+license). Only titles, URLs, mechanism descriptions and local status are recorded here.
+
 **Status vocabulary:** `implemented` (owned code, exercised by tests), `partial` (a bounded
 subset, with listed material differences), `deferred` (understood, no implementation, no
 claim), `not_applicable` (needs an architecture or data regime this loop does not have).
@@ -111,6 +124,30 @@ not exist here; each remains its own paper rather than a relabelled text feature
 V3 multi-token prediction and MoE routing · V2 MLA/KV compression · MoE fine-grained experts ·
 Coder-V2 trillion-token continued pretraining. Each requires retraining from a different
 initialisation, so post-hoc tweaks would be a different experiment wearing the paper's name.
+
+## Per-source map
+
+| Repository | Catalogue id | Local status |
+| --- | --- | --- |
+| DeepSeek-LLM | `deepseek-llm` | partial — schedule/clipping/step bookkeeping only |
+| DeepSeek-Coder | `deepseek-coder` | reference only — no FIM, no repo mining |
+| DeepSeek-Coder-V2 | `deepseek-coder-v2` | reference only — no continued pretraining |
+| DeepSeek-MoE | `deepseek-moe` | not applicable — dense target |
+| DeepSeek-Math | `deepseekmath` | partial — admission screen implemented, GRPO not |
+| DeepSeek-Math-V2 | `deepseek-math-v2` | refused — no learned verifier |
+| DeepSeek-V2 | `deepseek-v2` | not applicable — no MLA |
+| DeepSeek-V3 | `deepseek-v3` | partial — audited step records only |
+| DeepSeek-V3.2-Exp | `deepseek-v3-2-exp` | deferred — no sparse attention |
+| DeepSeek-R1 | `deepseek-r1` | partial — verified distillation, no RL |
+| DeepSeek-Prover-V1.5 | `deepseek-prover-v1-5` | partial shape — exact-answer, not Lean |
+| DeepSeek-Prover-V2 | `deepseek-prover-v2` | deferred — no proof assistant |
+| ESFT | `esft` | refused substitute — dense LoRA is not ESFT |
+| Engram | `engram` | deferred — SQLite ledger is not model memory |
+| DeepSeek-VL | `deepseek-vl` | deferred — no vision stack |
+| DeepSeek-VL2 | `deepseek-vl2` | deferred — no vision stack |
+| Janus | `janus` | deferred — no vision stack |
+| DeepSeek-OCR | `deepseek-ocr` | deferred — no vision stack |
+| DeepSeek-OCR-2 | `deepseek-ocr-2` | deferred — no vision stack |
 
 ## Non-claims
 

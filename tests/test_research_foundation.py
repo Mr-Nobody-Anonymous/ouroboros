@@ -545,3 +545,27 @@ def test_deepseek_matrix_is_source_linked_and_does_not_claim_reproduction():
     assert by_id["deepseekmath-grpo"]["status"] == "partial"
     assert by_id["esft-expert-specialization"]["status"] == "deferred"
     assert by_id["engram-conditional-memory"]["status"] == "deferred"
+
+
+def test_every_reviewed_deepseek_repository_is_present_in_the_repo_writing():
+    """The review must live in the repository's own research writing, not only in a matrix."""
+    from ouroboros.research.applicability import ENTRIES
+
+    root = Path(__file__).resolve().parents[1]
+    catalogue = json.loads((root / "papers/research.json").read_text(encoding="utf-8"))["papers"]
+    mapped = {paper["deepseek_repo"] for paper in catalogue if paper.get("deepseek_repo")}
+    assert mapped == {entry["repo"] for entry in ENTRIES}
+    assert len(mapped) == 19
+    bibliography = (root / "papers/references.bib").read_text(encoding="utf-8")
+    index = (root / "papers/PAPERS_INDEX.md").read_text(encoding="utf-8")
+    for paper in catalogue:
+        if not paper.get("deepseek_repo"):
+            continue
+        assert paper["url"].startswith("https://")
+        assert (root / paper["local_path"]).exists()
+        assert paper["reproduced_here"] is False
+        assert f"@misc{{{paper['id']}," in bibliography
+        assert paper["title"] in index
+    # The paper that introduces GRPO must stay explicitly labelled as unimplemented RL.
+    math = next(paper for paper in catalogue if paper["id"] == "deepseekmath")
+    assert "GRPO is not implemented" in math["summary"]

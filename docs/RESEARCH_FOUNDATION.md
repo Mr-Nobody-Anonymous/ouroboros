@@ -195,16 +195,58 @@ python scripts/run_foundation_fixture.py --workdir outputs/foundation-fixture-01
 constant-answer scaffold, runs the loop, verifies the artifact tree and writes
 `fixture_summary.json` with explicit non-claims.
 
-## Limits
+## Open gaps
 
-- Sequential CPU workers; no distributed training, multi-GPU or multi-agent concurrency.
-- Process separation is not filesystem secrecy: the controller is trusted Python, and a
-  hostile local reader could still see hidden data files.
-- Cooperative budgets are not hard quotas; there is no adversarial model-code sandbox.
-- No architectural/parameter-count intervention, no audited direct weight edit inside this
-  loop, no intermediate checkpoint-selection protocol, and no learned researcher policy.
-- Multimodal, MoE/MLA, sparse-attention and formal-proof features are out of scope and are
-  individually listed, with reasons, in [the DeepSeek matrix](../papers/DEEPSEEK_APPLICABILITY.md).
+Every item below is missing *now*. IDs are stable so the gap register can be cited from
+issues or a changelog entry.
+
+### Scientific (blocking any capability claim)
+
+| ID | Gap |
+| --- | --- |
+| G1 | **No clean pretrained rerun.** The only complete loop uses a random 1M GPT-2 fixture. The earlier pretrained attempt died at the follow-up stage on a now-fixed contract bug; it must be re-run end to end before any real-model statement. |
+| G2 | **No real task data.** The scaffold is eight constant-answer prompt sets in one synthetic domain. A licensed, verified multi-domain dataset with genuinely independent hidden roles is required. |
+| G3 | **No beneficial host control on a pretrained model.** Both discovery studies are negative; a host-designed LoRA/full-SFT recipe that passes strict gates on real data has not been found. |
+| G4 | **No independent model proposal of demonstrated value.** The local proposer path exists but has never produced a proposal that survived training and gating on a real task. |
+| G5 | **No useful autonomous edit** under the full gate chain (validation → reserved → final → robustness → retention). |
+| G6 | **No evidence that experience improves future selection** (milestone E). Posteriors update; the selection policy's superiority has never been predeclared and tested. |
+| G7 | **Two-seed replication only**, one machine, one dataset. Seed-level variance and power at this family correction are not characterized. |
+
+### Engineering (implemented but bounded)
+
+| ID | Gap |
+| --- | --- |
+| G8 | **No OS sandbox.** Workers are subprocesses with offline flags and watchdogs; hidden files, the ledger and the output tree stay readable by any local process. |
+| G9 | **Cooperative budgets only.** Wall/RSS/output-byte/step/export limits are checked by the controller, not enforced by cgroups or quotas. |
+| G10 | **No mid-step resume.** Optimizer/RNG state is exported with `resume_supported: false`; an interrupted run needs a new plan and fresh confirmation. |
+| G11 | **No intermediate checkpoint-selection protocol.** Only the final checkpoint of each run is evaluated; epoch/step selection with its own holdout is unimplemented. |
+| G12 | **No sequence packing**, no gradient accumulation tuning, no mixed precision, no distributed/multi-GPU execution. |
+| G13 | **No architecture or parameter-count intervention** and **no audited direct weight edit** inside this loop (the lab/discovery paths handle weight edits separately, and are not wired to these gates). |
+| G14 | **No learned researcher or bandit policy** — ranking is a transparent posterior/cost heuristic; there is no policy training, no offline evaluation of proposals, no counterfactual logging. |
+| G15 | **No research MCP tools.** The foundation is CLI/API only; MCP exposure would need new approval bindings. |
+| G16 | **Integrity is not authentication.** Hashes detect edits; there is no signing, no external timestamping, no inference replay. |
+| G17 | **Data admission is not decontamination.** The screen covers normalized question n-grams only; answers, semantics and pretraining contamination are explicitly unknown. |
+| G18 | **No retention under extended training.** Retention uses a fixed tiny follow-up SFT, not continued training or meta-learning. |
+
+### Scope (deliberately out)
+
+| ID | Gap |
+| --- | --- |
+| G19 | **RL/GRPO.** No policy-gradient objective, reward model or RL infrastructure; group standardisation is a data-filtering diagnostic. |
+| G20 | **Formal verification.** No Lean/proof-assistant integration, so Prover-style verification is limited to exact-answer matching. |
+| G21 | **Learned verifiers / self-scoring.** Deliberately refused; grading stays exact-answer and host-owned. |
+| G22 | **MoE, MLA, sparse attention, Engram-style model memory, multi-token prediction.** Architecture work, not post-hoc interventions. |
+| G23 | **Multimodal** (VL, VL2, Janus, OCR, OCR-2). No encoders, image data or visual evaluators. |
+| G24 | **Fill-in-the-middle and repository-level code mining.** Completion-style SFT only. |
+| G25 | **Paper-scale reproduction.** No DeepSeek weights, corpora, token counts or reported benchmark numbers are reproduced anywhere in this repository. |
+
+### Evidence hygiene
+
+| ID | Gap |
+| --- | --- |
+| G26 | **Frozen 135M arm remains interrupted** with unverified resident restoration; it was never resumed, and its eighth arm stays incomplete. |
+| G27 | **The CI 360M reruns** execute the protocol on fresh runners; they are not independent replications of the frozen local studies and must not be reported as such. |
+| G28 | **PDF review was partial.** Equations/figures were lost in text extraction and some batched output was truncated, so mechanism descriptions may be coarser than the papers. |
 
 ## Working direction
 
