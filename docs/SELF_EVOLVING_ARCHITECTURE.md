@@ -112,6 +112,57 @@ CLI and MCP expose this same whole-run engine; MCP shares one execution lock for
 
 Initial local evidence: the pretrained 135M editor produced two invalid actions, **no useful program**. Separate scripted integration edited 1,152 entries across two tensors, measured 0→0/rejected, restored. Tests also cover a mechanically accepted tiny Torch classifier, explicitly **not** an LLM. The [editor reliability follow-up](EDITOR_EXPERIMENTS.md) keeps that history separate: with matched initial prompts, schema decoding yielded three valid inventory calls then host `stalled`, versus zero valid commands in four unconstrained replies. Neither authored an edit or gained; real graded-output contrast/refusal checks are explicitly host-driven. No pretrained gain or reproduction of the 27B/math/vision studies is established.
 
+### Hypothesis-driven discovery (opt-in 0.5 profile)
+
+The [discovery protocol](DISCOVERY_EXPERIMENTS.md) subclasses the same engine rather than
+replacing its protected overlays. `discovery_config.py` adds two roles to the three-split
+base: **practice / development / reserved / final / retention**. All five are byte-bound
+for MCP approvals and prompt-disjoint. The packaged 240-example set includes 60 fixed
+GSM8K selections and 180 synthetic diagnostics; it is not the whole benchmark or
+pretraining-decontaminated data.
+
+```text
+practice errors → prospective candidate-bound hypothesis → actual numerical edit
+        ↑                              |                         |
+        +---- measured feedback / revision / explicit rollback <-+
+                                                              |
+                          seal BEFORE development → reserved → confirm/withdraw
+                                                              |
+                        freeze candidate → independent final → fixed follow-up edit
+                                                              |
+                       separate retention questions / full replay and restoration
+```
+
+- `discovery_session.py` provides **25 tools**, including all eight hypothesis/sensitivity/
+  comparison/evaluation/rollback/analysis/record/stop actions. Implicit multi-variant control
+  and sweep actions are absent in this profile: each intervention must have its own
+  hypothesis and audit. The general 19-action lab is unchanged.
+- `sensitivity.py` computes full prompt/reference+EOS completion NLL and opt-in selected-
+  tensor `autograd.grad`, with no optimizer/update or `.grad` accumulation. Actual prompt
+  sampling/template settings, context/allocation checks and exact mode/flag/RNG restoration
+  apply. Host and model gradient conditions are explicitly separate from gradient-free arms.
+- `journal.py` binds hypotheses to starting candidate/practice ids and stores every attempted
+  intervention's complete rounded numerical changes, actual count/norm, validation, paired
+  practice outcomes, gate result and forward/reverse replay. Prediction calibration,
+  partial inspected-gradient alignment, harmful-trial classifications and repeated numerical
+  programs are descriptive, not proof of semantic understanding or durable learning.
+- `retention.py` compares base/candidate/base+fixed-edit/candidate+fixed-edit on a separate
+  split after final selection; category accuracy and lower-is-better NLL retention are
+  different. No accepted edit means useful-edit retention is null, not passed.
+- `controls.py` contains **explicitly HOST-authored** two-dose gradient and matched-random
+  policies issuing the same hypothesis/edit/evaluate/rollback commands; no autonomous
+  fallback. `experiment.py` preregisters two seeds × eleven arms × two checkpoints (44
+  possible submissions), keeps alpha at 0.05/44 even when subsetted, and emits source/data/
+  receipt/config-bound evidence. Actual compute and bound measurement-cache hits are distinct.
+- The staged ablation constrains workflow phases only; the model must still generate all
+  target/operation/numerical choices. Feedback-off archives real results but blocks
+  edited-weight practice feedback. Initial prompts for unconstrained/schema must match.
+
+Development and reserved both require strict macro-accuracy gain, zero category forgetting
+and problem-clustered significance. Loss never promotes; final/retention never rescue or
+reselect rejected edits. This bounded plan is not external preregistration or an adversarial
+process boundary. Within-session revision is not a separately improved editing policy.
+
 ## 3. Promotion, rollback and final tests
 
 Domain scores are normalized exact-match fractions. `evaluate_samples` validates prediction cardinality and string types **before** scoring, then returns per-domain counts/scores, macro accuracy and predictions. A candidate needs positive macro-domain gain meeting `improvement_threshold`. For each domain it must remain within `forgetting_threshold` of **both** generation 0 and the latest accepted generation. Missing domains, NaN/Inf, missing loss, zero optimizer steps and checkpoint-export failure cannot promote a candidate. Equality is not progress. The weakest domain is used for diagnosis; all supplied training domains remain in the curriculum.

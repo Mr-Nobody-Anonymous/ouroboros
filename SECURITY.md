@@ -42,6 +42,32 @@ Research bundles are a **different format** from legacy single-matrix patches: e
 
 The local data importer trusts caller-supplied reference labels and license assertions; it never creates independently verified self-labels. The optional external benchmark driver is **plan-only by default**, never installs code/data and needs `--execute` to run the separately installed `lm-eval` executable. Fixed argument arrays, task-name checks, offline flags, new outputs and process-group timeout cleanup do not make upstream task/library code safe. PATH/executable provenance and any pre-provisioned benchmark data are operator responsibilities. Run upstream tools without secrets in isolated workers; offline environment flags are not a firewall.
 
+## Opt-in discovery: gradients, hidden roles and numerical journals
+
+The [discovery profile](docs/DISCOVERY_EXPERIMENTS.md) exposes 25 bounded data-only actions,
+not arbitrary code. Each edit/restore requires a prospective hypothesis, and all attempted
+interventions/reversals are audited. `inspect_gradients` is explicit **practice-label**
+autograd on one permitted tensor, no optimizer/update or `.grad` accumulation; it is not
+a no-gradient experiment. It can still consume graph/activation memory. Mode/flag/RNG
+restoration and allocation preflights are not hard quotas or adversarial model-code isolation.
+
+Development is irreversibly sealed before its first inference; reserved opens only after
+that gate passes. Final and retention samples never enter the editor context or reselect a
+candidate. Five-role MCP approval binds their bytes, not just the original three files.
+Full held-out measurements remain trusted-host artifacts; a user/host filesystem reader
+can still access the packaged data and raw outputs. **Editor-inaccessible tools/prompts
+are not OS-inaccessible files.** Do not expose the output tree or filesystem to an
+adversarial editor. Feedback-off withholds actual edited-practice outcome fields and blocks
+edited-weight queries; this is a bounded experimental ablation, not information-theoretic
+noninterference or protection against an external client reading archives.
+
+Complete numerical before/after values and raw practice responses may be sensitive. Review
+journals/artifacts before publication. Exact-state measurement caches are in-process only;
+they do not make repeated answers independent samples. A plan's code/data/model hash checks
+can detect a changed input but cannot prevent a trusted concurrent writer or undo arbitrary
+side effects. Fixed subsequent edits and recorded loss reduction certify neither behavioral
+safety nor durable learned self-improvement.
+
 ## Same-model experiments and MCP
 
 The legacy [self-edit controller](docs/SELF_EDITING.md) offers a host-defined, bounded numeric menu to the same target model; it does not execute model-generated programs. Research Lab supports the narrower data-only programs described above, never arbitrary Python. Validation/final-test questions and labels are not put into the proposal prompt. Practice data, model outputs and earlier decision summaries remain untrusted content. A constrained label preference is not proof of semantic weight understanding.

@@ -131,6 +131,7 @@ def summarize(rows):
         "answers": len(rows),
         "accuracy": sum(int(row["correct"]) for row in rows) / len(rows),
         "scores": scores,
+        "domain_counts": {key: len(values) for key, values in sorted(domains.items())},
         "macro_accuracy": sum(scores.values()) / len(scores),
         "cut_share": len(cut) / len(rows),
         "repetitive_share_of_cuts": sum(int(row["repetitive"]) for row in cut) / len(cut)
@@ -225,6 +226,10 @@ def paired_summary(baseline, candidate, *, seed=42, draws=10_000):
             for key, (n, a, b) in cohorts.items()
         },
     }
+    if "loss_records" in baseline and "loss_records" in candidate:
+        result["completion_nll_delta"] = paired_loss_summary(
+            baseline["loss_records"], candidate["loss_records"]
+        )
     if all(len(group["correct"]) == 1 for group in groups.values()):
         discordant = rescued + regressed
         # lgamma avoids constructing giant integers for large external evaluations.
@@ -243,6 +248,37 @@ def paired_summary(baseline, candidate, *, seed=42, draws=10_000):
         )
         result["paired_sign_test_one_sided"] = min(1.0, p)
     return result
+
+
+def paired_loss_summary(before, after):
+    """One teacher-forced loss per PROBLEM (not per repeated stochastic answer)."""
+    if not before or len(before) != len(after):
+        raise ValueError("Equal nonempty loss records required")
+    differences, domains = [], defaultdict(list)
+    for left, right in zip(before, after):
+        if any(left[key] != right[key] for key in ("id", "domain", "tokens")):
+            raise ValueError("Paired completion-loss record mismatch")
+        delta = right["nll"] - left["nll"]
+        if not math.isfinite(delta):
+            raise ValueError("Nonfinite loss difference")
+        differences.append(delta)
+        domains[left["domain"]].append(delta)
+    mean = float(np.mean(differences))
+    se = (
+        float(np.std(differences, ddof=1) / np.sqrt(len(differences)))
+        if len(differences) > 1
+        else None
+    )
+    return {
+        "mean": mean,
+        "standard_error": se,
+        "normal_95_interval": [mean - 1.96 * se, mean + 1.96 * se] if se is not None else None,
+        "by_domain": {key: float(np.mean(values)) for key, values in sorted(domains.items())},
+        "problems": len(differences),
+        "lower_is_better": True,
+        "used_for_promotion": False,
+        "note": "Problem-mean NLL including EOS; teacher forcing is not answer accuracy or task success. Interval is descriptive, not a sequential-testing correction.",
+    }
 
 
 def parse_action(text):

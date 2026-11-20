@@ -158,7 +158,7 @@
       "url": "https://arxiv.org/abs/2611.21885v2",
       "summary": "A 27B model reportedly gains 6.6 accuracy points on held-out math; smaller models abstain or damage themselves. Repeated practice checks are not an untouched final test. v2 dated November 18 was consulted.",
       "local_path": "ouroboros/lab/runner.py",
-      "implementation_status": "schema-constrained-frozen-editor-tools-no-demonstrated-gain",
+      "implementation_status": "hypothesis-driven-closed-loop-profile-no-demonstrated-pretrained-gain",
       "reviewed_on": "2026-11-19",
       "review_scope": "selected-full-text-methods-algorithms-and-appendices-D-E9",
       "reproduced_here": false,
@@ -167,7 +167,15 @@
         "evidence": "docs/evidence/research-interface-local.json",
         "paper_reproduced": false,
         "model_authored_weight_edits_observed": 0,
-        "capability_gain_claimed": false
+        "capability_gain_claimed": false,
+        "discovery": {
+          "guide": "docs/DISCOVERY_EXPERIMENTS.md",
+          "sources": "docs/evidence/discovery-sources.json",
+          "profile": "ouroboros/resources/discovery_lab.json",
+          "pretrained_study_status": "135M running locally; 360M configured on GitHub, not yet verified",
+          "gain_claimed": false,
+          "meta_improvement_claimed": false
+        }
       }
     },
     {

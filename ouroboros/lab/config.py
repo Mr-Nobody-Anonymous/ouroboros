@@ -202,7 +202,7 @@ def load_lab_config(path, *, workspace=None):
     if (
         not isinstance(values, dict)
         or not required <= set(values)
-        or set(values) - required - {"damage"}
+        or set(values) - required - {"damage", "discovery"}
     ):
         raise ValueError("Lab config requires: " + ", ".join(sorted(required)))
     if type(values["schema_version"]) is not int or values["schema_version"] != 1:
@@ -259,6 +259,22 @@ def load_lab_config(path, *, workspace=None):
         splits[name] = rows
         input_hashes[str(data_path)] = file_sha256(data_path)
     dataset = DatasetBundle(splits["train"], splits["validation"], test=splits["test"])
+    discovery = values.get("discovery")
+    if discovery is not None:
+        from .discovery_config import validate_discovery
+
+        if not isinstance(discovery, dict):
+            raise ValueError("discovery must be an object")
+        discovery = dict(discovery)
+        for key in ("development", "retention"):
+            data_path = Path(resolve(discovery.get(key)))
+            if data_path.stat().st_size > 64 * 1024**2:
+                raise ValueError("Discovery data file exceeds 64 MiB")
+            discovery[key] = load_samples(data_path)
+            if any(len(s.instruction) > 32000 or len(s.target) > 4000 for s in discovery[key]):
+                raise ValueError("Discovery data exceeds character limits")
+            input_hashes[str(data_path)] = file_sha256(data_path)
+        discovery = validate_discovery(discovery, dataset, policy)
     damage = values.get("damage")
     if damage is not None:
         keys = {"parameter_name", "first_row", "rows", "std_multiplier", "seed"}
@@ -284,12 +300,16 @@ def load_lab_config(path, *, workspace=None):
         "license_name": values["license"],
         "provenance": values["provenance"],
         "damage": damage,
+        "discovery": discovery,
         "input_hashes": input_hashes,
     }
 
 
 def lab_config_summary(config):
+    from .discovery_config import discovery_summary
+
     return {
+        "discovery": discovery_summary(config.get("discovery")),
         "valid": True,
         "model_loaded": False,
         "network_accessed": False,

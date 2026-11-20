@@ -23,6 +23,9 @@ class BudgetExceeded(RuntimeError):
 
 
 class LabSession:
+    tools = TOOLS
+    terminal_actions = {"confirm", "withdraw"}
+
     def __init__(
         self,
         backend,
@@ -162,9 +165,9 @@ class LabSession:
             if not isinstance(action, dict) or len(json.dumps(action, allow_nan=False)) > 64 * 1024:
                 raise ValueError("Expected an action object <=64 KiB")
             kind = action.get("action")
-            if not isinstance(kind, str) or kind not in TOOLS:
+            if not isinstance(kind, str) or kind not in self.tools:
                 raise ValueError("Unknown research action; use the tool catalogue, not Python")
-            spec = TOOLS[kind]
+            spec = self.tools[kind]
             required = {"action", *spec.get("required", [])}
             allowed = required | set(spec.get("optional", [])) | {"rationale"}
             if not required <= set(action) or set(action) - allowed:
@@ -176,7 +179,7 @@ class LabSession:
                 not isinstance(action["rationale"], str) or len(action["rationale"]) > 2000
             ):
                 raise ValueError("rationale must be a string <=2000 characters")
-            if self.sealed and kind not in ("confirm", "withdraw"):
+            if self.sealed and kind not in self.terminal_actions:
                 raise ValueError(
                     "Reserved check sealed the edit; only confirm or withdraw is permitted"
                 )

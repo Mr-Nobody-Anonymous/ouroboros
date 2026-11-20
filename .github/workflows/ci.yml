@@ -8,6 +8,28 @@ permissions:
   contents: read
 
 jobs:
+  discovery-scope:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.scope.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+      - id: scope
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          # If the comparison is unavailable, run conservatively. Docs-only follow-ups
+          # do not repeat a two-checkpoint study; all ordinary CI still runs.
+          changed=true
+          if git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            if git diff --quiet "$BEFORE" "$GITHUB_SHA" -- ouroboros pyproject.toml constraints .github/workflows/ci.yml scripts/run_discovery_experiment.py scripts/prepare_discovery_data.py; then
+              changed=false
+            fi
+          fi
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
   core:
     runs-on: ubuntu-latest
     strategy:
@@ -26,6 +48,8 @@ jobs:
       - run: ouroboros run --config examples/local_sft.json --check-only
       - run: ouroboros weights trial --config examples/weight_trial.json --check-only
       - run: ouroboros lab tools
+      - run: ouroboros lab tools --discovery
+      - run: ouroboros lab experiment --model-dir missing --workdir outputs/check-only --check-only
       - run: python -m pip check
       - run: python -m build
   local-lora:
@@ -90,4 +114,50 @@ jobs:
             outputs/research-interface/outputs/*/*/lab.json
             outputs/research-smoke/research_summary.json
             outputs/research-smoke/outputs/*/*/lab.json
+          if-no-files-found: warn
+  pretrained-discovery-360m:
+    # Avoid duplicate PR and docs-only runs. A missing comparison runs conservatively.
+    # Every PR still runs all protocol tests and the separate 135M job.
+    needs: discovery-scope
+    if: github.event_name == 'push' && needs.discovery-scope.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        seed: [17, 42]
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_XET: '1'
+      HF_HUB_DOWNLOAD_TIMEOUT: '60'
+      HF_HUB_ETAG_TIMEOUT: '60'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      MALLOC_ARENA_MAX: '2'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - run: python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m pip install -e '.[llm,structured]' -c constraints/ml-tested.txt
+      # Explicit public data-only provisioning. Resolve and hash the checkpoint BEFORE
+      # preregistration/inference; receipt contains the exact immutable revision and files.
+      - name: Provision official 360M Instruct checkpoint
+        run: ouroboros models fetch --repo HuggingFaceTB/SmolLM2-360M-Instruct --directory models/smollm2-360m --max-bytes 2147483648
+        env:
+          HF_HUB_OFFLINE: '0'
+          TRANSFORMERS_OFFLINE: '0'
+      # Two fixed seeds, all controls/ablations, strict unchanged accuracy/retention gates.
+      # A null result passes integrity CI, NEVER the scientific useful-edit milestone.
+      - name: Closed-loop controls and autonomous discovery attempts
+        run: ouroboros lab experiment --model-dir models/smollm2-360m --workdir outputs/discovery-360m-${{ matrix.seed }} --profile 360m --seeds ${{ matrix.seed }}
+      - run: python -m pip check
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: discovery-360m-evidence-${{ matrix.seed }}
+          path: outputs/discovery-360m-${{ matrix.seed }}/**/*.json
           if-no-files-found: warn

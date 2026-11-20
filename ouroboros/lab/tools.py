@@ -117,9 +117,23 @@ OPERATIONS = {
 }
 
 
-def capabilities():
+def capabilities(*, discovery=False):
     from .action_schema import action_schema
 
+    if discovery:
+        from .discovery_session import DiscoverySession
+        from .journal import SUCCESS_LEVELS
+
+        return {
+            "kind": "ouroboros-discovery-tools",
+            "schema_version": 1,
+            "actions": DiscoverySession.tools,
+            "weight_operations": OPERATIONS,
+            "editor_action_schema": action_schema(tools=DiscoverySession.tools),
+            "sealed_action_schema": action_schema(sealed=True, tools=DiscoverySession.tools),
+            "evidence_levels": SUCCESS_LEVELS,
+            "opt_in": "Add a discovery section with separately approved development/retention paths and a fixed followup edit to a lab config. Requires strict significance and zero domain forgetting. Gradients must be explicitly enabled and are not paper-parity/no-gradient runs.",
+        }
     return {
         "kind": "ouroboros-research-tools",
         "schema_version": 2,

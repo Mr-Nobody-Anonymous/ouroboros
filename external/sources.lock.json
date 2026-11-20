@@ -144,5 +144,21 @@
       "integration": "Optional separately installed Transformers prefix decoder, owned closed action schema and independent host checks; no upstream code vendored.",
       "verification_scope": "Cloned/source-inspected in local development; receipt and owned integration tests are preserved. Not a thirteenth preserved source tree; repos sync/verify still cover only sources[]. Upstream test suite not executed."
     }
+  ],
+  "development_data_model_source_reviews": [
+    {
+      "repository": "https://github.com/openai/grade-school-math",
+      "cloned_revision": "3101c7d5072418e28b9008a6636bde82a006892c",
+      "license": "MIT",
+      "integration": "Data-only selection of 60 question/numeric-reference pairs across five fixed roles, no upstream code execution. Disjoint upstream train rows for practice/development/reserved; test rows for final/retention. SHA256-ranked, not performance-selected. Chain-of-thought rationales excluded from emitted role files.",
+      "receipt": "docs/evidence/discovery-sources.json"
+    },
+    {
+      "repository": "https://github.com/Dadhichi-Sarker-Shayon/SmolLM2-360M-GGUF",
+      "cloned_revision": "a3f5ab2509573383064fd986bfff2d912dc4ba39",
+      "license": "Apache-2.0 (source assertion)",
+      "integration": "Reviewed data/conversion provenance and resource requirements. Base checkpoint, not Instruct; no model payload in this GitHub clone and no converter/upstream code executed. The independent CI plan provisions official HuggingFaceTB/SmolLM2-360M-Instruct and records a separate immutable resolved revision/files receipt before inference.",
+      "receipt": "docs/evidence/discovery-sources.json"
+    }
   ]
 }

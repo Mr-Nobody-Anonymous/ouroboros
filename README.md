@@ -4,13 +4,13 @@
 
 <h1 align="center">Ouroboros</h1>
 <p align="center"><strong>A small model. Its own weights. Every edit measured.</strong></p>
-<p align="center">Diagnose → Inspect → Edit → Compare → Keep or Undo</p>
+<p align="center">Diagnose → Hypothesize → Edit → Measure → Keep or Undo</p>
 
 Ouroboros is a local research toolkit for bounded model adaptation. Run a small LLM that **chooses edits to its own weights**, or use the new **frozen-editor Research Lab** for model-authored JSON actions, multi-tensor numerical programs, instrumented reads and controlled experiments. Schema-constrained commands and practice-readiness diagnostics make failures inspectable rather than silently manufacturing success. A separate host measures candidates, rejects plateaus/regressions and records the evidence. No API key or GPU is required for the small CPU quickstart.
 
 **Not magic self-improvement:** generated Python is never executed, the tiny pretrained model has **not** discovered a beneficial research edit, and a completed run can correctly accept **nothing**. LoRA training, replay and reversible patches remain separate, usable paths.
 
-[Research Lab](docs/RESEARCH_LAB.md) · [Paper gap checklist](docs/PAPER_PARITY.md) · [Small-LLM guide](docs/SELF_EDITING.md) · [MCP](docs/MCP.md) · [Test evidence](docs/TESTING.md) · [Research](papers/PAPERS_INDEX.md)
+[Closed-loop discovery](docs/DISCOVERY_EXPERIMENTS.md) · [Research Lab](docs/RESEARCH_LAB.md) · [Paper gaps](docs/PAPER_PARITY.md) · [Small-LLM guide](docs/SELF_EDITING.md) · [MCP](docs/MCP.md) · [Test evidence](docs/TESTING.md) · [Research](papers/PAPERS_INDEX.md)
 
 ## Run a small LLM
 
@@ -76,7 +76,24 @@ ouroboros lab run --config ouroboros-lab/research_lab.json
 
 **Measured follow-up:** with identical initial prompts, unconstrained decoding produced **0 valid commands in 4 replies**; schema decoding produced **3 valid inventory calls in 3 replies**, then stopped as `stalled`. **Neither authored an edit or demonstrated a gain.** Real CLI/MCP and explicitly host-driven contrast/refusal checks passed separately. [Results, evidence and reproduction →](docs/EDITOR_EXPERIMENTS.md)
 
-**Still missing:** a persistent isolated arbitrary-Python kernel, vLLM/tensor-parallel serving, vision/game/Go/diffusion task adapters, and actual 27B/paper/standard-benchmark reproduction. Tests and APIs cannot substitute for those experiments; **full paper parity and capability gains are not claimed**.
+### Closed-loop discovery: test the mechanism before blaming the model
+
+The new **opt-in discovery profile** adds all eight requested tools together: `hypothesize`, `inspect_gradients`, `compare_checkpoints`, `evaluate_candidate`, `rollback`, `analyze_failure`, `record_experiment`, `stop_and_explain`. Every attempted edit has a prospective hypothesis and an exact numerical audit; valid edits get actual paired practice feedback before revision. Gradient assistance is explicit, not disguised as no-gradient paper parity.
+
+```bash
+# A NEW scaffold, including the broader evaluation and its upstream license:
+ouroboros init ouroboros-discovery --discovery
+# Reuse the receipt-verified model from the quickstart above:
+ouroboros lab tools --discovery
+ouroboros lab experiment --model-dir ouroboros-lab/models/smollm2 \
+  --data-dir ouroboros-discovery/discovery --workdir outputs/discovery-135m-01 --profile 135m
+```
+
+The fixed study has **240 examples / four categories**, including 60 independently authored GSM8K problems, **two seeds / eleven control-and-ablation arms**. No-edit, host-directed, matched-random and actual model-authored runs remain separate. Development seals before its first look, reserved independently confirms, final never reselects, and retention tests a fixed subsequent edit. A conservative **44-submission family correction**, strict accuracy gain and zero per-category forgetting stay in force. Lower loss or valid JSON cannot qualify as a useful autonomous edit.
+
+**Current status:** a real hand-designed neural-classifier positive control and **412 local tests** pass; those are not pretrained gains. The source-bound **135M study is running locally** and an original **360M Instruct study is configured for GitHub**, not yet verified here. Full model results, including negative outcomes, are separate from infrastructure checks. [Protocol, audit fields, controls, limitations and reproduction →](docs/DISCOVERY_EXPERIMENTS.md)
+
+**Still missing:** a validated beneficial autonomous pretrained edit unless its actual gates pass; learned improvement of future self-improvement; extended-training retention; a persistent isolated arbitrary-Python kernel; vLLM/tensor-parallel serving; vision/game/Go/diffusion adapters; and actual 27B/paper/full-standard-benchmark reproduction. **Full paper parity and capability gains are not claimed.**
 
 ## Use it from an agent: MCP
 
@@ -119,7 +136,8 @@ ouroboros run --config examples/local_sft.json
 | Surface | What is implemented |
 | --- | --- |
 | Same-model smoke | Constrained model-selected trials, strict measured gates, reversible accepted chains; still a finite menu |
-| Research Lab | Frozen editor, model-generated closed-language programs, multi-tensor tools/controls, sealed checks, independent sessions and final test; optional schema-constrained commands and graded practice diagnostics, not guaranteed useful edits |
+| Research Lab | Frozen editor, model-generated closed-language programs, multi-tensor tools/controls, sealed checks, independent sessions and final test; optional schema-constrained commands and graded practice diagnostics |
+| Discovery profile | Prospective hypotheses, actual iterative feedback, opt-in gradients, full attempted-edit ledger/replay, matched host/random controls, five-role broader data, final/retention probes; no guaranteed useful edit or learned meta-improvement |
 | Local SFT | Completion-masked Transformers/PEFT LoRA, replay anchors, original/latest retention and adapter rollback; GPU QLoRA untested |
 | Weight tools | Bounded inspection, one-matrix trials plus atomic research programs and exact target-/full-state-bound sparse bundles |
 | Agent access | JSON CLI, packaged `init`, dependency doctor, read-only-default stdio MCP, explicitly allowlisted execution |
@@ -155,7 +173,7 @@ python scripts/run_pretrained_smoke.py --workdir outputs/pretrained-smoke --fetc
 python scripts/run_research_smoke.py --workdir outputs/research-smoke --model-dir outputs/pretrained-smoke/models/smollm2
 ```
 
-**Current follow-up verification:** **390 local tests passed**; a fresh no-Torch core+MCP install passed **274**, with 24 explicit optional skips and 92 ML tests deselected. The complete implementation passed **all six GitHub jobs on both push and PR**, including actual pretrained comparison execution. Real paired/CLI/MCP/contrast measurements remain separate from unit fixtures. [CI](.github/workflows/ci.yml) separates Python 3.10/3.11/3.12 core, offline ML/math/structured generation, MCP protocol and pretrained execution. See [testing](docs/TESTING.md) for current distribution/remote status, exact commits/run links and historical results—not an assumption that an earlier green run validates later edits.
+**Previous completed follow-up:** **390 local tests passed**; a fresh no-Torch core+MCP install passed **274**, with 24 explicit optional skips and 92 ML tests deselected. That implementation passed **all six GitHub jobs on both push and PR**, including actual pretrained comparison execution. **New discovery implementation:** **412 local tests passed**; its larger pretrained studies are still in progress/configured, not covered by those older green runs. Real paired/CLI/MCP/contrast measurements remain separate from unit fixtures. [CI](.github/workflows/ci.yml) separates Python 3.10/3.11/3.12 core, offline ML/math/structured generation, MCP protocol and pretrained execution. See [testing](docs/TESTING.md) for current distribution/remote status, exact commits/run links and historical results—not an assumption that an earlier green run validates later edits.
 
 ## Storage, releases, and license
 

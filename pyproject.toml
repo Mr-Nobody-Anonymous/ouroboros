@@ -36,7 +36,7 @@ include = ["ouroboros*"]
 exclude = ["external*", "tests*"]
 
 [tool.setuptools.package-data]
-"ouroboros.resources" = ["*.json"]
+"ouroboros.resources" = ["*.json", "discovery/*.json", "discovery/*.txt"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -176,11 +176,11 @@ def create_server(
         return _report(root, report)
 
     @server.tool(annotations=read_only)
-    def research_tools() -> dict:
-        """Research action/operation catalogue and explicit gaps; no model load or execution."""
+    def research_tools(discovery: bool = False) -> dict:
+        """Research/discovery action catalogue and explicit gaps; no model load or execution."""
         from .lab.tools import capabilities
 
-        return capabilities()
+        return capabilities(discovery=discovery)
 
     @server.tool(annotations=read_only)
     def check_lab_config(config: str) -> dict:

@@ -215,6 +215,11 @@ def parser():
         "init", help="Create a small self-edit project; never overwrite files"
     )
     init.add_argument("directory", nargs="?", default="ouroboros-lab")
+    init.add_argument(
+        "--discovery",
+        action="store_true",
+        help="Also copy the broader five-role discovery evaluation, license and strict config",
+    )
     self_edit = commands.add_parser(
         "self-edit", help="Same local model selects bounded edits to its own weights"
     )
@@ -228,12 +233,26 @@ def parser():
         "lab", help="Frozen-editor research sessions, instrumented copies and multi-tensor programs"
     )
     lab_ops = lab.add_subparsers(dest="lab_operation", required=True)
-    lab_ops.add_parser("tools", help="JSON catalogue of data-only research actions (no model load)")
+    lab_tools = lab_ops.add_parser(
+        "tools", help="JSON catalogue of data-only research actions (no model load)"
+    )
+    lab_tools.add_argument(
+        "--discovery",
+        action="store_true",
+        help="Hypothesis/audit/gradient-access/retention profile",
+    )
     lab_run = lab_ops.add_parser(
         "run", help="Run configured model-authored or labelled scripted sessions"
     )
     lab_run.add_argument("--config", required=True)
     lab_run.add_argument("--check-only", action="store_true")
+    lab_experiment = lab_ops.add_parser(
+        "experiment",
+        help="Plan-first discovery controls/ablations on a receipt-verified local checkpoint",
+    )
+    from .lab.experiment import add_arguments
+
+    add_arguments(lab_experiment)
     lab_diagnose = lab_ops.add_parser(
         "diagnose",
         help="Measure practice readiness only; never generate reserved/final answers or edits",
@@ -410,12 +429,16 @@ def main(argv=None):
         elif args.command == "init":
             from .project import init_project
 
-            emit(init_project(args.directory))
+            emit(init_project(args.directory, discovery=args.discovery))
         elif args.command == "lab":
             if args.lab_operation == "tools":
                 from .lab.tools import capabilities
 
-                emit(capabilities())
+                emit(capabilities(discovery=args.discovery))
+            elif args.lab_operation == "experiment":
+                from .lab.experiment import run_experiment
+
+                emit(run_experiment(args))
             elif args.lab_operation == "verify-bundle":
                 from .lab.patches import verify_bundle
 

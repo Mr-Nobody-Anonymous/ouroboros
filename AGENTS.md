@@ -58,6 +58,17 @@ Core dependencies include NumPy, PyYAML and safetensors, **not Torch**. `pip ins
 - `lab import-data` requires explicit local reference-labelled data and source/license assertions; it does not verify them independently. `lab benchmark` is a plan-first offline command bridge to a separately installed trusted `lm-eval`, not an installed/reproduced benchmark or patched-model exporter.
 - MCP has 11 read-only tools by default. Research execution needs opt-in plus `--lab-config`; approval binds config/data/script bytes. Smoke/research children share one lock. No generic shell, notebook, arbitrary mutation or hidden-label file tool.
 
+## Discovery contract (opt-in research profile)
+
+- Read docs/DISCOVERY_EXPERIMENTS.md. `init --discovery`, `lab tools --discovery` and `lab experiment` provide the broader five-role profile; the original lab remains 19 actions, discovery has 25. All eight hypothesis/gradient/compare/evaluate/rollback/analyze/record/stop tools are included. An implicit sweep/control cannot bypass fresh per-edit hypotheses/audits.
+- Keep command validity, actual nonempty edit validity, strict useful accuracy gain, unseen generalization, post-intervention retention and improved future editing ability separate. Lower loss, passing tests, valid queries or host-authored controls are not autonomous capability gains.
+- Practice→candidate-bound prospective hypothesis→actual numerical edit→real feedback→revision/rollback is adaptive; development seals before inference, reserved independently confirms, final/retention never reselect. Preserve strict significance/zero-domain-forgetting rules. The 44-submission family remains alpha 0.05/44 even when running subsets.
+- `inspect_gradients` is explicit gradient assistance, never paper-parity gradient-free discovery. Host positive/random policies emit the SAME audited tools and must never substitute for failed model choices. Staged workflow constrains phases only, not model numerical decisions.
+- Every attempted edit needs complete actual rounded before/after values/indices, tensor/base hashes, count/norm, validation, practice outcomes, gate results and replay/restoration. Failed/noop trials remain. A cache hit is not new inference or independent replication; record actual sequence/NLL counts separately.
+- The five-role 240-example data include 60 fixed GSM8K selections with upstream MIT notice and row/byte hashes. Preserve the manifest, source/licensing attribution and exact grader. Do not call it full GSM8K or pretraining-decontaminated. MCP approvals bind all five roles.
+- Freeze code/data/model/config before model loading. Do not change source under a running study: the driver will refuse the next arm. Never overwrite, silently resume or retarget a preregistered experiment. Preserve interrupted evidence and start a newly named study for a changed protocol.
+- Useful-edit retention is null when no useful edit was accepted; four-cell baseline/diagnostic perturbations do not change that. A fixed small follow-up edit is not extended training. Within-context revision is not a new trained editing-policy checkpoint.
+
 ## Map
 
 - ouroboros/self_edit.py, model_files.py, project.py, resources/: same-model controller, explicit model provisioning and installed-package quickstart fixtures.

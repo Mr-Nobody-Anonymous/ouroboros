@@ -70,6 +70,10 @@ def _editor_prompt(backend, session, diagnosis, history, editor, damaged):
         },
         "notes": session.notes,
     }
+    if hasattr(session, "discovery"):
+        from .discovery_prompt import discovery_task
+
+        task = discovery_task(session, diagnosis_preview(diagnosis))
     if damaged:
         task["damage_note"] = (
             "All original reads/tests refer to the damaged target. Its damage location/method and the clean editor weights are unavailable through tools."
@@ -101,14 +105,15 @@ def _editor_prompt(backend, session, diagnosis, history, editor, damaged):
         )
 
 
-def _repair_feedback(action, *, sealed=False):
+def _repair_feedback(action, *, sealed=False, tools=None):
+    tools = TOOLS if tools is None else tools
     kind = action.get("action") if isinstance(action, dict) else None
-    spec = TOOLS.get(kind)
+    spec = tools.get(kind)
     return {
         "instruction": "Repair the error with ONE complete JSON action object. No prose, Python, extra keys or partial JSON. This retry consumes the same finite turn/invalid-action budget.",
         "required_fields": ["action", *spec.get("required", [])] if spec else ["action"],
         "optional_fields": [*spec.get("optional", []), "rationale"] if spec else [],
-        "valid_actions": ["confirm", "withdraw"] if sealed else list(TOOLS),
+        "valid_actions": ["confirm", "withdraw"] if sealed else list(tools),
         "minimal_example": {"action": "withdraw"},
     }
 
@@ -155,6 +160,9 @@ def run_lab(
     license_name,
     damage=None,
     source=None,
+    discovery=None,
+    controller=None,
+    measurement_cache=None,
 ):
     """Integrated research workflow. Scripted edits are labelled, never called model-authored.
 
@@ -175,11 +183,26 @@ def run_lab(
     if sum(p.numel() for p in backend.model.parameters()) > policy.max_model_parameters:
         raise ValueError("Loaded model exceeds configured parameter budget")
     editor = normalize_editor(editor)
+    if discovery is not None:
+        from .discovery_config import validate_discovery
+        from .discovery_session import DiscoverySession
+
+        discovery = validate_discovery(discovery, dataset, policy)
+    if controller is not None and (
+        editor["mode"] != "scripted" or actions is not None or not callable(controller)
+    ):
+        raise ValueError(
+            "A trusted host controller must be explicitly scripted, callable and have no action-file fallback"
+        )
     if editor["mode"] == "model" and editor["decoding"] == "json_schema":
         require_structured_decoder()
     if (
         editor["mode"] not in ("model", "scripted")
-        or (editor["mode"] == "scripted" and (not isinstance(actions, list) or not actions))
+        or (
+            editor["mode"] == "scripted"
+            and controller is None
+            and (not isinstance(actions, list) or not actions)
+        )
         or (editor["mode"] == "model" and actions is not None)
     ):
         raise ValueError("Choose an actual model editor or explicitly labelled scripted actions")
@@ -208,6 +231,7 @@ def run_lab(
         if editor["decoding"] == "json_schema"
         else None,
         "model_authored_actions": editor["mode"] == "model",
+        "host_controller": type(controller).__name__ if controller is not None else None,
         "frozen_editor": True,
         "editor_state_sha256": before,
         "base_restored": False,
@@ -234,15 +258,32 @@ def run_lab(
         dataset,
         directory,
     )
+    if discovery is not None:
+        from .discovery_config import discovery_summary
+        from .journal import SUCCESS_LEVELS
+
+        report["discovery"] = discovery_summary(discovery)
+        report["evidence_levels"] = SUCCESS_LEVELS
+        report["evaluation_plan"]["discovery"] = report["discovery"]
+        atomic_json(
+            report["evaluation_plan"]["path"],
+            {
+                key: value
+                for key, value in report["evaluation_plan"].items()
+                if key not in ("path", "sha256")
+            },
+        )
+        report["evaluation_plan"]["sha256"] = file_sha256(report["evaluation_plan"]["path"])
     atomic_json(report_path, report)
     incumbent, previous_scores, reserved_baseline = {}, None, None
     final_started = False
+    session = session_dir = None
     try:
         torch.set_num_threads(policy.cpu_threads)
         with frozen_eval(backend.model):
             for session_index in range(policy.max_sessions):
                 copy = WorkingCopy(backend.model, policy, initial=initial)
-                session = LabSession(
+                session = (DiscoverySession if discovery is not None else LabSession)(
                     backend,
                     copy,
                     dataset,
@@ -250,6 +291,11 @@ def run_lab(
                     grader=grader,
                     previous_scores=previous_scores,
                     reserved_baseline=reserved_baseline,
+                    **(
+                        {"discovery": discovery, "measurement_cache": measurement_cache}
+                        if discovery is not None
+                        else {}
+                    ),
                 )
                 session_dir = directory / f"session_{session_index + 1:02d}"
                 session_dir.mkdir()
@@ -284,7 +330,11 @@ def run_lab(
                     raw_reply, action, prompt, generation = None, None, None, None
                     try:
                         session._check()
-                        if editor["mode"] == "scripted":
+                        if controller is not None:
+                            action = controller(
+                                session, turn, history[-1]["observation"] if history else None
+                            )
+                        elif editor["mode"] == "scripted":
                             if turn >= len(actions):
                                 record["status"] = "script_exhausted"
                                 break
@@ -308,7 +358,9 @@ def run_lab(
                             options = (
                                 {
                                     "json_schema": action_schema(
-                                        sealed=session.sealed, context=session.schema_context()
+                                        sealed=session.sealed,
+                                        context=session.schema_context(),
+                                        tools=session.tools,
                                     )
                                 }
                                 if editor["decoding"] == "json_schema"
@@ -351,6 +403,11 @@ def run_lab(
                             "test",
                             "control",
                             "notes",
+                            "inspect_gradients",
+                            "compare_checkpoints",
+                            "evaluate_candidate",
+                            "analyze_failure",
+                            "record_experiment",
                         }
                         query = (
                             json.dumps(
@@ -396,7 +453,15 @@ def run_lab(
                         observation = {
                             "error": f"{type(exc).__name__}: {exc}",
                             "counters": session.counters(),
-                            "repair": _repair_feedback(action, sealed=session.sealed),
+                            "repair": _repair_feedback(
+                                action,
+                                sealed=session.sealed,
+                                tools={
+                                    name: spec
+                                    for name, spec in session.tools.items()
+                                    if discovery is None or name in session.available_actions()
+                                },
+                            ),
                         }
                         event = {
                             "turn": turn + 1,
@@ -421,10 +486,21 @@ def run_lab(
                         artifact=str(path.relative_to(directory)), artifact_sha256=file_sha256(path)
                     )
                     record["events"].append(event)
-                    history.append(
-                        {"action": _preview(action), "observation": _preview(observation)}
+                    visible = (
+                        session.editor_observation(observation)
+                        if discovery is not None
+                        else observation
                     )
+                    history.append({"action": _preview(action), "observation": _preview(visible)})
                     record["counters"] = session.counters()
+                    if discovery is not None:
+                        journal_path = session_dir / "edit_journal.json"
+                        atomic_json(journal_path, session.journal())
+                        record["edit_journal"] = {
+                            "path": str(journal_path),
+                            "sha256": file_sha256(journal_path),
+                            "adaptive_summary": session.journal()["adaptive_summary"],
+                        }
                     atomic_json(report_path, report)
                     if session.done or record["status"] in ("stalled", "budget_exhausted"):
                         break
@@ -438,9 +514,17 @@ def run_lab(
                     record["reserved_check"] = {
                         key: value for key, value in session.pending.items() if key != "measurement"
                     }
+                    if "measurement" in session.pending:
+                        atomic_json(
+                            session_dir / "reserved_measurement.json",
+                            session.pending["measurement"],
+                        )
+                if discovery is not None and session.development_measurement is not None:
                     atomic_json(
-                        session_dir / "reserved_measurement.json", session.pending["measurement"]
+                        session_dir / "development_measurement.json",
+                        session.development_measurement,
                     )
+                    record["development_check"] = session.development_check
                 if session.decision == "accepted":
                     record["patch"] = export_bundle(
                         copy,
@@ -457,9 +541,27 @@ def run_lab(
             # Freeze winner before opening final-test inference. Never return final feedback to editor.
             final_copy = WorkingCopy(backend.model, policy, initial=initial)
             final_copy.candidate = incumbent
-            final_session = LabSession(
-                backend, final_copy, dataset, sampling=sampling, grader=grader
+            final_session = (DiscoverySession if discovery is not None else LabSession)(
+                backend,
+                final_copy,
+                dataset,
+                sampling=sampling,
+                grader=grader,
+                **(
+                    {"discovery": discovery, "measurement_cache": measurement_cache}
+                    if discovery is not None
+                    else {}
+                ),
             )
+            terminal = dict(session.last_proposal) if discovery is not None else {}
+            if discovery is not None:
+                from .journal import candidate_hash
+
+                report["frozen_candidates_before_final"] = {
+                    "selected": candidate_hash(incumbent),
+                    "terminal_diagnostic": candidate_hash(terminal),
+                    "diagnostic_not_eligible_by_default": True,
+                }
             final_started = True
             report["final_test"] = {
                 "status": "running",
@@ -481,8 +583,41 @@ def run_lab(
                 if incumbent
                 else baseline
             )
+            terminal_measurement = None
+            if discovery is not None and terminal:
+                terminal_measurement = (
+                    candidate
+                    if candidate_hash(terminal) == candidate_hash(incumbent)
+                    else final_session.measure(
+                        dataset.test,
+                        terminal,
+                        seed=policy.test_seed,
+                        repeats=policy.test_samples_per_problem,
+                    )
+                )
+                report["terminal_candidate_test"] = {
+                    "used_for_promotion": False,
+                    "not_selected_from_final": True,
+                    "paired": paired_summary(
+                        baseline,
+                        terminal_measurement,
+                        seed=policy.test_seed,
+                        draws=policy.permutation_draws,
+                    ),
+                }
             path = directory / "final_measurement.json"
-            atomic_json(path, {"baseline": baseline, "candidate": candidate})
+            atomic_json(
+                path,
+                {
+                    "baseline": baseline,
+                    "candidate": candidate,
+                    **(
+                        {"terminal_diagnostic": terminal_measurement}
+                        if discovery is not None
+                        else {}
+                    ),
+                },
+            )
             report["final_test"].update(
                 status="completed",
                 candidate_is_baseline=not bool(incumbent),
@@ -493,6 +628,31 @@ def run_lab(
                 artifact_sha256=file_sha256(path),
                 generated_sequences=final_session.generated_sequences,
             )
+            if discovery is not None:
+                from .retention import final_assessment, retention_probe
+
+                report["final_test"]["generalization_assessment"] = final_assessment(
+                    report["final_test"]["paired"], policy
+                )
+                retained = retention_probe(
+                    final_session,
+                    incumbent or terminal,
+                    candidate_kind="accepted"
+                    if incumbent
+                    else "terminal_diagnostic"
+                    if terminal
+                    else "baseline_no_edit",
+                )
+                retention_path = directory / "retention_measurement.json"
+                atomic_json(retention_path, retained)
+                report["retention"] = {
+                    key: value
+                    for key, value in retained.items()
+                    if key not in ("measurement", "changes", "subsequent_only_changes")
+                }
+                report["retention"].update(
+                    artifact=str(retention_path), artifact_sha256=file_sha256(retention_path)
+                )
             report["status"] = "completed"
     except BaseException as exc:
         report.update(
@@ -510,6 +670,15 @@ def run_lab(
         random.setstate(python_rng)
         np.random.set_state(numpy_rng)
         torch.set_num_threads(original_threads)
+        if discovery is not None and session is not None and session_dir is not None:
+            journal_path = session_dir / "edit_journal.json"
+            atomic_json(journal_path, session.journal())
+            if report["sessions"]:
+                report["sessions"][-1]["edit_journal"] = {
+                    "path": str(journal_path),
+                    "sha256": file_sha256(journal_path),
+                    "adaptive_summary": session.journal()["adaptive_summary"],
+                }
         report["base_restored"] = model_fingerprint(backend.model) == before
         files = getattr(backend, "base_model_files", None)
         if files is not None:
@@ -650,6 +819,7 @@ def run_configured_lab(config):
         license_name=config["license_name"],
         damage=config["damage"],
         source=source,
+        discovery=config.get("discovery"),
     )
 
 

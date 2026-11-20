@@ -40,7 +40,7 @@ Stdout belongs exclusively to the protocol; errors/logging go to stderr. `status
 | `verify_patch(patch)` | Bounded data-only patch verification; never applies/reverses it |
 | `list_self_edit_reports(directory="outputs/self-edit")` | At most 100 immediate run-report paths, with a bounded directory scan; not a generic filesystem browser |
 | `read_self_edit_report(report)` | A `self_edit.json` of the expected kind, at most 1 MiB; not arbitrary file reading |
-| `research_tools()` | The 19-action/7-operation research catalogue (including structural JSON schemas), required fields, formulae and explicit gaps; no model load |
+| `research_tools(discovery=false)` | The 19-action/7-operation research catalogue; with `discovery=true`, the 25-action hypothesis-driven catalogue including all eight new tools. Structural schemas/fields/formulae/gaps; no model load |
 | `check_lab_config(config)` | Research schema/split/fingerprint/settings check; no reserved/final questions/labels or damage location returned |
 | `verify_edit_bundle(bundle)` | Data-only full-state-bound multi-tensor bundle verification; never applies it |
 | `list_lab_reports(directory="outputs/research")` | At most 100 immediate `lab.json` paths; no raw observation/held-out file browsing |
@@ -67,7 +67,7 @@ First use the [self-edit quickstart](SELF_EDITING.md) to create a project and pr
 }
 ```
 
-Both `--allow-experiments` **and** at least one `--config` (smoke) or `--lab-config` (research) are required. Repeat either flag to approve more files. Startup validates every config's path/schema/data boundaries. Smoke approvals record the config hash; research approvals bind config, all three dataset files and any scripted-action file bytes. Changed approved inputs must be reviewed and reapproved by restarting the server. A client cannot enable execution, invent a new approved path, or change limits through tool parameters.
+Both `--allow-experiments` **and** at least one `--config` (smoke) or `--lab-config` (research) are required. Repeat either flag to approve more files. Startup validates every config's path/schema/data boundaries. Smoke approvals record the config hash; research approvals bind config, all three dataset files (all **five** roles for the [discovery profile](DISCOVERY_EXPERIMENTS.md)) and any scripted-action file bytes. Changed approved inputs must be reviewed and reapproved by restarting the server. A client cannot enable execution, invent a new approved path, or change limits through tool parameters.
 
 An additional tool becomes available:
 

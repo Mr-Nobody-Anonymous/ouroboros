@@ -35,7 +35,7 @@ def _enum(*values):
     return {"type": "string", "enum": list(values)}
 
 
-def action_schema(*, sealed=False, context=None):
+def action_schema(*, sealed=False, context=None, tools=None):
     """A bounded structural subset of the public language. Never bypass host validation.
 
     Array limits keep generated commands practical; the Python/scripted API can supply larger
@@ -78,6 +78,8 @@ def action_schema(*, sealed=False, context=None):
     }
     operations = []
     for kind, spec in OPERATIONS.items():
+        if context.get("operation_scope") == "sparse" and kind not in ("set_entries", "add"):
+            continue
         fields = spec["required"] + spec.get("optional", [])
         operations.append(
             _object(
@@ -119,12 +121,43 @@ def action_schema(*, sealed=False, context=None):
             high=4,
         ),
         "text": text,
+        "problem": _string(600),
+        "targets": _array(name, high=context.get("max_edit_tensors", 8)),
+        "reason": _string(600),
+        "metric": _enum("accuracy", "nll"),
+        "expected_delta": {"type": "number", "minimum": -100, "maximum": 1},
+        "falsification": _string(600),
+        "hypothesis_id": choices(context.get("unused_hypotheses", []), _string(32)),
+        "left": _enum("original", "edited", *context.get("saved", [])),
+        "right": _enum("original", "edited", *context.get("saved", [])),
+        "to": _enum("previous", "original"),
+        "experiment_id": choices(context.get("experiments", []), _string(32)),
+        "assessment": _enum("helpful", "harmful", "unchanged", "unmeasured"),
+        "evidence": _string(600),
+        "revision": _string(600),
+        "summary": _string(600),
     }
     actions = []
-    for kind, spec in TOOLS.items():
-        if sealed and kind not in ("confirm", "withdraw"):
+    for kind, spec in (TOOLS if tools is None else tools).items():
+        if "allowed_actions" in context and kind not in context["allowed_actions"]:
+            continue
+        if sealed and kind not in ("confirm", "withdraw", "stop_and_explain"):
             continue
         if not sealed and kind == "confirm":
+            continue
+        if (
+            "unused_hypotheses" in context
+            and kind in ("edit", "restore")
+            and not context["unused_hypotheses"]
+        ):
+            continue
+        if (
+            "experiments" in context
+            and kind in ("analyze_failure", "record_experiment")
+            and not context["experiments"]
+        ):
+            continue
+        if kind == "inspect_gradients" and context.get("gradient_access") is False:
             continue
         if kind == "writers" and known_directions == []:
             continue

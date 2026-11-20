@@ -4,6 +4,17 @@ This is the integrated **0.5 development** research workflow, not a renaming of 
 
 **Start with the [paper gap checklist](PAPER_PARITY.md).** These tools cover many missing engineering surfaces, not complete paper parity, an OS sandbox or reproduced benchmark gains. The initial unconstrained tiny pretrained run produced **zero valid actions**; the separately scripted integration was rejected. The [editor/experiment follow-up](EDITOR_EXPERIMENTS.md) adds constrained commands, better feedback and a separate measured comparison—not a host-written success. The historical negative result remains recorded.
 
+## New: closed-loop discovery profile
+
+Use **[the discovery guide](DISCOVERY_EXPERIMENTS.md)** for `init --discovery`, the
+240-example/five-role evaluation, eleven matched controls/ablations and two seeds. The
+opt-in profile adds all eight hypothesis/gradient/compare/evaluate/rollback/analyze/record/
+stop tools together, a complete attempted-edit numerical journal and fixed subsequent-edit
+retention. Development seals before its first look; independent reserved accuracy must also
+improve. Loss cannot promote. Host-directed controls, model-authored commands and learned
+future self-improvement remain separate evidence levels. It reuses the same protected
+numerical engine; the general lab below keeps its original 19 actions and three roles.
+
 ## 1. Install and run the model-driven starter
 
 Use the active branch linked in the [README](../README.md); it is not on the historical default branch/release yet. Python 3.10–3.12, Git and several GB of RAM/disk are recommended for the tested small CPU model.
@@ -30,7 +41,7 @@ Check-only validates the JSON schema, split boundaries and limits **without impo
 
 ## 2. Configuration and budgets
 
-`init` creates [`research_lab.json`](../ouroboros/resources/research_lab.json). Paths resolve relative to the config file, not your current shell. Required top-level fields are `schema_version`, `model`, `policy`, `sampling`, `editor`, `grader`, `data`, `output_dir`, `license` and `provenance`; only `damage` is optional. Unknown fields and duplicate/nonfinite JSON keys fail closed.
+`init` creates [`research_lab.json`](../ouroboros/resources/research_lab.json). Paths resolve relative to the config file, not your current shell. Required top-level fields are `schema_version`, `model`, `policy`, `sampling`, `editor`, `grader`, `data`, `output_dir`, `license` and `provenance`; `damage` and the opt-in `discovery` profile are optional. Unknown fields and duplicate/nonfinite JSON keys fail closed.
 
 - **`model`** uses the local model configuration; `max_new_tokens` caps each answer (≤32,768). Context checks reject overlong inputs instead of silently truncating generation prompts. Ordinary FP16/BF16/FP32/FP64 only; quantized mutation is refused.
 - **`editor`** is `{"mode":"model","max_new_tokens":384,"decoding":"json_schema","sampling":{"temperature":0.3,"thinking":false}}` for the new starter's actual token-filtered generations, or `{"mode":"scripted","actions":"actions.json"}` for a clearly labelled reviewed action list. Never give an action file to model mode. Scripted mode is an integration/host-control path, not autonomous self-editing. Existing configs default to `decoding:"unconstrained"`; `json_schema` requires the explicit optional decoder and no thinking preamble. Editor sampling is independent of answer sampling and defaults to greedy/no thinking.

@@ -382,3 +382,32 @@ def test_practice_contrast_keeps_grades_but_refuses_a_completion_truncated_by_re
     assert result["counters"]["invalid_actions"] == 0
     assert "measurement" not in result and "direction_id" not in result and not copy.directions
     assert model_fingerprint(backend.model) == before
+
+
+def test_real_random_llama_completion_sensitivity_matches_finite_difference(research_backend):
+    import torch
+
+    from ouroboros.data import Sample
+    from ouroboros.lab.backend import frozen_eval
+    from ouroboros.lab.sensitivity import inspect_gradients, measure_loss
+
+    backend = research_backend
+    copy = WorkingCopy(backend.model, LabPolicy(max_read_tokens=64))
+    name = "model.layers.1.post_attention_layernorm.weight"
+    samples = [Sample("a b", "c"), Sample("b a", "d")]
+    before = model_fingerprint(backend.model)
+    rng = torch.get_rng_state().clone()
+    with frozen_eval(backend.model):
+        sensitivity = inspect_gradients(backend, copy, samples, name, limit=1)
+    entry = sensitivity["entries"][0]
+    values = []
+    epsilon = 0.01
+    for direction in (-1, 1):
+        candidate = copy.original(name)
+        candidate.reshape(-1)[entry["index"]] += direction * epsilon
+        with copy.use({name: candidate}):
+            values.append(measure_loss(backend, samples, copy.policy)["problem_mean_nll"])
+    numerical = (values[1] - values[0]) / (2 * epsilon)
+    assert numerical == pytest.approx(entry["gradient"], rel=0.02, abs=2e-5)
+    assert model_fingerprint(backend.model) == before and torch.equal(rng, torch.get_rng_state())
+    assert not any(p.requires_grad or p.grad is not None for p in backend.model.parameters())

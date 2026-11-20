@@ -29,7 +29,42 @@ ouroboros weights demo
 
 `pytest` runs the full suite; unittest discovery runs the smaller public-API smoke suite. The [CI workflow](../.github/workflows/ci.yml) tests minimal Python 3.10/3.11/3.12 plus a separate Python 3.11 CPU ML job. Remote CI conclusions are distinct from local observations and must be checked before being claimed.
 
-## Current editor/experiment follow-up
+## Current closed-loop discovery implementation
+
+The [hypothesis-driven profile](DISCOVERY_EXPERIMENTS.md) returned **412 passed**, three
+expected PEFT warnings, in **12.80 seconds** after Ruff lint/format. This is **not** a reuse
+of the 390-test publication below. Added checks cover five-role data/hash separation,
+repeatable non-performance-filtered GSM8K selection, dependency-light CLI/check-only and
+MCP approval binding, candidate-bound prospective hypotheses, invalid/noop edit audit,
+actual practice feedback/masking, phase-staged workflow, explicit host/random controllers,
+development sealing, strict reserved/final/retention mechanics, exact numerical replay,
+cache/state isolation and sensitivity alignment.
+
+The updated no-Torch core+MCP environment returned **282 passed / 24 optional skips /
+106 ML deselected**, 6.98 seconds. A non-editable wheel was installed outside the checkout
+with **none** of Torch/Transformers/PEFT/MCP/GGUF/Math-Verify/decoder installed; exact
+package-source bytes, **16 JSON/TXT resources**, the GSM8K notice, 19/25-action catalogues,
+five-role scaffold, matching family alpha and all discovery check-only commands passed.
+The safe-inventoried sdist contains the new docs/data/tests/notice; extracted-source core+MCP
+tests returned **281 passed / 25 skips / 106 ML deselected**, 7.68 seconds. The extra skip is
+Git-only release provenance. `pip check`, compile, Ruff's **101 Python files**, workflow
+YAML, whitespace and **37 owned Markdown / 33 reference** checks passed. The build is a
+local snapshot, not PyPI/release publication. [Exact implementation/distribution receipt](evidence/discovery-implementation-local.json).
+
+The mechanically accepted **50%→100% token-classifier control is hand-designed, not a
+pretrained LLM or independent capability/generalization result**. Real random-Llama
+completion autograd agrees with central finite differences (epsilon 0.01, relative tolerance
+0.02 / absolute 2e-5), with full state/flag/RNG restoration. A gradient check is not a
+beneficial pretrained edit. `lab experiment --check-only` and the discovery tool catalogue
+also ran with no model load or implicit downloads.
+
+**Pretrained study status at this implementation checkpoint:** 135M study running locally;
+360M Instruct study configured on implementation pushes. Their model outcomes and remote
+verification are **not yet claimed**. Earlier six-job green runs validate only their older
+snapshots. No beneficial autonomous pretrained edit or learned future editing ability is
+inferred from test counts. Full results will be archived separately, including failed trials.
+
+## Previous editor/experiment follow-up
 
 This is a new verification of the follow-up described in [editor experiments](EDITOR_EXPERIMENTS.md), not a reuse of the initial 321-test delivery below. Tests were run serially with pretrained work to avoid repeating the OOM pilot.
 

@@ -4,6 +4,23 @@
 
 The comparison baseline is Ouroboros **0.4**: a real same-model **finite menu** over one matrix per trial, tiny greedy/exact-match fixtures, reversible accepted chains, CLI and MCP. The additions are the **0.5 development research workflow** under [`ouroboros/lab/`](../ouroboros/lab). The original smoke/SFT paths remain available; they are not silently changed into this protocol.
 
+## New discovery work is a distinct methodological profile
+
+The [closed-loop discovery follow-up](DISCOVERY_EXPERIMENTS.md) adds prospective hypotheses,
+complete attempted-intervention ledgers, actual feedback/revision, explicit sensitivity,
+host/random/no-edit/model controls, eleven arms/two seeds, a broader 240-example five-role
+set and post-selection subsequent-edit retention. Development seals **before its first
+look**, then reserved independently confirms. The strict 44-submission family correction
+is an additional engineering protocol, not the paper's exact original method.
+
+These additions close measurable experimental gaps but **do not** turn tests or gradient-
+assisted host controls into no-gradient paper parity. They also do not certify independent
+semantic circuit discovery, learned future self-improvement or a beneficial pretrained edit.
+The initial 135M local study is running and larger 360M Instruct study configured at this
+implementation checkpoint; their results must be read separately from the earlier negative
+runs and the 412 passing tests. The general 19-action lab comparison below is preserved;
+the opt-in 25-action discovery profile additionally requires explicit per-edit hypotheses.
+
 ## 1. Self-rewriting: missing/partial features and disposition
 
 **Implemented** below means owned executable tooling with tests. It does not mean a model successfully used it to improve a benchmark. **Partial/different** and **missing** are intentional, visible limits, not hidden TODOs behind a success flag.
