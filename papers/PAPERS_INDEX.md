@@ -1,6 +1,6 @@
 # Research index: model adaptation, weight editing, and self-evolution
 
-As of **2026-11-19**. 33 references; 11 recent primary-source reviews in the **2026-08-19 to 2026-11-19** window.
+As of **2026-11-19**. 34 references; 12 recent primary-source reviews in the **2026-08-19 to 2026-11-19** window.
 
 This is a curated selection, not an exhaustive survey. Blog posts, preprints and journal papers are labeled separately. Source-reported results have **not** been reproduced by Ouroboros. An implementation link is a partial mapping unless explicitly stated otherwise.
 
@@ -21,6 +21,7 @@ Machine-readable [catalogue](research.json), abbreviated-author [BibTeX](referen
 | 2026-11-16 | [Replicating and Extending Weight-Space Programming: Frontier LLMs Compile Programs into Weights and Read Input Layers](https://arxiv.org/abs/2611.21449) — preprint | Independent replication of small-network writing, with evidence for program compilation and shallow input-layer reading rather than unrestricted semantic understanding. | [reference-only](../papers/RECENT_RESEARCH_2026.md) |
 | 2026-11-16 | [Language Models Can Rewrite Their Own Weights](https://arxiv.org/abs/2611.21885v2) — preprint | A 27B model reportedly gains 6.6 accuracy points on held-out math; smaller models abstain or damage themselves. Repeated practice checks are not an untouched final test. v2 dated November 18 was consulted. | [hypothesis-driven-closed-loop-profile-no-demonstrated-pretrained-gain](../ouroboros/lab/runner.py) |
 | 2026-11-17 | [Weight-Space Programming Doesn't Need Transformers](https://arxiv.org/abs/2611.22055) — work-in-progress-preprint | Agents choose sparse associative tables for directly written weights. Pretrained LLMs remain more accurate; the claim is about structures to build when writing weights, not replacing all Transformers. | [reference-only](../ouroboros/core/architecture_mutator.py) |
+| 2026-11-19 | [DeepSeek official research: source-linked applicability review](https://github.com/deepseek-ai) — local-methods-review | Nineteen pinned official repositories and selected method sections (62 documents, 13 PDFs) were read to decide what a bounded CPU research loop may adopt. Four bounded features were implemented, three only partially, and the rest were refused or deferred with reasons. No DeepSeek result is reproduced. | [partial-infrastructure](../papers/DEEPSEEK_APPLICABILITY.md) |
 
 ## Foundations and earlier related work
 

@@ -112,7 +112,7 @@ def test_artifact_registration_cannot_write_through_symlinks(tmp_path, symlink_p
 
 
 def test_documentation_and_research_catalogue_are_consistent():
-    assert check(ROOT)["research_references"] == 33
+    assert check(ROOT)["research_references"] == 34
     catalogue = json.loads((ROOT / "papers/research.json").read_text())
     for paper in catalogue["papers"]:
         if "local_engineering_follow_up" in paper:

@@ -4,6 +4,7 @@ import argparse
 import importlib.util
 import json
 import shutil
+import sqlite3
 import subprocess
 import sys
 from dataclasses import asdict
@@ -211,6 +212,48 @@ def parser():
         "--model-path", help="Relocated local base model directory (LLM checkpoints only)"
     )
     commands.add_parser("doctor", help="Inspect dependencies without loading models")
+    research = commands.add_parser(
+        "research", help="Bounded training-research foundation; independent gates and SQLite memory"
+    )
+    research_ops = research.add_subparsers(dest="research_operation", required=True)
+    research_ops.add_parser("tools", help="Versioned research commands and authority boundaries")
+    research_ops.add_parser(
+        "deepseek",
+        help="Source-linked DeepSeek features: adopted, partial, deferred, not applicable",
+    )
+    foundation_run = research_ops.add_parser(
+        "run", help="One frozen research loop; never overwrite a baseline"
+    )
+    foundation_run.add_argument("--config", required=True)
+    foundation_run.add_argument("--check-only", action="store_true")
+    campaign = research_ops.add_parser(
+        "campaign", help="Explicit finite cycles, fresh hidden data, one memory ledger"
+    )
+    campaign.add_argument("--config", action="append", required=True)
+    campaign.add_argument("--max-cycles", type=int, required=True)
+    history = research_ops.add_parser(
+        "history", help="Read-only bounded authoritative result retrieval"
+    )
+    history.add_argument("--database", required=True)
+    history.add_argument("--query", default="")
+    history.add_argument("--limit", type=int, default=20)
+    recover = research_ops.add_parser(
+        "recover", help="Mark a dead unfinished run interrupted; never reopen a holdout"
+    )
+    recover.add_argument("--database", required=True)
+    recover.add_argument("--experiment-id", required=True)
+    inspect_run = research_ops.add_parser(
+        "verify-run", help="Verify a foundation artifact tree without model loading"
+    )
+    inspect_run.add_argument("--report", required=True)
+    inspect_run.add_argument(
+        "--database", help="Explicit relocated authoritative database, otherwise use recorded path"
+    )
+    foundation_init = research_ops.add_parser(
+        "init", help="Create explicitly synthetic foundation fixtures/config, no model download"
+    )
+    foundation_init.add_argument("directory")
+    foundation_init.add_argument("--model-path", required=True)
     init = commands.add_parser(
         "init", help="Create a small self-edit project; never overwrite files"
     )
@@ -426,6 +469,64 @@ def main(argv=None):
     try:
         if args.command == "doctor":
             emit(doctor())
+        elif args.command == "research":
+            if args.research_operation == "tools":
+                from .research.contracts import commands as research_commands
+
+                emit(research_commands())
+            elif args.research_operation == "deepseek":
+                from .research.applicability import report as deepseek_report
+
+                result = deepseek_report(Path(__file__).resolve().parents[1])
+                emit(result)
+                if result["missing_local_evidence"]:
+                    return 2
+            elif args.research_operation == "run":
+                from .research.controller import run_research
+
+                result = run_research(args.config, check_only=args.check_only)
+                emit(result)
+                if result.get("state") in ("failed", "interrupted"):
+                    return 2
+            elif args.research_operation == "campaign":
+                from .research.controller import run_campaign
+
+                result = run_campaign(args.config, max_cycles=args.max_cycles)
+                emit(result)
+                if any(row["state"] in ("failed", "interrupted") for row in result["reports"]):
+                    return 2
+            elif args.research_operation in ("history", "recover"):
+                from .research.memory import ExperimentMemory
+
+                memory = ExperimentMemory(
+                    args.database, readonly=args.research_operation == "history"
+                )
+                try:
+                    if args.research_operation == "history":
+                        emit(
+                            {
+                                "results": memory.search(args.query, limit=args.limit),
+                                "integrity_verified": True,
+                            }
+                        )
+                    else:
+                        memory.recover_interrupted(args.experiment_id)
+                        emit(
+                            {
+                                "state": memory.state(args.experiment_id),
+                                "automatically_resumed": False,
+                            }
+                        )
+                finally:
+                    memory.close()
+            elif args.research_operation == "verify-run":
+                from .research.project import verify_run
+
+                emit(verify_run(args.report, database=args.database))
+            else:
+                from .research.project import init_foundation
+
+                emit(init_foundation(args.directory, args.model_path))
         elif args.command == "init":
             from .project import init_project
 
@@ -716,6 +817,7 @@ def main(argv=None):
         OSError,
         RuntimeError,
         ImportError,
+        sqlite3.Error,
         subprocess.SubprocessError,
     ) as exc:
         print(f"ouroboros: {exc}", file=sys.stderr)

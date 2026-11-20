@@ -95,6 +95,24 @@ The fixed study has **240 examples / four categories**, including 60 independent
 
 **Still missing:** a validated beneficial autonomous pretrained edit unless its actual gates pass; learned improvement of future self-improvement; extended-training retention; a persistent isolated arbitrary-Python kernel; vLLM/tensor-parallel serving; vision/game/Go/diffusion adapters; and actual 27B/paper/full-standard-benchmark reproduction. **Full paper parity and capability gains are not claimed.**
 
+### Research foundation: bounded experiments, not self-scored improvement
+
+`ouroboros research` is a separate single-machine loop where the proposer, executor and evaluator are genuinely different processes. A researcher — a host reference or a real local model under a JSON schema — emits **versioned typed proposals** (competing hypotheses with uncertainty, alternatives, missing information, a numeric prediction and a falsification condition). The controller freezes the plan, budget and gate set before inference; workers train real LoRA/full-SFT/distillation candidates in fresh processes; one recipe is sealed by worst-seed practice accuracy; and validation, reserved, final, robustness and retention are each measured by a **fresh evaluator worker** at a conservative `0.05/44` family correction with zero per-domain forgetting.
+
+```bash
+ouroboros research tools      # versioned commands, authority and non-capabilities
+ouroboros research deepseek   # what was adopted, refused or deferred from DeepSeek research
+ouroboros research init ouroboros-research --model-path /path/to/local/model
+ouroboros research run --config ouroboros-research/foundation.json --check-only
+ouroboros research run --config ouroboros-research/foundation.json
+ouroboros research verify-run --report ouroboros-research/runs/<run>/research.json
+ouroboros research history --database ouroboros-research/experiments.sqlite3
+```
+
+Baselines are never overwritten, hidden prompts are consumed before inference and cannot be reopened, every artifact is write-once and hash-bound, and an append-only SQLite chain is the authoritative record. Model narratives are stored as **unverified claims**. There is no mid-step resume: an interrupted run needs a new plan and fresh confirmation.
+
+**Measured status:** the complete gated loop has run only on a **randomly initialised ~1M-parameter GPT-2 fixture** with deliberately trivial constant-answer prompts, which proves plumbing and not capability. An earlier real-model attempt reached the follow-up stage and failed on a worker contract bug (it read a retention measurement it must not see); the fix makes the follow-up return `evaluation_requires_fresh_worker` and defers scoring to a separate process, and a clean rerun is still required. No pretrained gain, autonomous model discovery or improved future experiment selection is claimed. [Architecture, gates and subsystem status](docs/RESEARCH_FOUNDATION.md) · [DeepSeek applicability](papers/DEEPSEEK_APPLICABILITY.md)
+
 ## Use it from an agent: MCP
 
 The optional official **Model Context Protocol** SDK provides a local **stdio** server. The installer above includes it. By default it exposes only dependency/config checks, bounded weight inspection, patch verification and report reading.
@@ -138,6 +156,7 @@ ouroboros run --config examples/local_sft.json
 | Same-model smoke | Constrained model-selected trials, strict measured gates, reversible accepted chains; still a finite menu |
 | Research Lab | Frozen editor, model-generated closed-language programs, multi-tensor tools/controls, sealed checks, independent sessions and final test; optional schema-constrained commands and graded practice diagnostics |
 | Discovery profile | Prospective hypotheses, actual iterative feedback, opt-in gradients, full attempted-edit ledger/replay, matched host/random controls, five-role broader data, final/retention probes; no guaranteed useful edit or learned meta-improvement |
+| Research foundation | Separate researcher/executor/evaluator, versioned typed proposals, immutable plans, real LoRA/full SFT/distillation, per-seed clustered gates, robustness and four-cell retention, write-once artifacts, append-only SQLite memory, bounded watchdogs; complete loop only proven on a random fixture |
 | Local SFT | Completion-masked Transformers/PEFT LoRA, replay anchors, original/latest retention and adapter rollback; GPU QLoRA untested |
 | Weight tools | Bounded inspection, one-matrix trials plus atomic research programs and exact target-/full-state-bound sparse bundles |
 | Agent access | JSON CLI, packaged `init`, dependency doctor, read-only-default stdio MCP, explicitly allowlisted execution |
@@ -148,7 +167,7 @@ ouroboros run --config examples/local_sft.json
 
 ## Research and real source checkouts
 
-The [research index](papers/PAPERS_INDEX.md) contains **33 references**, including 11 recent primary-source reviews. Source-reported gains remain separate from local observations. The Astra/Qwen work is an **MIT CSAIL research blog**, not a Harvard paper or an Ouroboros reproduction.
+The [research index](papers/PAPERS_INDEX.md) contains **34 references**, including 12 recent primary-source reviews. Source-reported gains remain separate from local observations. The Astra/Qwen work is an **MIT CSAIL research blog**, not a Harvard paper or an Ouroboros reproduction.
 
 Seven pinned submodules and five preserved snapshots are [inventoried](external/README.md), analyzed in the [repository deep dive](analysis/REPOSITORY_DEEP_DIVE.md), and labeled by actual integration level. Cloning a reference does not automatically install or execute it.
 
@@ -173,7 +192,7 @@ python scripts/run_pretrained_smoke.py --workdir outputs/pretrained-smoke --fetc
 python scripts/run_research_smoke.py --workdir outputs/research-smoke --model-dir outputs/pretrained-smoke/models/smollm2
 ```
 
-**Current local follow-up:** **426 tests passed**, plus **14 unittest checks**; no-Torch core+MCP returned **291 passed / 24 expected optional skips / 111 ML deselected**. The original discovery runtime passed **all nine push jobs and six ordinary PR jobs**; a separate read-only review recovered the complete 360M evidence. Its negative scientific outcome is not a CI failure or a test-fixture gain. Earlier 412-test distribution and 390-test editor snapshots remain separately labelled, not silently updated. [CI](.github/workflows/ci.yml) separates Python 3.10/3.11/3.12 core, offline ML/math/structured generation, MCP protocol and actual pretrained execution. See [testing](docs/TESTING.md) for exact source/run bindings, current-head status and distribution limits—not an assumption that an earlier green run validates later edits.
+**Current local follow-up:** **463 tests passed**, plus **14 unittest checks**; `-m 'not ml'` returned **348 passed / 115 deselected** in this full environment (the earlier no-Torch counts, **291 passed / 24 expected optional skips / 111 ML deselected**, predate the research foundation and were not re-measured). The original discovery runtime passed **all nine push jobs and six ordinary PR jobs**; a separate read-only review recovered the complete 360M evidence. Its negative scientific outcome is not a CI failure or a test-fixture gain. Earlier 412-test distribution and 390-test editor snapshots remain separately labelled, not silently updated. [CI](.github/workflows/ci.yml) separates Python 3.10/3.11/3.12 core, offline ML/math/structured generation, MCP protocol and actual pretrained execution. See [testing](docs/TESTING.md) for exact source/run bindings, current-head status and distribution limits—not an assumption that an earlier green run validates later edits.
 
 ## Storage, releases, and license
 

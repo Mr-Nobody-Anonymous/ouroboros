@@ -69,9 +69,22 @@ Core dependencies include NumPy, PyYAML and safetensors, **not Torch**. `pip ins
 - Freeze code/data/model/config before model loading. Do not change source under a running study: the driver will refuse the next arm. Never overwrite, silently resume or retarget a preregistered experiment. Preserve interrupted evidence and start a newly named study for a changed protocol.
 - Useful-edit retention is null when no useful edit was accepted; four-cell baseline/diagnostic perturbations do not change that. A fixed small follow-up edit is not extended training. Within-context revision is not a new trained editing-policy checkpoint.
 
+## Research foundation contract (separate from lab/discovery)
+
+- Read docs/RESEARCH_FOUNDATION.md and papers/DEEPSEEK_APPLICABILITY.md before changing `ouroboros/research/`. This loop is bounded training research: the proposer may emit only versioned JSON hypotheses/recipes, and the controller/executor/evaluator remain distinct processes. A stronger researcher model improving a target is assisted improvement, not target self-improvement.
+- Keep the evidence ladder explicit: infrastructure → beneficial host control → independent model proposals → useful autonomous edit → improved future selection. Only infrastructure-with-a-random-fixture is established. Never describe the constant-answer scaffold, a passing test or a valid JSON proposal as a capability or generalization result.
+- Baselines are immutable, plans/designs/selections/artifacts are write-once, and SQLite is authoritative over any JSON or model narrative. Claims are stored `verified = 0`. Holdouts are consumed before inference and must never be reopened; a failed look still burns them.
+- Never weaken `alpha = 0.05/family_size`, the per-seed strict-accuracy rule, zero-domain-forgetting, the separate robustness non-inferiority gate or the four-cell retention comparison. Practice accuracy chooses the recipe; validation and later roles never reselect. Loss, NLL, confidence and model prose never rescue a candidate.
+- Do not add sequence packing, mid-step resume, MoE/MLA conversion, learned verifiers, FIM or multimodal paths by relabelling a nearby implementation. Supported families are `lora_sft`, `full_sft`, `data_reweight`, `distill_sft`; anything else needs its own design, gates and evidence.
+- Data admission is not decontamination. The question-overlap screen covers questions only, not answers, semantics or pretraining data, and reports `semantic_decontamination: false`.
+- Resource watchdogs (wall/RSS/output bytes/step and export budgets) and process separation are cooperative bounds, not an OS sandbox or hard quota. Do not claim hidden-data secrecy or adversarial isolation.
+- Never resume, retarget or reuse the hidden sets of the frozen 135M/360M discovery studies. An interrupted foundation run needs a new plan and fresh confirmation.
+- Verify with `ouroboros research run --config ... --check-only`, protocol tests, and `ouroboros research verify-run --report ...`; keep `scripts/run_foundation_fixture.py` labelled synthetic.
+
 ## Map
 
 - ouroboros/self_edit.py, model_files.py, project.py, resources/: same-model controller, explicit model provisioning and installed-package quickstart fixtures.
+- ouroboros/research/: bounded training-research foundation (contracts, controller, fixed workers, audited SFT, independent gates, SQLite memory, DeepSeek applicability matrix).
 - ouroboros/lab/: separate frozen-editor research programs, instrumentation, controls, sealed validation/sessions, full-state-bound bundles and explicit dataset/benchmark boundaries.
 - ouroboros/mcp_server.py: optional official-SDK stdio server, read-only default and allowlisted offline child execution.
 - ouroboros/backends/: NumPy reference classifier, shared frozen LocalCausalLM loader and optional PEFT SFT backend.

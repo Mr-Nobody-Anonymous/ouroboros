@@ -93,3 +93,41 @@ Each run exclusively owns its UUID output/checkpoint directories. Do not let ano
 Dense snapshots, sorting, norm computations and full-target hashing scale with matrix size, even when the serialized patch is tiny. Buffer-streamed tensor hashing avoids extra whole-tensor Python byte copies, not model/overlay memory; shorter histories/no-progress stops are not RAM quotas. An OOM-killed development pilot had no completed in-memory restoration claim. Architecture copies can exceed RAM/VRAM. Use external process/container quotas for untrusted or expensive work. Header/sample limits on inspection are not a general hard resource sandbox.
 
 External EasyEdit/mergekit/TRL/DGM/WeightBench tools have their own dependencies, downloads, permissions and security models. Follow pinned documentation in isolated environments. Inclusion in the source inventory is not a security endorsement or a promise of compatibility.
+
+## Bounded research foundation (`ouroboros research`)
+
+The foundation separates a **proposer** from an **executor** and a **fresh evaluator**. The
+proposer emits only versioned JSON hypotheses and numeric recipes; it cannot execute code,
+write the database, change gates, or read hidden roles. Invalid model output is recorded as
+invalid and never silently replaced by a host recipe.
+
+Trust boundaries that remain operator responsibilities:
+
+- **Process separation is not filesystem secrecy.** Workers are subprocesses with offline Hub
+  flags, a parent-death binding, a CPU `RLIMIT_CPU` and parent-side wall/RSS/output-byte
+  watchdogs, but they inherit the operator's filesystem and network privileges. Hidden role
+  files, the SQLite ledger and the output tree are readable by any local process. Do not run
+  an adversarial researcher on a host whose hidden data it must not see.
+- **Budgets are cooperative.** Step, export, output-byte, RSS and wall limits are checked by
+  the controller; they are not cgroups or hard quotas, and a hostile model implementation can
+  still exhaust memory before a check fires.
+- **Hashes detect, they do not authenticate.** Write-once artifacts, checkpoint manifests and
+  the SQLite hash chain detect edits and swapped candidates; they do not prove authorship,
+  cannot replay inference, and do not stop a concurrent writer with access to the same tree.
+- **Model claims are not measurements.** `claims` rows are stored with `verified = 0`.
+  `results.useful` requires a terminal `completed` state *and* `full_gate_passed`; the
+  controller recomputes gates from executor records rather than trusting a summary.
+- **Holdouts are consumed before inference** in a cross-run ledger. A failed or interrupted
+  look still burns the prompts, and reuse fails closed. Do not "fix" a run by re-opening them.
+- **No mid-step resume.** Checkpoint exports include optimizer and CPU-RNG state with
+  `resume_supported: false`; resuming a partially trained candidate is not supported and an
+  interrupted run needs a new plan and fresh independent confirmation.
+- **Distillation** samples only training prompts and accepts a completion only on exact
+  reference match. Correct answers do not certify the reasoning text, and the teacher is a
+  trusted local model, not an audited oracle.
+- **Data admission is not decontamination.** The question-overlap screen covers normalized
+  question word spans only; answers, semantics and pretraining contamination are unchecked and
+  explicitly reported as unknown.
+- Reports, per-role snapshots, worker logs and raw model generations may contain private
+  prompts and completions. Review the output tree before publishing it, and do not expose it
+  to the proposer.

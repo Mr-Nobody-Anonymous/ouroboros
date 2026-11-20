@@ -500,6 +500,21 @@
       "implementation_status": "replay-mitigation",
       "review_scope": "foundational-reference-not-new-full-text-review",
       "reproduced_here": false
+    },
+    {
+      "id": "deepseek-applicability",
+      "title": "DeepSeek official research: source-linked applicability review",
+      "arxiv": null,
+      "published": "2026-11-19",
+      "authors": "DeepSeek-AI",
+      "kind": "local-methods-review",
+      "url": "https://github.com/deepseek-ai",
+      "summary": "Nineteen pinned official repositories and selected method sections (62 documents, 13 PDFs) were read to decide what a bounded CPU research loop may adopt. Four bounded features were implemented, three only partially, and the rest were refused or deferred with reasons. No DeepSeek result is reproduced.",
+      "local_path": "papers/DEEPSEEK_APPLICABILITY.md",
+      "implementation_status": "partial-infrastructure",
+      "reviewed_on": "2026-11-19",
+      "review_scope": "selected-methods-not-exhaustive",
+      "reproduced_here": false
     }
   ]
 }

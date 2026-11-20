@@ -29,6 +29,74 @@ ouroboros weights demo
 
 `pytest` runs the full suite; unittest discovery runs the smaller public-API smoke suite. The [CI workflow](../.github/workflows/ci.yml) tests minimal Python 3.10/3.11/3.12 plus a separate Python 3.11 CPU ML job. Remote CI conclusions are distinct from local observations and must be checked before being claimed.
 
+## Bounded research foundation verification
+
+The foundation is verified at two deliberately separate levels, and neither one is a
+capability result.
+
+| Level | Command | What it establishes |
+| --- | --- | --- |
+| Protocol (no Torch) | `python -m pytest -q tests/test_research_foundation.py tests/test_research_data_quality.py` | Contracts, admission, gates, memory chains, recovery, CLI and the DeepSeek matrix — with **scripted** executors |
+| Real offline CPU | `python -m pytest -q tests/test_research_foundation_ml.py` | Actual PEFT/full-SFT steps, frozen base, optimizer/RNG export, no silent truncation, a complete gated loop and an RSS watchdog, on a **random** tiny GPT-2 |
+
+| Observed in this pass | Value |
+| --- | --- |
+| Foundation protocol tests | **33 passed**, ~1 s |
+| Foundation real-model tests | **4 passed**, two expected PEFT `Conv1D` warnings, 2m08s |
+| Full offline suite | **463 passed**, five warnings, 2m32s (latest run; 2m18s the run before) |
+| No-ML selection (`-m 'not ml'`) | **348 passed, 115 deselected**, ~9 s |
+| Compatibility unittest | **14 passed** |
+| Ruff lint / format | Clean; **119 files** formatted |
+| Owned docs / references | Checker OK; **34 references** |
+
+The historical **426 full / 291 lightweight** numbers predate this work and are not reused.
+The earlier no-Torch environment was not recreated in this pass, so its exact skip profile is
+unmeasured rather than assumed.
+
+The scripted executor in the protocol suite is a fixture: it returns synthesized evaluations
+so controller paths (completion, plateau rejection, interruption, holdout reuse, invalid
+proposer) can be tested deterministically. Its "improvements" are not measurements.
+
+`python scripts/run_foundation_fixture.py --workdir outputs/foundation-fixture-NN` performs the
+same real run outside pytest and writes `fixture_summary.json` with explicit non-claims.
+
+### What the first complete loop actually did
+
+The real fixture run inside the suite reached `state: completed` with `full_gate_passed: true`
+and `source_files_unchanged: true`:
+
+| Observation | Value |
+| --- | --- |
+| Worker processes | **32**, all with distinct PIDs (fresh process per step) |
+| Gates recorded | validation, reserved, final, robustness, retention — all passed |
+| Family correction | `alpha = 0.05/44 = 0.00113636...` per gate |
+| Baseline practice | **0/12**, every answer truncated at the 4-token budget |
+| Host reference control (LoRA) | **0/12** at both seeds |
+| LoRA candidate | **0/12** at both seeds |
+| Full-SFT candidate | **12/12** at both seeds |
+| Sealed selection | `full_sft`, 50 steps, AdamW lr 0.01, chosen on worst-seed practice |
+| Prediction audit | predicted +0.01, observed +1.0, mean error **+0.99** |
+| Optimizer steps / wall time | 208 planned, 124.5 s |
+| Artifacts re-verified | 261 files, 9 original config/data/model inputs rehashed |
+| Preservation | source inventories unchanged, base model never overwritten |
+
+**Read this correctly.** The target memorizes one constant word across twelve prompts of a
+single synthetic domain, so 12/12 shows that full fine-tuning can fit a trivial label — not
+reasoning, generalization or autonomous research. The baseline truncates all twelve answers,
+which makes the paired comparison coarse; the LoRA arm simply fails to fit within the budget.
+The 0.99 prediction error is reported rather than hidden: a host hypothesis that says "small
+gain" is falsified by a saturated fixture. Nothing here transfers to a pretrained model.
+
+**What this does not show:** the fixture is randomly initialised and its prompts are
+constant-answer trivia, so a passing loop demonstrates that training, sealing, independent
+evaluation, rollback and recording work together. It says nothing about pretrained
+capability, semantic generalization or autonomous research. A first real-model loop attempt
+reached the follow-up stage and failed on a worker contract bug (the training worker read a
+withheld retention measurement). The worker now returns only its training record plus
+`evaluation_requires_fresh_worker`, and post-follow-up scoring runs in a separate evaluator
+process; that path is covered by the protocol test that asserts every `followup` is followed
+by an `evaluate` call. A clean real-model rerun is still required before quoting any result.
+
 ## Current discovery results and evidence follow-up
 
 The **complete original 360M study has now been reviewed**, not inferred from passing CI:
