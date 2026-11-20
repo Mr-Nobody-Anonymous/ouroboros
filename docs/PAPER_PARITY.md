@@ -57,7 +57,7 @@ The same pinned Q4_1-derived **134,515,008-parameter** SmolLM2 used in 0.4 was a
 - Both modes restored the full state and left source files unchanged. State SHA-256: `6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8`.
 - A separate **actual CLI** run of `examples/research_scripted.json` completed the same 16 actions, 1,152-entry edit and plateau rejection/restoration. A separate **actual official-SDK stdio MCP** child ran model-authored mode and report readback: same two invalid replies, no accepted edit, restoration/source checks passed.
 
-[Local evidence](evidence/research-smoke-local.json) · [real MCP evidence](evidence/mcp-research-local.json) · [test/remote CI status](TESTING.md). These are public plumbing fixtures on a quantization-derived model, **not** the paper's models, data, gains or causal-discovery experiment.
+[Local evidence](evidence/research-smoke-local.json) · [real MCP evidence](evidence/mcp-research-local.json) · [test/remote CI status](TESTING.md). The research implementation also passed all six jobs in both push/PR GitHub runs, with the same measured failure/rejection outcomes ([API-verified CI evidence](evidence/research-smoke-github.json)). These are public plumbing fixtures on a quantization-derived model, **not** the paper's models, data, gains or causal-discovery experiment.
 
 ## 4. What was actually cloned and adapted
 

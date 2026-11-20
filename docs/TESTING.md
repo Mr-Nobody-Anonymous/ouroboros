@@ -71,7 +71,11 @@ The extracted sdist with no Git/upstream sources returned **233 passed, 4 expect
 
 ### 0.5 GitHub verification
 
-The updated workflow adds the actual research smoke to the pretrained job, separately reports model-authored/scripted measurements, uploads small research JSON evidence, tests the optional real math grader and keeps Python 3.10/3.11/3.12 core, no-Torch MCP and offline ML coverage. **This section is local verification until a new remote run is explicitly recorded below.** Historical 0.4 CI does not validate the new research tree.
+Implementation commit **`9a3745eb698d9198b774c9c20cae4716793dbea5`** passed **all six jobs on both** [push run 44690540729](https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44690540729) and [PR run 44690546371](https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44690546371). This includes Python 3.10/3.11/3.12 core/build/lint/docs, offline CPU ML plus real Math-Verify, no-Torch official-SDK MCP tests, and **actual pinned pretrained legacy + research execution**. Historical 0.4 CI is not reused as evidence.
+
+[GitHub API-verified evidence](evidence/research-smoke-github.json) records both run/job conclusions and their measured research notices: each actual editor produced **0 valid / 2 invalid actions**; each separate scripted integration completed **16 actions / 10 forwards**, changed **1,152 entries / two tensors**, scored **0→0/rejected** and confirmed full restoration/source integrity. Remote control norm rounding discrepancy was **4.6595295734683324e-08** (not asserted bit-identical to this CPU's result). The same complete editor hash was observed.
+
+Both jobs uploaded `pretrained-self-edit-evidence` JSON-only artifacts (API inventories: **15,052** and **15,054 bytes**). Measurements were retrieved/verified through the **run/jobs/check-annotations APIs**, not by downloading the artifact ZIP; no claim of locally verifying its redirected payload. Retrieve it on an unrestricted machine with `gh run download RUN_ID --name pretrained-self-edit-evidence`. Current code lives on [open PR #1](https://github.com/Mr-Nobody-Anonymous/ouroboros/pull/1); no merge or 0.5 release is implied.
 
 ## Historical local verification performed for 0.4 development
 

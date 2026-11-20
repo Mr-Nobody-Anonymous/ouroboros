@@ -150,7 +150,7 @@ python scripts/run_pretrained_smoke.py --workdir outputs/pretrained-smoke --fetc
 python scripts/run_research_smoke.py --workdir outputs/research-smoke --model-dir outputs/pretrained-smoke/models/smollm2
 ```
 
-[CI](.github/workflows/ci.yml) separates lightweight Python 3.10/3.11/3.12 checks, offline random-LM integration, MCP protocol tests and an explicit pinned pretrained-model smoke run. See [testing](docs/TESTING.md) for observed local/GitHub results and limitations.
+**Verified:** 321 local tests; fresh no-Torch/package checks; all six jobs passed on both push and PR runs for the research implementation, including actual pretrained execution. [CI](.github/workflows/ci.yml) separates Python 3.10/3.11/3.12 core, offline ML/math grading, MCP protocol and pretrained smoke. See [testing](docs/TESTING.md) for exact commits/run links and limitations.
 
 ## Storage, releases, and license
 
