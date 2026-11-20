@@ -512,6 +512,7 @@
   "additional_checks": {
     "practice_only_cli": "docs/evidence/research-diagnose-cli-local.json",
     "real_stdio_mcp": "docs/evidence/mcp-structured-editor-local.json",
-    "host_driven_graded_contrast": "docs/evidence/research-graded-contrast-local.json"
+    "host_driven_graded_contrast": "docs/evidence/research-graded-contrast-local.json",
+    "github_api_verified": "docs/evidence/research-interface-github.json"
   }
 }

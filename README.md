@@ -155,7 +155,7 @@ python scripts/run_pretrained_smoke.py --workdir outputs/pretrained-smoke --fetc
 python scripts/run_research_smoke.py --workdir outputs/research-smoke --model-dir outputs/pretrained-smoke/models/smollm2
 ```
 
-**Current follow-up verification:** **390 local tests passed**; a fresh no-Torch core+MCP install passed **274**, with 24 explicit optional skips and 92 ML tests deselected. Real pretrained paired/CLI/MCP/contrast checks are reported separately from unit fixtures. [CI](.github/workflows/ci.yml) separates Python 3.10/3.11/3.12 core, offline ML/math/structured generation, MCP protocol and pretrained execution. See [testing](docs/TESTING.md) for current distribution/remote status, exact commits/run links and historical results—not an assumption that an earlier green run validates later edits.
+**Current follow-up verification:** **390 local tests passed**; a fresh no-Torch core+MCP install passed **274**, with 24 explicit optional skips and 92 ML tests deselected. The complete implementation passed **all six GitHub jobs on both push and PR**, including actual pretrained comparison execution. Real paired/CLI/MCP/contrast measurements remain separate from unit fixtures. [CI](.github/workflows/ci.yml) separates Python 3.10/3.11/3.12 core, offline ML/math/structured generation, MCP protocol and pretrained execution. See [testing](docs/TESTING.md) for current distribution/remote status, exact commits/run links and historical results—not an assumption that an earlier green run validates later edits.
 
 ## Storage, releases, and license
 
