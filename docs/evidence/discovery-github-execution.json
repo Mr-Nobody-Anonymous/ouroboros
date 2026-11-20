@@ -1,0 +1,121 @@
+{
+  "actions_notice_failure": {
+    "characters_per_notice": 4096,
+    "full_eleven_arm_results_recoverable_from_notices": false,
+    "notices_are_complete_valid_json": false,
+    "retrieved_notices_per_seed": 10,
+    "seeds": [
+      17,
+      42
+    ]
+  },
+  "artifacts_metadata": [
+    {
+      "digest": "sha256:fc3108e8c636748ecd75b73a04ff6d3645f67a60b32d4f60e880678f48b838f6",
+      "expired": false,
+      "id": 14623630301,
+      "name": "discovery-360m-evidence-17",
+      "size_in_bytes": 838978
+    },
+    {
+      "digest": "sha256:44bbd8f62f4884c28d3ea764b295948cd7c66223ab8a8766c540158f5a31a621",
+      "expired": false,
+      "id": 14621214992,
+      "name": "discovery-360m-evidence-42",
+      "size_in_bytes": 812097
+    },
+    {
+      "digest": "sha256:97a2dc2ab03345784a62238e731f87eef58b9e9b96799c839cc11a7b68ba6c19",
+      "expired": false,
+      "id": 14619577457,
+      "name": "pretrained-self-edit-evidence",
+      "size_in_bytes": 29929
+    }
+  ],
+  "kind": "ouroboros-discovery-github-execution-and-evidence-transport",
+  "pull_request": {
+    "conclusion": "success",
+    "event": "pull_request",
+    "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44715386144",
+    "id": 44715386144,
+    "status": "completed"
+  },
+  "push": {
+    "conclusion": "success",
+    "event": "push",
+    "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44715379570",
+    "id": 44715379570,
+    "status": "completed"
+  },
+  "push_jobs": [
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217333483",
+      "conclusion": "success",
+      "id": 136217333483,
+      "name": "mcp",
+      "status": "completed"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217333842",
+      "conclusion": "success",
+      "id": 136217333842,
+      "name": "discovery-scope",
+      "status": "completed"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217333847",
+      "conclusion": "success",
+      "id": 136217333847,
+      "name": "core (3.12)",
+      "status": "completed"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217333892",
+      "conclusion": "success",
+      "id": 136217333892,
+      "name": "core (3.10)",
+      "status": "completed"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217333952",
+      "conclusion": "success",
+      "id": 136217333952,
+      "name": "local-lora",
+      "status": "completed"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217333982",
+      "conclusion": "success",
+      "id": 136217333982,
+      "name": "pretrained-self-edit",
+      "status": "completed"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217334103",
+      "conclusion": "success",
+      "id": 136217334103,
+      "name": "core (3.11)",
+      "status": "completed"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217421833",
+      "conclusion": "success",
+      "id": 136217421833,
+      "name": "pretrained-discovery-360m (17)",
+      "status": "completed"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217422003",
+      "conclusion": "success",
+      "id": 136217422003,
+      "name": "pretrained-discovery-360m (42)",
+      "status": "completed"
+    }
+  ],
+  "raw_zip_downloaded_in_local_sandbox": false,
+  "raw_zip_failure": "An explicit download of discovery-360m-evidence-42 failed with EOF at the Azure blob redirect. No unchanged retry or claim that this sandbox inspected the ZIP.",
+  "recovery": "Separate read-only artifact review on GitHub: download and check the EXISTING source ZIP digest, hash-verify reports/journals/events and numerical norms, publish complete bounded machine-readable Checks output without inference/new evaluation/reselection. Recovery execution/decoded data not yet verified at this checkpoint.",
+  "review_date": "2026-11-19",
+  "scientific_model_outcomes_at_this_checkpoint": "Await full original artifact review; successful CI execution alone does not establish a useful autonomous edit, generalization, retention or improved future editing policy.",
+  "source_head_sha": "cb4c0df1008f208016a8bfa941c999bd96bcfc8b"
+}

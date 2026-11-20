@@ -59,7 +59,7 @@
       "fixed_final_retention_probe_passed": true,
       "host_authored": true,
       "nonempty_actual_edit": true,
-      "note": "Reworded feature-identical fixture examples are mechanism tests, not independent pretrained capability evidence.",
+      "note": "Reworded feature-identical fixture examples are mechanism tests, not independent pretrained capability evidence. The tiny fixture explicitly uses max_edited_fraction=0.1 so a coefficient can be tested; both actual pretrained studies keep the unchanged production 0.001 fraction and 0.1 relative norm limits.",
       "pretrained_llm": false,
       "scientific_generalization_claimed": false,
       "strict_development_reserved_gates_passed": true

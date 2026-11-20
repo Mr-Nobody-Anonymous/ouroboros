@@ -50,7 +50,7 @@ the opt-in 25-action discovery profile additionally requires explicit per-edit h
 | P21 | Same-model 2B/4B/9B/27B scale ladder; hybrid Qwen3.5 | 135M smoke only | **Not run / model-specific integration unverified**: configurable research resource ceilings can exceed smoke limits, but only tiny Llama and SmolLM2 are verified. No 27B checkpoint, CUDA device or scale-ladder experiment here. Raising a budget does not add architecture support or memory. |
 | P22 | vLLM, high-throughput long generation, same engine reset for editor (Appendix D) | Single-process Transformers greedy path | **Missing**: research backend remains serial, per-prompt local Transformers on one configured device. No vLLM, tensor-parallel/multi-GPU/distributed serving or paper-throughput claim. |
 | P23 | Repair transfer to six image benchmarks (§E.6) | No vision-model evaluator | **Missing**: no vision loader/processor, image benchmark adapters or transfer measurements. |
-| P24 | Actual benchmark gains and repair recovery | No gains on tiny public smoke | **Not established**: tools/tests are not scientific evidence. No MATH-500/GSM8K/IFEval/GPQA/vision run, safety/locality study or paper improvement reproduced. |
+| P24 | Actual benchmark gains and repair recovery | No gains on tiny public smoke | **Not established**: tools/tests are not scientific evidence. No full MATH-500/GSM8K/IFEval/GPQA/vision benchmark, safety/locality study or paper improvement reproduced. The new discovery profile separately tests a fixed 60-problem GSM8K selection, not the standard full benchmark. |
 
 ## 2. Additional Astra/blog capabilities
 

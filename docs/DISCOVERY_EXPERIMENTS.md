@@ -13,16 +13,33 @@ sealed development/reserved checks, exact numerical replay/reversal and subseque
 retention. The classifier is deliberately hand-designed, **not a pretrained LLM**; its
 50%→100% accuracy is a mechanism regression test, not an independent capability result.
 Its reworded feature-identical examples do not establish a research significance claim.
+This tiny unit fixture explicitly raises its edit-fraction allowance to 0.1 so a single
+coefficient can be tested; that is **not** the pretrained policy or evidence of success
+under its resource limits. Both real checkpoint studies keep the original **0.001**
+maximum edited fraction, 0.1 relative norm and strict accuracy/significance/retention gates.
 The no-Torch core+MCP suite also passed **282** tests; an installed non-editable wheel's
 five-role scaffold/catalogue/check-only and all **16 JSON/TXT resources** were checked
 outside the source checkout. [Implementation/distribution receipt](evidence/discovery-implementation-local.json).
 
-The first source-bound **pretrained 135M study is running locally**. The larger, original
-**360M Instruct checkpoint study is configured for GitHub**, not yet verified at this
-implementation checkpoint. Do not infer their outcomes from the test suite. Results and
-failed trials will be recorded separately when those runs finish. No beneficial autonomous
-edit, generalization gain, retention of such a gain or learned self-improvement is currently
-claimed.
+The first source-bound **pretrained 135M study is running locally**. Its completed
+host-controlled small dose improved practice exact accuracy **0/32→3/32** and NLL
+**3.994603→3.675749**, but development **0/32→1/32, p=0.5** failed the unchanged gate;
+reserved stayed unopened. The larger dose harmed NLL/accuracy and was rolled back. These
+are **HOST** choices, not model discoveries. Matched-random controls also finished; model
+conditions remain in progress, with no accepted edit so far.
+
+The original **361,821,120-parameter 360M Instruct studies at both seeds have completed on
+GitHub**, together with all nine push jobs and all six ordinary PR jobs at `cb4c0df`.
+**Their full model evidence is being independently retrieved/reviewed**, not inferred from
+a green check: the first attempt uncovered 4 KB Actions-notice truncation and a notice cap.
+The original ZIP artifacts are preserved; this sandbox cannot fetch their Azure redirect.
+A separate, explicitly read-only artifact-review job now checks those existing archives
+and exports complete bounded Checks API evidence, without any new model run or selection.
+[Execution/transport status](evidence/discovery-github-execution.json).
+
+No beneficial autonomous edit, validated pretrained generalization gain, retention of such
+a gain or learned future self-improvement is currently claimed. Do not infer those outcomes
+from the test suite or an evidence-integrity check.
 
 | Level | Required evidence |
 | --- | --- |
@@ -209,7 +226,10 @@ not an external timestamp or proof that template-correlated problems satisfy exc
 
 Submitting seals **before development inference**, including a failed development look;
 otherwise development would become more practice. The final selected overlay and last valid
-terminal diagnostic overlay are frozen before final inference. Final outcomes never feed
+**proposed** diagnostic overlay are frozen before final inference. The latter is literally
+the last nonempty proposal, **even if it was harmful and already rolled back**; it is not
+silently replaced with a better earlier dose or the search's current staged state. Its
+reported final/retention results are diagnostics only. Final outcomes never feed
 back into this or a later search, rescue rejected candidates or choose a better dose. Cross-arm
 comparisons are reported, not used to launch adaptive extra seeds.
 
@@ -219,10 +239,40 @@ retention are reported separately. If no useful edit was accepted, `retention_of
 is **null**, even if a baseline/diagnostic perturbation was tested successfully. This is one
 small subsequent edit, not extended continual training or proof of durable meta-learning.
 
-Full JSON is kept in ignored output directories and GitHub artifacts; compact check annotations
-include baseline/loss/category/counts, actual edits, outcomes, final/retention and hashes, but
-no raw held-out prompts/answers. The [CI workflow](../.github/workflows/ci.yml) runs the longer
-360M study on implementation pushes, not duplicate PR or docs-only events. A null scientific
+Full JSON is kept in ignored output directories and GitHub artifacts. The first study's
+oversized per-arm Actions notices were **truncated to 4,096 characters**, and only ten notices
+were retrievable per seed, so they cannot be treated as complete JSON or a full study. The
+original artifacts—not reconstructed/truncated notices—remain the source of truth.
+
+The dependency-free reviewer validates source run/head, archive size/digest, safe JSON-only
+extraction, unchanged report/journal/event hashes, start-state equality, complete numerical
+values and independently recomputed delta norms. It does **not** rerun a model, reconstruct
+unedited tensor entries, independently repeat Torch replay, regrade hidden items or choose
+an edit. Tensor replay/restoration remain assertions hash-bound to the original runner.
+
+```bash
+# Local review: NEW output directory, no Torch, network, inference or candidate selection.
+python scripts/review_discovery_experiment.py --study-dir outputs/discovery-135m-01 \\
+  --workdir outputs/discovery-review-135m
+# Only if deliberately reviewing an unfinished study, add --allow-partial.
+
+# Explicit GitHub artifact retrieval (needs normal GitHub access, including its blob host):
+python scripts/review_discovery_experiment.py --github-run 44715379570 \\
+  --expected-head cb4c0df1008f208016a8bfa941c999bd96bcfc8b \\
+  --repo Mr-Nobody-Anonymous/ouroboros --seed 17 --profile 360m \\
+  --workdir outputs/discovery-review-360m-17
+```
+
+The separate [trusted-branch artifact-review workflow](../.github/workflows/discovery-evidence.yml)
+uses explicit `--publish-checks` with job-scoped `actions:read/checks:write` permissions.
+It exports aggregate results and complete numerical ledgers, **not raw held-out prompts or
+answers**, as bounded gzip/base64 parts in Checks API `output.text` (not Actions notices).
+Concatenate/decode/decompress parts and verify the uncompressed SHA256 before reading.
+This is an auditable evidence publication step, not a model fallback, release, additional
+seed, new final evaluation or second selection. Local review defaults to no publication.
+
+The [inference CI workflow](../.github/workflows/ci.yml) runs the longer 360M study on
+implementation pushes, not duplicate PR or docs/analysis-only events. A null scientific
 result can pass **integrity CI**; it cannot pass the scientific useful-edit milestone.
 
 ## Still missing / not established

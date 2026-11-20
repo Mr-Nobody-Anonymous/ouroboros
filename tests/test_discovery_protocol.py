@@ -458,6 +458,12 @@ def test_actual_host_and_matched_random_policies_use_the_same_audited_tools(
     assert "rollback" in row["valid_action_names"]
     assert "evaluate_candidate" in row["valid_action_names"]
     assert random["base_restored"]
+    random_journal = json.loads(Path(random["sessions"][0]["edit_journal"]["path"]).read_text())
+    random_edits = [r for r in random_journal["experiments"] if r["operation"]["action"] == "edit"]
+    for reference, trial in zip(refs, random_edits):
+        tensor = trial["changes"]["tensors"][0]
+        assert tensor["indices"] == reference["indices"]
+        assert tensor["delta_norm"] == pytest.approx(reference["delta_norm"], rel=2e-6, abs=2e-8)
     monkeypatch.setenv("GITHUB_ACTIONS", "true")
     monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(tmp_path / "step.md"))
     envelope = {
@@ -475,3 +481,165 @@ def test_actual_host_and_matched_random_policies_use_the_same_audited_tools(
         evidence["valid_nonempty_edits"] == 2
         and not evidence["milestones"]["validated_autonomous_useful_edit"]
     )
+
+
+def test_development_is_sealed_even_when_its_first_measurement_fails(token_classifier, monkeypatch):
+    session, *_ = setup_session(token_classifier)
+    session.act(hypothesis())
+    session.act(edit())
+    before = model_fingerprint(token_classifier.model)
+
+    def failed_measure(samples, candidate, **kwargs):
+        assert session.sealed
+        raise RuntimeError("Deliberate development inference failure, no adaptive retry")
+
+    monkeypatch.setattr(session, "measure", failed_measure)
+    with pytest.raises(RuntimeError, match="development inference failure"):
+        session.act({"action": "submit"})
+    assert session.sealed and session.reserved_checks == 0
+    with pytest.raises(ValueError, match="sealed"):
+        session.act(hypothesis())
+    assert model_fingerprint(token_classifier.model) == before
+
+
+def test_failed_automatic_feedback_preserves_actual_numeric_edit_audit(
+    token_classifier, monkeypatch
+):
+    session, *_ = setup_session(token_classifier)
+    session.act(hypothesis())
+    resident = model_fingerprint(token_classifier.model)
+    original_measure = session.measure
+
+    def fail_candidate(samples, candidate, **kwargs):
+        if candidate:
+            # Enter and unwind the same resident-overlay restoration boundary before failure.
+            with session.copy.use(candidate):
+                raise RuntimeError("Deliberate candidate measurement failure")
+        return original_measure(samples, candidate, **kwargs)
+
+    monkeypatch.setattr(session, "measure", fail_candidate)
+    with pytest.raises(RuntimeError, match="candidate measurement failure"):
+        session.act(edit())
+    trial = session.experiments[-1]
+    assert trial["status"] == "failed_attempt" and trial["validation_result"]["passed"]
+    assert trial["changes"]["changed_entries"] == 1 and trial["roundtrip_replay"]["passed"]
+    assert trial["practice_evaluation"] is None and trial["restored_to_resident_base"]
+    assert session.journal()["adaptive_summary"]["measured_attempts"] == 0
+    session.act({"action": "rollback"})
+    assert not session.copy.candidate and model_fingerprint(token_classifier.model) == resident
+
+
+def test_retention_counts_real_work_separately_from_cache_and_never_tunes_a_refusal(
+    token_classifier,
+):
+    from ouroboros.lab.retention import retention_probe
+
+    session, *_ = setup_session(token_classifier, cache={})
+    session.act(hypothesis())
+    session.act(edit())
+    prior = session.copy.candidate
+    resident = model_fingerprint(token_classifier.model)
+    first = retention_probe(session, prior, candidate_kind="terminal_diagnostic")
+    assert first["status"] == "completed" and first["retention_of_validated_useful_edit"] is None
+    assert first["actual_generated_sequences"] == 4 * len(session.discovery["retention"])
+    assert first["actual_loss_evaluated_problems"] == first["actual_generated_sequences"]
+    assert first["measurement_cache_hits"] == 0
+    assert (
+        first["roundtrip_replay"]["passed"] and first["subsequent_only_roundtrip_replay"]["passed"]
+    )
+    second = retention_probe(session, prior, candidate_kind="terminal_diagnostic")
+    assert second["actual_generated_sequences"] == second["actual_loss_evaluated_problems"] == 0
+    assert second["measurement_cache_hits"] == 4
+    assert session.copy.candidate is prior and model_fingerprint(token_classifier.model) == resident
+    session.discovery["followup_operations"][0]["value"] = 100
+    refused = retention_probe(session, prior, candidate_kind="terminal_diagnostic")
+    assert refused["status"] == "refused" and refused["actual_generated_sequences"] == 0
+    assert refused["retention_of_validated_useful_edit"] is None
+    assert session.discovery["followup_operations"][0]["value"] == 100
+    assert refused["base_restored"] and session.copy.candidate is prior
+
+
+def test_feedback_off_blocks_all_candidate_outcome_routes_before_any_extra_work(token_classifier):
+    session, *_ = setup_session(token_classifier, feedback=False)
+    session.act(hypothesis())
+    session.act(edit())
+    calls = token_classifier.model.calls
+    blocked = [
+        {"action": "evaluate_candidate", "ids": [0]},
+        {"action": "test", "ids": [0], "weights": "both"},
+        {"action": "inspect_gradients", "name": "bridge.weight", "ids": [0], "weights": "edited"},
+        {"action": "read", "kind": "logprobs", "texts": ["warm"], "weights": "edited"},
+        {
+            "action": "contrast",
+            "module": "bridge",
+            "failing": ["warm"],
+            "successful": ["cool"],
+            "weights": "edited",
+        },
+        {"action": "contrast_practice", "module": "bridge", "ids": [0, 1], "weights": "edited"},
+    ]
+    for action in blocked:
+        with pytest.raises(ValueError, match="feedback-off"):
+            session.act(action)
+    assert token_classifier.model.calls == calls
+    analyzed = session.act(
+        {
+            "action": "analyze_failure",
+            "experiment_id": "e0",
+            "assessment": "unmeasured",
+            "evidence": "Outcomes withheld by this arm.",
+            "revision": "Do not invent them.",
+        }
+    )
+    assert analyzed["actual_outcome"] is not None  # Full host archive, never the editor view.
+    assert "actual_outcome" not in session.editor_observation(analyzed)
+    session.act({"action": "save", "name": "first"})
+    with pytest.raises(ValueError, match="require weights=both"):
+        session.act({"action": "test", "ids": [0], "weights": "original", "saved": ["first"]})
+    assert token_classifier.model.calls == calls
+
+
+def test_run_interruption_flushes_numeric_journal_and_restores_before_final_data(
+    token_classifier, tmp_path
+):
+    import torch
+
+    _, dataset, policy, spec = setup_session(token_classifier)
+    before = model_fingerprint(token_classifier.model)
+    rng = torch.get_rng_state().clone()
+    flags = [p.requires_grad for p in token_classifier.model.parameters()]
+    token_classifier.model.train()
+    modes = [m.training for m in token_classifier.model.modules()]
+
+    def interrupt(session, turn, observation):
+        if turn == 0:
+            return hypothesis()
+        if turn == 1:
+            return edit()
+        raise KeyboardInterrupt("Deliberate host interruption, no final inference")
+
+    with pytest.raises(KeyboardInterrupt, match="host interruption"):
+        run_lab(
+            token_classifier,
+            dataset,
+            policy,
+            tmp_path,
+            sampling=Sampling(),
+            editor={"mode": "scripted"},
+            controller=interrupt,
+            discovery=spec,
+            provenance="HOST interruption fixture, not an LLM.",
+            license_name="MIT",
+        )
+    report = json.loads(next(tmp_path.glob("*/lab.json")).read_text())
+    assert report["status"] == "interrupted" and report["base_restored"]
+    assert report["final_test"]["status"] == "skipped_after_failure"
+    assert report["sessions"][0]["status"] == "interrupted"
+    journal = json.loads(Path(report["sessions"][0]["edit_journal"]["path"]).read_text())
+    assert (
+        len(journal["experiments"]) == 1 and journal["experiments"][0]["roundtrip_replay"]["passed"]
+    )
+    assert model_fingerprint(token_classifier.model) == before
+    assert torch.equal(torch.get_rng_state(), rng)
+    assert [p.requires_grad for p in token_classifier.model.parameters()] == flags
+    assert [m.training for m in token_classifier.model.modules()] == modes
