@@ -1,6 +1,6 @@
 # Numeric inspection and measured weight-edit experiments
 
-This is an explicit experimental path alongside LoRA training. It does **not** reproduce Astra, infer semantics from arbitrary weights, or silently insert weight surgery into every training generation.
+This is an explicit experimental path alongside LoRA training. It does **not** reproduce Astra, infer semantics from arbitrary weights, or silently insert weight surgery into every training generation. Version 0.4 also composes these primitives in a [same-model constrained self-edit controller](SELF_EDITING.md), with final-test isolation and accepted-chain reversal; the APIs below remain independently usable.
 
 ## Inspect a file without loading a model
 
@@ -30,7 +30,7 @@ The JSON response gives the actual `report_path` and `patch`. Keep these paths r
 
 ## A real local causal-LM trial
 
-1. Provision a licensed local model with safetensors, config and tokenizer files. No model is downloaded by Ouroboros.
+1. Provision a licensed local model with safetensors, config and tokenizer files. Loading/trials never download a model; `models fetch` / `models fetch-smoke` are separate explicit provisioning commands.
 2. Copy/edit [weight_trial.json](../examples/weight_trial.json). Replace the model path, exact runtime parameter name, model license, source revision and direction provenance.
 3. Replace [direction.example.json](../examples/data/direction.example.json) with a **measured** finite nonzero vector: one entry per stored matrix row. The four-entry example is a schema placeholder and does not fit arbitrary Qwen models. It is not Astra's released direction. `WeightSpaceProgrammer.contrastive_direction` can reduce caller-supplied failing/successful activations, but those activations and their causal interpretation remain your responsibility. Standard Linear and GPT-2 Conv1D store matrices in different orientations.
 4. Supply independently checked canonical validation answers and retention domains. Do not tune on your final test set.

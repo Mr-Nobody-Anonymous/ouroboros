@@ -16,6 +16,8 @@ python scripts/check_docs.py
 
 For a no-Torch environment run `python -m pytest -q -m 'not ml'`. Core safetensors inspection/patch-format tests must work there. Optional Torch/direct-edit and local-LM tests need the `train` extra, with the tested versions in `constraints/ml-tested.txt`. Tiny causal LMs/tokenizers are generated locally without pretrained downloads; mark all Torch-dependent tests `ml` so minimal installations remain lightweight.
 
+`python scripts/install.py --profile train --dev` is the convenience environment setup (includes optional MCP/GGUF packages). MCP tests use the `mcp` marker and the real official SDK/stdio protocol. `init` must work from an installed wheel with no source tree. Ordinary pytest must never download pretrained data; the separate `scripts/run_pretrained_smoke.py --fetch` / GitHub job is explicitly network-enabled and checks mechanics, not a required accuracy gain. Preserve the read-only MCP default and explicit config allowlist; do not add generic execution/deletion tools.
+
 Check both `ouroboros run --config examples/local_sft.json --check-only` and `ouroboros weights trial --config examples/weight_trial.json --check-only`. A schema check must not imply that a real model exists or that a direction matches its target.
 
 ## Standards

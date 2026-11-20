@@ -1,0 +1,12 @@
+[
+  {
+    "instruction": "Calculate 3 + 8. Give only the number.",
+    "target": "11",
+    "domain": "arithmetic"
+  },
+  {
+    "instruction": "What is the capital of Italy? Answer with only the city name.",
+    "target": "Rome",
+    "domain": "retention"
+  }
+]

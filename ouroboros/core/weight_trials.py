@@ -81,7 +81,9 @@ def _tensor_hash(tensor):
     header = json.dumps(
         {"shape": list(tensor.shape), "dtype": str(tensor.dtype)}, sort_keys=True
     ).encode()
-    return hashlib.sha256(header + b"\0" + tensor.view(torch.uint8).numpy().tobytes()).hexdigest()
+    return hashlib.sha256(
+        header + b"\0" + tensor.reshape(-1).view(torch.uint8).numpy().tobytes()
+    ).hexdigest()
 
 
 def _seed(torch, seed, devices):
@@ -142,6 +144,7 @@ def run_weight_edit_trial(
     provenance,
     license_name,
     model_info=None,
+    reference_scores=None,
 ):
     """Test one ablation, enforce count/norm/byte/retention gates, export only accepted patches.
 
@@ -219,9 +222,12 @@ def run_weight_edit_trial(
                 _seed(torch, plan.seed, devices)
                 with torch.inference_mode():
                     report["candidate"] = evaluate_samples(predict, validation)
-                evaluator = SelfEvaluator(report["baseline"]["scores"])
+                evaluator = SelfEvaluator(
+                    report["baseline"]["scores"] if reference_scores is None else reference_scores
+                )
                 passed, reason = evaluator.verify_improvement(
                     report["candidate"]["scores"],
+                    previous_scores=report["baseline"]["scores"],
                     forgetting_threshold=plan.forgetting_threshold,
                     improvement_threshold=plan.improvement_threshold,
                 )

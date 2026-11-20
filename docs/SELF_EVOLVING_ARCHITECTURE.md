@@ -1,6 +1,6 @@
 # Self-evolving architecture: implemented control flow and research boundaries
 
-As of 2026-11-19, version 0.3.0. Read the [capability table](../README.md#capability-status) before interpreting “self-evolving.” This repository provides a bounded experimental controller, not a guarantee that a model can improve itself indefinitely.
+As of 2026-11-19, version 0.4 development. Read the [capability table](../README.md#capability-status) before interpreting “self-evolving.” This repository provides a bounded experimental controller, not a guarantee that a model can improve itself indefinitely.
 
 ## 1. Persistent state and trust boundaries
 
@@ -67,6 +67,16 @@ SFT masks prompt and padding labels with `-100`, retains completion labels/EOS, 
 
 Base weights are not copied into each checkpoint. Keep the original model directory and record its license/revision separately. Saved metadata records local path and file hashes; `evaluate --model-path` supports relocation but refuses recorded content mismatches. GPU QLoRA is an optional training path, not a tested hardware claim. Direct weight trials refuse quantized models.
 
+### Same-model constrained weight selection (0.4)
+
+`self_edit.py` is a **separate controller**, not a silent insertion into PEFT SFT. It measures a frozen local-model baseline, constructs at most four explicit coordinate/strength ablations, and obtains a constrained next-token choice from that **same target model**. Practice examples/predictions and previous edit/decision summaries enter the prompt; held-out questions/labels do not. A label preference is not evidence of semantic weight understanding. `require_attempt` removes abstention only when deliberately requested (the smoke fixture does so).
+
+Each trial always restores its one matrix and enforces entry/norm/byte budgets. An accepted data-only patch is then applied in memory; original/latest domain floors prevent cumulative retention drift. Final-test inference occurs once after selection, then the accepted chain is reversed in reverse order even on final-test failure/cancellation. Full state-dict fingerprints (including buffers) check restoration; successful configured runs rehash base/tokenizer files. These checks detect foreign callback changes but do not snapshot or undo arbitrary side effects. No full model overwrites the source.
+
+`project.py`/packaged resources provide `init` from a wheel. `model_files.py` separates **explicit** pinned/size-bounded model provisioning from local-only inference. Its GitHub smoke route was actually cloned and adapted as data-only Q4_1-to-float32 conversion, not plugin execution or recovered full precision. The pretrained 135M experiment rejected two nonzero plateau edits; see [mechanism/evidence](SELF_EDITING.md).
+
+`mcp_server.py` uses the optional official SDK over **stdio only**, read-only by default. It exposes bounded inspection/config/report tools; execution appears only with startup opt-in and unchanged allowlisted configs. A fixed offline-Hub child, serialized runs and a wall timeout are operational controls, not an OS sandbox. See [permissions/threat model](MCP.md).
+
 ## 3. Promotion, rollback and final tests
 
 Domain scores are normalized exact-match fractions. `evaluate_samples` validates prediction cardinality and string types **before** scoring, then returns per-domain counts/scores, macro accuracy and predictions. A candidate needs positive macro-domain gain meeting `improvement_threshold`. For each domain it must remain within `forgetting_threshold` of **both** generation 0 and the latest accepted generation. Missing domains, NaN/Inf, missing loss, zero optimizer steps and checkpoint-export failure cannot promote a candidate. Equality is not progress. The weakest domain is used for diagnosis; all supplied training domains remain in the curriculum.
@@ -104,7 +114,7 @@ Pareto pruning compares macro accuracy (maximize) against actual bytes (minimize
 | LoRA / QLoRA | [Original papers](../papers/LoRA_and_QLoRA.md); resource claims depend on setup | Real PEFT SFT; GPU quantization untested |
 | SEAL | [2506.10943](https://arxiv.org/abs/2506.10943): learned self-edit outer RL | Verified proposal interface + local SFT, not SEAL RL |
 | Weight-space programming | [MIT post](../papers/Sparks_of_Weight_Space_Programming.md): specific repetition repair | Bounded inspection, measured reversible trials and patches; Astra not reproduced |
-| Self-rewriting | [2611.21885v2](https://arxiv.org/abs/2611.21885v2): larger model gains, smaller models fail | Candidate/abstention/rollback design and post-selection final-test isolation, not a learned self-editor |
+| Self-rewriting | [2611.21885v2](https://arxiv.org/abs/2611.21885v2): larger model gains, smaller models fail | Same-model bounded menu selection, measured trials/abstention/chain rollback and final test; 135M plateau smoke, not a reproduction or learned self-editor |
 | Harness/weight co-evolution | [Evo2](https://arxiv.org/abs/2610.13025), [SIA](https://arxiv.org/abs/2605.27276) | Separate reviewable patch and adapter experiments, not joint RL |
 | Evaluation and continual learning | [WeightBench](https://arxiv.org/abs/2611.18553), [continual-agent study](https://arxiv.org/abs/2610.25858) | Independent source checkouts, original/latest gates and optional final test |
 | Recursive synthetic-data drift | [Nature article](https://www.nature.com/articles/s41586-024-07566-y) | Verified replay mitigation, not a universal ratio or theorem |

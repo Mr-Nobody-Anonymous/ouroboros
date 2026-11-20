@@ -150,8 +150,8 @@
       "kind": "preprint",
       "url": "https://arxiv.org/abs/2611.21885v2",
       "summary": "A 27B model reportedly gains 6.6 accuracy points on held-out math; smaller models abstain or damage themselves. Repeated practice checks are not an untouched final test. v2 dated November 18 was consulted.",
-      "local_path": "ouroboros/pipeline/self_loop.py",
-      "implementation_status": "design-motivation-not-reproduced",
+      "local_path": "ouroboros/self_edit.py",
+      "implementation_status": "bounded-menu-experiment-not-reproduced",
       "reviewed_on": "2026-11-19",
       "review_scope": "abstract-and-selected-methods",
       "reproduced_here": false

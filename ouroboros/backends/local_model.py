@@ -1,5 +1,6 @@
 """Shared offline safetensors loading and greedy inference; no PEFT or training required."""
 
+import inspect
 from pathlib import Path
 
 from ..config import ModelConfig
@@ -35,6 +36,7 @@ class LocalCausalLM:
             "tokenizer.model",
             "vocab.txt",
             "added_tokens.json",
+            "chat_template.jinja",
         )
         base_files = sorted(
             {file for pattern in patterns for file in path.glob(pattern) if file.is_file()}
@@ -50,7 +52,9 @@ class LocalCausalLM:
             import torch
             from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
         except ImportError as exc:
-            raise RuntimeError("Install the training extra: pip install -e '.[train]'") from exc
+            raise RuntimeError(
+                "Install LLM dependencies: pip install -e '.[llm]' (or the train extra)"
+            ) from exc
         self.torch, self.config = torch, model_config
         if model_config.device.startswith("cuda") and not torch.cuda.is_available():
             raise ValueError("CUDA requested but unavailable")
@@ -97,10 +101,69 @@ class LocalCausalLM:
             "base_model": str(Path(self.config.model_name_or_path).resolve()),
             "base_model_files": dict(self.base_model_files),
             "quantized": self.config.use_qlora,
+            "parameters": sum(p.numel() for p in self.model.parameters()),
             "trainable_parameters": sum(
                 p.numel() for p in self.model.parameters() if p.requires_grad
             ),
             "model_config": dict(self.config.__dict__),
+        }
+
+    def render_prompt(self, instruction):
+        if self.config.prompt_format == "chat":
+            if not self.tokenizer.chat_template:
+                raise ValueError("chat prompt_format requires a tokenizer chat template")
+            return self.tokenizer.apply_chat_template(
+                [{"role": "user", "content": instruction}],
+                tokenize=False,
+                add_generation_prompt=True,
+            )
+        return format_prompt(instruction)
+
+    def prompt_inputs(self, instruction):
+        inputs = self.tokenizer(
+            self.render_prompt(instruction),
+            return_tensors="pt",
+            add_special_tokens=self.config.prompt_format != "chat",
+            return_token_type_ids=False,
+        ).to(self.device)
+        return inputs
+
+    def choose(self, instruction, labels):
+        """Constrained next-token selection by THIS model, not an external proposer or judge.
+
+        Labels must be distinct single-token strings. This intentionally restricts the action
+        space; it is not free-form weight-program synthesis or evidence that the edit is correct.
+        """
+        torch = self.torch
+        if not labels or len(set(labels)) != len(labels):
+            raise ValueError("Nonempty unique choice labels are required")
+        encodings = [self.tokenizer.encode(label, add_special_tokens=False) for label in labels]
+        if any(len(ids) != 1 for ids in encodings) or len({ids[0] for ids in encodings}) != len(
+            labels
+        ):
+            raise ValueError("Choice labels must map to unique single tokens")
+        inputs = self.prompt_inputs(instruction)
+        if inputs.input_ids.shape[1] >= self.context_size:
+            raise ValueError("Proposal prompt exceeds the context budget")
+        self.model.eval()
+        last_only = (
+            {"logits_to_keep": 1}
+            if "logits_to_keep" in inspect.signature(self.model.forward).parameters
+            else {}
+        )
+        with torch.inference_mode():
+            logits = self.model(**inputs, **last_only).logits[0, -1].float()
+            ids = torch.tensor([encoding[0] for encoding in encodings], device=logits.device)
+            selected = logits[ids]
+            if not torch.isfinite(selected).all():
+                raise FloatingPointError("Nonfinite proposal logits")
+            probabilities = torch.softmax(selected, dim=0).cpu().tolist()
+        choice = labels[max(range(len(labels)), key=lambda i: probabilities[i])]
+        return {
+            "choice": choice,
+            "method": "constrained-next-token-choice",
+            "probabilities_within_menu": dict(zip(labels, probabilities)),
+            "proposer_is_target_model": True,
         }
 
     def predict(self, prompts):
@@ -110,7 +173,7 @@ class LocalCausalLM:
         # Single-prompt generation avoids padding-side and batch-size dependent decoding.
         with torch.inference_mode():
             for prompt in prompts:
-                inputs = self.tokenizer(format_prompt(prompt), return_tensors="pt").to(self.device)
+                inputs = self.prompt_inputs(prompt)
                 if inputs.input_ids.shape[1] + self.config.max_new_tokens > self.context_size:
                     raise ValueError(
                         "Evaluation prompt exceeds the context budget; it was not truncated"

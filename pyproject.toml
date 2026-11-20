@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ouroboros"
-version = "0.3.0"
+version = "0.4.0"
 description = "Auditable local model adaptation, weight editing, and bounded self-improvement experiments"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -14,6 +14,9 @@ authors = [{name = "Ouroboros contributors"}]
 dependencies = ["numpy>=1.24,<3", "PyYAML>=6,<7", "safetensors>=0.4,<1"]
 
 [project.optional-dependencies]
+llm = ["torch>=2.2,<3", "transformers>=4.46,<5", "accelerate>=1,<2", "huggingface-hub>=0.26,<1"]
+mcp = ["mcp>=1.20,<2"]
+smoke = ["gguf>=0.19,<1"]
 train = ["torch>=2.2,<3", "transformers>=4.46,<5", "peft>=0.14,<1", "accelerate>=1,<2", "safetensors>=0.4,<1"]
 quantization = ["bitsandbytes>=0.45,<1"]
 preference = ["trl>=0.15,<1", "datasets>=3,<5"]
@@ -21,6 +24,7 @@ dev = ["pytest>=8,<10", "ruff>=0.8,<1", "build>=1,<2"]
 
 [project.scripts]
 ouroboros = "ouroboros.cli:main"
+ouroboros-mcp = "ouroboros.mcp_server:main"
 
 [project.urls]
 Repository = "https://github.com/Mr-Nobody-Anonymous/ouroboros"
@@ -29,10 +33,16 @@ Repository = "https://github.com/Mr-Nobody-Anonymous/ouroboros"
 include = ["ouroboros*"]
 exclude = ["external*", "tests*"]
 
+[tool.setuptools.package-data]
+"ouroboros.resources" = ["*.json"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
-markers = ["ml: optional Torch/direct-edit and local Transformers/PEFT integration tests (no downloads)"]
+markers = [
+    "ml: optional Torch/direct-edit and local Transformers/PEFT integration tests (no downloads)",
+    "mcp: optional real MCP SDK and stdio protocol integration tests",
+]
 
 [tool.ruff]
 line-length = 100

@@ -1,0 +1,26 @@
+{
+  "model": {
+    "model_name_or_path": "models/smollm2",
+    "device": "cpu",
+    "torch_dtype": "float32",
+    "max_new_tokens": 12,
+    "prompt_format": "chat"
+  },
+  "policy": {
+    "max_rounds": 2,
+    "max_seconds": 240,
+    "cpu_threads": 2,
+    "edited_fraction": 0.001,
+    "max_relative_norm": 0.02,
+    "forgetting_threshold": 0.0,
+    "require_attempt": true
+  },
+  "data": {
+    "train": "practice.json",
+    "validation": "validation.json",
+    "test": "test.json"
+  },
+  "output_dir": "outputs/self-edit",
+  "license": "Apache-2.0 (verify the downloaded model card before reuse)",
+  "provenance": "SmolLM2-135M-Instruct: explicitly provision original Hub weights or the pinned GitHub Q4_1-derived smoke model. The model receipt records source revision, conversion (if any) and SHA-256 hashes. Public smoke tasks, not benchmark evidence."
+}

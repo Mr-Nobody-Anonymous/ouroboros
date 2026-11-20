@@ -29,12 +29,15 @@ class ModelConfig:
     use_qlora: bool = False
     bits: int = 4
     max_new_tokens: int = 64
+    prompt_format: str = "plain"
 
     def __post_init__(self):
         if self.model_name_or_path is not None and (
             not isinstance(self.model_name_or_path, str) or not self.model_name_or_path.strip()
         ):
             raise ValueError("model_name_or_path must be a nonempty local path string or None")
+        if self.prompt_format not in ("plain", "chat"):
+            raise ValueError("prompt_format must be plain or chat")
         if self.torch_dtype not in ("float32", "float16", "bfloat16"):
             raise ValueError("torch_dtype must be float32, float16, or bfloat16")
         if not isinstance(self.device, str) or not re.fullmatch(

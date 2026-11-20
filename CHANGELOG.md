@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.4.0 — same-model experiments and local MCP (development)
+
+### Added
+
+- A real small causal LM uses its own next-token logits to choose a bounded host-defined edit to its own MLP weights. Optional abstention, original/latest retention, strict positive-gain gates and isolated final-test inference remain host-controlled.
+- Accepted patches can form an in-memory chain; reverse-order cleanup, full state-dict restoration fingerprints and source-file rehashing leave the original base model unchanged.
+- Explicit model provisioning with resolved revisions, byte gates and SHA-256 receipts. A pinned/hash-checked GitHub Q4_1 SmolLM2 source is converted to float32 safetensors without executing its plugin; the original precision is not recovered. Separate Hub download path has mocked boundary tests.
+- Packaged `init` fixtures, three-profile venv installer, `llm`/`mcp`/`smoke` extras, improved doctor, JSON CLI and explicit pretrained end-to-end smoke script.
+- Official-SDK **stdio MCP**, read-only by default. Optional experiments need startup opt-in plus unchanged allowlisted configs, workspace path checks, serialized fixed-argument offline-Hub children and wall-time/cancellation cleanup. No generic shell/download/delete/apply tool.
+- Local pretrained evidence, offline/random-LM and real MCP protocol regressions, plus dedicated GitHub MCP/pretrained smoke jobs with small JSON artifacts only.
+- One compact Ouroboros emblem, a new quickstart-focused README and mechanism/permissions/security/testing guides.
+
+### Fixed
+
+- Preserve original-generation retention floors across successive direct trials rather than permitting threshold-sized incremental drift.
+- Share reviewed chat-template rendering between inference, proposals and SFT; suppress unsupported tokenizer `token_type_ids` for portable causal-LM generation.
+- Handle scalar buffers in full-state hashing, malformed model IDs, shard traversal, changed model receipts, failed chain reversal and failed/interrupted final-test states.
+- Drain child pipes during timeout/cancellation cleanup to avoid waiting on a full stdout buffer.
+
+### Observed result and limits
+
+The actual 134,515,008-parameter pretrained Q4_1-derived SmolLM2 selected two nonzero edits (884 entries each). Both plateaued on the four-example strict exact-match fixture and were rejected/restored; no patch or capability gain is claimed. The metric penalizes verbose/truncated answers. This is constrained menu choice, not free-form self-written weight programs, semantic circuit discovery, Astra replication, statistical evidence or an OS sandbox. Historical published releases are unchanged. See [self-edit evidence](docs/SELF_EDITING.md) and [MCP permissions](docs/MCP.md).
+
 ## 0.3.0 — measured reversible weight experiments (2026-11-19, pre-release)
 
 ### Added

@@ -26,6 +26,8 @@ ouroboros weights trial --config examples/weight_trial.json --check-only
 ouroboros demo --generations 3
 ```
 
+`python scripts/install.py --profile core --dev` creates the local environment with optional MCP; `--profile llm` adds same-model inference/GGUF smoke provisioning, and `--profile train` adds PEFT. `ouroboros init NEW_DIRECTORY` packages its own tiny fixtures. Run `self-edit --config CONFIG --check-only` before a real run. Model downloads are explicit `models fetch` (Hub) / `models fetch-smoke` (pinned GitHub derivative), not side effects of inference.
+
 Core dependencies include NumPy, PyYAML and safetensors, **not Torch**. `pip install -e '.[train]' -c constraints/ml-tested.txt` enables CPU Torch/direct-edit and tiny random local-LM tests without pretrained downloads. No GPU is assumed. Run the full `pytest` suite in that environment; mark new Torch-dependent tests `ml`. Check-only validates config/data, not actual model availability or target shape.
 
 ## Measured weight-edit contract
@@ -37,8 +39,18 @@ Core dependencies include NumPy, PyYAML and safetensors, **not Torch**. `pip ins
 - Do not apply base edits inside PEFT SFT and assume adapter-only snapshots/checkpoints own them. Keep interventions separate unless their backend rollback/export contract is implemented and tested.
 - `weights demo` is a **2×2 Torch classifier**. The training demo is a tiny NumPy classifier. Neither is an LLM/math benchmark or Astra reproduction.
 
+## Same-model / MCP contract
+
+- Read docs/SELF_EDITING.md and docs/MCP.md. Self-edit means THIS target model chooses a constrained menu label with its logits, not a full self-written weight program or guaranteed improvement. `require_attempt: true` is an explicit smoke-only forced-choice setting; API policy defaults to allowing abstention.
+- Practice data only enter proposal prompts. Fixed validation drives strict original/latest gates; a final test runs once after selection. Accepted patch chains are used in memory then reversed in reverse order. Full state/source hashes check restoration; no base model files are overwritten.
+- The checked-in pretrained report used a pinned Q4_1-derived 135M SmolLM2, not original full precision. Both nonzero trials plateaued/rejected. Do not call it an accuracy gain, semantic weight discovery, Astra reproduction or a benchmark.
+- MCP defaults to local stdio read-only tools. Execution requires startup opt-in AND unchanged allowlisted configs. Do not add generic shell, download, delete, unrestricted file-read or generated-code execution tools. Path checks/offline child flags/timeouts are not an OS sandbox.
+- Mark real SDK/protocol tests `mcp`, Torch tests `ml`; ordinary pytest must never implicitly download pretrained data. scripts/run_pretrained_smoke.py requires explicit --fetch or an existing receipt-verified model and a new workdir. CI uploads JSON evidence only.
+
 ## Map
 
+- ouroboros/self_edit.py, model_files.py, project.py, resources/: same-model controller, explicit model provisioning and installed-package quickstart fixtures.
+- ouroboros/mcp_server.py: optional official-SDK stdio server, read-only default and allowlisted offline child execution.
 - ouroboros/backends/: NumPy reference classifier, shared frozen LocalCausalLM loader and optional PEFT SFT backend.
 - ouroboros/pipeline/self_loop.py: measured control flow, owned-state rollback, stage evidence and once-only post-selection final test.
 - ouroboros/data.py: schema, provenance, replay and split boundaries.

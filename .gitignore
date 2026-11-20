@@ -17,6 +17,7 @@ build/
 dist/
 *.egg
 checkpoints/
+models/
 adapters/
 outputs/
 logs/

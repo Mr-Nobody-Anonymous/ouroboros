@@ -4,7 +4,7 @@ Ouroboros is an experimental training controller, **not** a security sandbox. Re
 
 ## Defaults
 
-- No model or dataset downloads in core training/evaluation commands.
+- No model or dataset downloads in training/evaluation/check-only/MCP commands. `models fetch`, `models fetch-smoke` and `repos sync` are explicit network operations.
 - Local safetensors model loading with `trust_remote_code=False`; NumPy loads use `allow_pickle=False`.
 - Bounded numeric inspection and data-only patch verification do not load Torch, model code or pickle.
 - No source from `external/` executes merely because it is cloned, inspected or listed.
@@ -27,6 +27,18 @@ Read [the weight-edit contract](docs/WEIGHT_EDITING.md) before using it. Trial i
 Patches are data-only safetensors plus JSON, with bounded file sizes, exact two-file inventories, index/dtype/finite checks and explicit before/after values. `verify-patch` checks their format/integrity, not their scientific validity. `apply_weight_patch` additionally checks full expected input/output **target-tensor** hashes, selected values and the norm policy before mutation. Those checks do not bind all other model weights, authenticate the author, validate asserted licenses or certify behavior in a different full model. Weight tying can give one edited tensor multiple roles.
 
 Reversal needs the exact expected patched tensor; it is not a substitute for retaining an independent known-good model. Only ordinary little-endian F16/BF16/F32/F64 matrices are supported; quantized models are refused. PEFT adapter-only snapshots/exports do **not** preserve/undo arbitrary base-weight edits. Keep direct trials separate from SFT unless the corresponding backend state/export contract is implemented and tested.
+
+## Same-model experiments and MCP
+
+The [self-edit controller](docs/SELF_EDITING.md) offers a host-defined, bounded numeric menu to the same target model; it does not execute model-generated programs. Validation/final-test questions and labels are not put into the proposal prompt. Practice data, model outputs and earlier decision summaries remain untrusted content. A constrained label preference is not proof of semantic weight understanding.
+
+Accepted patches are applied temporarily in order and reversed in reverse order in `finally`, including final-test errors/cancellation. Full state-dict hashes check that the owned chain restored; they **detect**, not undo, arbitrary trusted callback writes elsewhere. Model/tokenizer source files are rehashed after a successful configured run. Hard process termination can prevent report finalization; no source model is saved over. Preflight byte/element limits are helpful, not a hardened malicious-config memory sandbox.
+
+The optional [MCP server](docs/MCP.md) is **local stdio and read-only by default**. Experiment tools are absent unless the operator supplies both `--allow-experiments` and an explicit config allowlist. Config hashes must remain unchanged; all configured paths must be inside the workspace, without hidden/traversal/symlink components. These checks do not defend against concurrent filesystem replacement or authenticate every input byte. Model/data/library inputs are trusted. There are no shell/download/delete/arbitrary-patch tools.
+
+Enabled runs use a fixed-argument offline-Hub child with a wall timeout and serialized execution. A subprocess inherits environment/filesystem privileges; HF offline flags are not an OS network firewall, and a timeout is not a RAM/VRAM or security sandbox. Use an isolated, least-privileged environment without credentials, a tiny workspace and a separate trusted grader for adversarial work. Reports may contain private practice examples/predictions; tool annotations and JSON schemas do not automatically redact them or prevent client-side prompt injection.
+
+Explicit model provisioning refuses existing destinations and executable/pickle inputs, pins source revisions and records file checksums. The pinned GitHub route reads only model data/license from a clone, not its plugin code. Q4_1-to-float32 conversion does not recover original precision. License/source metadata and receipts are assertions plus integrity checks, not signatures or legal/security approval.
 
 ## Generated source
 

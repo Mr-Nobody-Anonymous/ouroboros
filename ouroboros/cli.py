@@ -147,6 +147,9 @@ def doctor():
             "peft",
             "trl",
             "easyeditor",
+            "mcp",
+            "huggingface_hub",
+            "gguf",
         )
     }
     lfs = shutil.which("git-lfs") is not None
@@ -161,7 +164,17 @@ def doctor():
             "docker": shutil.which("docker") is not None,
         },
         "default_mode": "measured tiny CPU classifier; NOT an LLM",
-        "network": "Core commands never download a model. repos sync explicitly uses GitHub.",
+        "network": "Only explicit models fetch/fetch-smoke and repos sync access the network; inference is local-only.",
+        "ready": {
+            "core": all(packages[name] for name in ("numpy", "yaml", "safetensors")),
+            "self_edit": all(packages[name] for name in ("torch", "transformers", "safetensors")),
+            "mcp": packages["mcp"],
+        },
+        "install_hints": {
+            "self_edit": "python -m pip install -e '.[llm]' -c constraints/ml-tested.txt",
+            "mcp": "python -m pip install -e '.[mcp]'",
+            "github_smoke_model": "python -m pip install -e '.[llm,smoke]' -c constraints/ml-tested.txt",
+        },
     }
 
 
@@ -190,6 +203,51 @@ def parser():
         "--model-path", help="Relocated local base model directory (LLM checkpoints only)"
     )
     commands.add_parser("doctor", help="Inspect dependencies without loading models")
+    init = commands.add_parser(
+        "init", help="Create a small self-edit project; never overwrite files"
+    )
+    init.add_argument("directory", nargs="?", default="ouroboros-lab")
+    self_edit = commands.add_parser(
+        "self-edit", help="Same local model selects bounded edits to its own weights"
+    )
+    self_edit.add_argument("--config", required=True)
+    self_edit.add_argument(
+        "--check-only",
+        action="store_true",
+        help="Check schema/data without a model load or download",
+    )
+    models = commands.add_parser(
+        "models", help="Explicit model provisioning or offline checksum verification"
+    )
+    model_ops = models.add_subparsers(dest="model_operation", required=True)
+    fetch = model_ops.add_parser(
+        "fetch", help="Explicit Hub download: safetensors/config/tokenizer only, pinned receipt"
+    )
+    fetch.add_argument("--repo", default="HuggingFaceTB/SmolLM2-135M-Instruct")
+    fetch.add_argument("--directory", required=True)
+    fetch.add_argument("--revision", default="main")
+    fetch.add_argument("--max-bytes", type=int, default=1024**3)
+    smoke = model_ops.add_parser(
+        "fetch-smoke",
+        help="Explicit pinned GitHub pretrained GGUF -> float32 safetensors conversion",
+    )
+    smoke.add_argument("--directory", required=True)
+    model_verify = model_ops.add_parser(
+        "verify", help="Verify local files against their download receipt (no network)"
+    )
+    model_verify.add_argument("--directory", required=True)
+    mcp = commands.add_parser(
+        "mcp", help="Local stdio MCP server; read-only unless experiments explicitly enabled"
+    )
+    mcp.add_argument("--workspace", default=".")
+    mcp.add_argument("--allow-experiments", action="store_true")
+    mcp.add_argument(
+        "--config",
+        action="append",
+        default=[],
+        help="Allowlist one self-edit config; repeat to approve more",
+    )
+    mcp.add_argument("--timeout-seconds", type=int, default=600)
     repos = commands.add_parser(
         "repos", help="List, verify, or explicitly fetch locked upstream sources"
     )
@@ -285,6 +343,43 @@ def main(argv=None):
     try:
         if args.command == "doctor":
             emit(doctor())
+        elif args.command == "init":
+            from .project import init_project
+
+            emit(init_project(args.directory))
+        elif args.command == "models":
+            from .model_files import fetch_model, fetch_smoke_model, verify_model_files
+
+            if args.model_operation == "fetch":
+                result = fetch_model(
+                    args.repo, args.directory, revision=args.revision, max_bytes=args.max_bytes
+                )
+            elif args.model_operation == "fetch-smoke":
+                result = fetch_smoke_model(args.directory)
+            else:
+                result = verify_model_files(args.directory)
+            emit(result)
+        elif args.command == "self-edit":
+            from .self_edit import (
+                load_self_edit_config,
+                run_configured_self_edit,
+                self_edit_config_summary,
+            )
+
+            config = load_self_edit_config(args.config)
+            if args.check_only:
+                emit(self_edit_config_summary(config))
+            else:
+                emit(run_configured_self_edit(config))
+        elif args.command == "mcp":
+            from .mcp_server import create_server
+
+            create_server(
+                args.workspace,
+                allow_experiments=args.allow_experiments,
+                approved_configs=args.config,
+                timeout_seconds=args.timeout_seconds,
+            ).run(transport="stdio")
         elif args.command == "demo":
             loop = RecursiveTuningLoop(
                 RecursiveCycleConfig(
@@ -473,6 +568,7 @@ def main(argv=None):
         KeyError,
         OSError,
         RuntimeError,
+        ImportError,
         subprocess.SubprocessError,
     ) as exc:
         print(f"ouroboros: {exc}", file=sys.stderr)

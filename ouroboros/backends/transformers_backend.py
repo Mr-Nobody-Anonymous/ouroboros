@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 
 from ..config import ModelConfig, TuningConfig
-from .local_model import LocalCausalLM, format_prompt
+from .local_model import LocalCausalLM
 
 
 class TransformersLoRABackend(LocalCausalLM):
@@ -91,7 +91,10 @@ class TransformersLoRABackend(LocalCausalLM):
         self.model.eval()
 
     def encode_sample(self, sample, max_length):
-        prompt = self.tokenizer.encode(format_prompt(sample.instruction), add_special_tokens=True)
+        prompt = self.tokenizer.encode(
+            self.render_prompt(sample.instruction),
+            add_special_tokens=self.config.prompt_format != "chat",
+        )
         completion = self.tokenizer.encode(sample.target, add_special_tokens=False)
         if self.tokenizer.eos_token_id is not None:
             completion.append(self.tokenizer.eos_token_id)

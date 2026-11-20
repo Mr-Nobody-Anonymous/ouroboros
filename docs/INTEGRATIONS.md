@@ -24,6 +24,14 @@ The owned `LocalCausalLM` loader also supports explicit direct-weight trials wit
 
 [Weight-edit commands/APIs](WEIGHT_EDITING.md) provide bounded read-only inspection without Torch, measured one-matrix trials with unconditional restoration, accepted-only sparse data exports and explicit exact apply/reverse. The original WSP logs motivated their contracts; neither those tools nor a passing 2×2 fixture demonstrate reproduction of Astra, WSP-Scope or WeightBench results. Callers still choose the model, target, direction and independent evaluation. Keep direct base edits outside adapter-only SFT snapshots/exports unless you implement/test their backend state contract.
 
+## Same-model selection, pretrained smoke source and MCP
+
+The owned [self-edit controller](SELF_EDITING.md) adds constrained next-token menu selection using the **same** target model, not an external autonomous agent or the upstream self-rewriting algorithm. It composes existing measured trials, original/latest gates and exact accepted-patch reversal without mixing base edits into adapter-only SFT. The real 135M pretrained smoke rejected two nonzero edits; no capability gain is claimed.
+
+The independently pinned `simonw/llm-smollm2` distribution was actually cloned and its README/license/data layout inspected. Only its known-size/SHA-256 pretrained Q4_1 GGUF and license are adapted through installed Transformers/GGUF conversion; the cloned plugin is never imported, installed or executed. Source commit, original model/quantizer attribution, conversion caveat and output hashes are recorded in the model receipt. This optional downloaded model data is **not** a new vendored source tree or an expansion of the twelve-source integration inventory. `models fetch` is an alternative explicit Hub provisioning path; normal inference remains local-only.
+
+The optional official Python MCP SDK powers a [stdio server](MCP.md). Read-only tools are default; explicit startup opt-in plus a config allowlist enables fixed-command offline-Hub child experiments. No cloud-app connector, HTTP service, shell tool or arbitrary generated-code executor is implied. Ordinary tests exercise actual MCP protocol initialization/tool calls without model downloads; pretrained smoke is a separately opted-in workflow.
+
 ## EasyEdit: explicit call, separate environment
 
 The bridge supports `ROME`, `MEMIT`, `MEND` and `FT` with an installed compatible `easyeditor` package and a real method-specific hyperparameter YAML.

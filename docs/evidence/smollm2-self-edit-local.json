@@ -1,0 +1,482 @@
+{
+  "accepted_chain": [],
+  "base_restored": true,
+  "base_state_sha256": "6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8",
+  "baseline": {
+    "domain_counts": {
+      "arithmetic": 2,
+      "retention": 2
+    },
+    "examples": 4,
+    "macro_accuracy": 0.0,
+    "metric": "normalized_exact_match",
+    "predictions": [
+      "To calculate 7 + 5, we need to add",
+      "To calculate 9 - 3, we need to subtract",
+      "The capital of France is Paris.",
+      "The opposite of hot is cold."
+    ],
+    "scores": {
+      "arithmetic": 0.0,
+      "retention": 0.0
+    }
+  },
+  "dataset_sha256": "4bff527547083a189020f1cbe117b61f4625876d10e2eb340308fc4ab8c92a2a",
+  "elapsed_seconds": 20.110355037999852,
+  "final_test": {
+    "domain_counts": {
+      "arithmetic": 1,
+      "retention": 1
+    },
+    "examples": 2,
+    "macro_accuracy": 0.0,
+    "metric": "normalized_exact_match",
+    "predictions": [
+      "To calculate 3 + 8, we simply add them",
+      "Il Coriobella, Italy's capital."
+    ],
+    "scores": {
+      "arithmetic": 0.0,
+      "retention": 0.0
+    },
+    "status": "completed",
+    "used_for_promotion": false
+  },
+  "kind": "model-selected-self-edit",
+  "license": "Apache-2.0 (verify the downloaded model card before reuse)",
+  "model": {
+    "backend": "transformers-local-causal-lm",
+    "base_model": "/home/user/ouroboros/models/smollm2",
+    "base_model_files": {
+      "chat_template.jinja": "872be49dbb638044ad01b60388f48d469ff2980e5f0dccdc22ec907db54d0788",
+      "config.json": "d63221c135cfc8189ec799cd09cc8c9287fdb971d50cd7026ad737d5d2dc092a",
+      "generation_config.json": "4371a906cb4fb6ff3fdc71124a5e3566d034c7d074e7783be28e515e8a0dc954",
+      "model.safetensors": "a672150fb4f99d7c8f4168cecdd464069c0ef3a37d8113f22ddb9d48031d03cd",
+      "special_tokens_map.json": "d1a0a91edd73f8c6718cfcd1b8236da3539bc1e51a1c264d92f5c12218ac6b42",
+      "tokenizer.json": "b554121022512f7655e37bce89eed6849177e17e8466f4fd78fdc25e219c127c",
+      "tokenizer_config.json": "e876f5d69dea1e659fe79041f6ae1edba32e04afbe4338fb42a0241f90c82fbd"
+    },
+    "is_llm": true,
+    "model_config": {
+      "bits": 4,
+      "device": "cpu",
+      "max_new_tokens": 12,
+      "model_name_or_path": "/home/user/ouroboros/models/smollm2",
+      "prompt_format": "chat",
+      "torch_dtype": "float32",
+      "use_qlora": false
+    },
+    "parameters": 134515008,
+    "quantized": false,
+    "trainable_parameters": 0
+  },
+  "policy": {
+    "cpu_threads": 2,
+    "edited_fraction": 0.001,
+    "forgetting_threshold": 0.0,
+    "improvement_threshold": 0.0,
+    "max_matrix_elements": 2000000,
+    "max_model_bytes": 1073741824,
+    "max_model_parameters": 300000000,
+    "max_relative_norm": 0.02,
+    "max_rounds": 2,
+    "max_seconds": 240,
+    "require_attempt": true,
+    "seed": 42
+  },
+  "proposer_is_target_model": true,
+  "provenance": "SmolLM2-135M-Instruct: explicitly provision original Hub weights or the pinned GitHub Q4_1-derived smoke model. The model receipt records source revision, conversion (if any) and SHA-256 hashes. Public smoke tasks, not benchmark evidence.",
+  "report_path": "/home/user/ouroboros/outputs/pretrained-local-01/outputs/self-edit/19e4481593804aa799b95e4604120740/self_edit.json",
+  "restored_state_sha256": "6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8",
+  "rounds": [
+    {
+      "menu": {
+        "B": {
+          "direction": "unit coordinate of largest-norm output row",
+          "parameter_name": "model.layers.28.mlp.down_proj.weight",
+          "row": 17,
+          "shape": [
+            576,
+            1536
+          ],
+          "strength": 0.1
+        },
+        "C": {
+          "direction": "unit coordinate of largest-norm output row",
+          "parameter_name": "model.layers.28.mlp.down_proj.weight",
+          "row": 17,
+          "shape": [
+            576,
+            1536
+          ],
+          "strength": 0.25
+        },
+        "D": {
+          "direction": "unit coordinate of largest-norm output row",
+          "parameter_name": "model.layers.29.mlp.down_proj.weight",
+          "row": 507,
+          "shape": [
+            576,
+            1536
+          ],
+          "strength": 0.1
+        },
+        "E": {
+          "direction": "unit coordinate of largest-norm output row",
+          "parameter_name": "model.layers.29.mlp.down_proj.weight",
+          "row": 507,
+          "shape": [
+            576,
+            1536
+          ],
+          "strength": 0.25
+        }
+      },
+      "plan": {
+        "direction": "unit coordinate of largest-norm output row",
+        "parameter_name": "model.layers.28.mlp.down_proj.weight",
+        "row": 17,
+        "shape": [
+          576,
+          1536
+        ],
+        "strength": 0.1
+      },
+      "practice": {
+        "domain_counts": {
+          "arithmetic": 1,
+          "retention": 1
+        },
+        "examples": 2,
+        "macro_accuracy": 0.0,
+        "metric": "normalized_exact_match",
+        "predictions": [
+          "Two plus two is equal to 4.",
+          "A ripe banana is a sweet fruit with a bright red color"
+        ],
+        "scores": {
+          "arithmetic": 0.0,
+          "retention": 0.0
+        }
+      },
+      "proposal": {
+        "choice": "B",
+        "method": "constrained-next-token-choice",
+        "probabilities_within_menu": {
+          "B": 0.6425750255584717,
+          "C": 0.10075163096189499,
+          "D": 0.14029234647750854,
+          "E": 0.11638098955154419
+        },
+        "proposer_is_target_model": true
+      },
+      "round": 1,
+      "trial": {
+        "baseline": {
+          "domain_counts": {
+            "arithmetic": 2,
+            "retention": 2
+          },
+          "examples": 4,
+          "macro_accuracy": 0.0,
+          "metric": "normalized_exact_match",
+          "predictions": [
+            "To calculate 7 + 5, we need to add",
+            "To calculate 9 - 3, we need to subtract",
+            "The capital of France is Paris.",
+            "The opposite of hot is cold."
+          ],
+          "scores": {
+            "arithmetic": 0.0,
+            "retention": 0.0
+          }
+        },
+        "candidate": {
+          "domain_counts": {
+            "arithmetic": 2,
+            "retention": 2
+          },
+          "examples": 4,
+          "macro_accuracy": 0.0,
+          "metric": "normalized_exact_match",
+          "predictions": [
+            "To calculate 7 + 5, we need to add",
+            "To calculate 9 - 3, we need to subtract",
+            "The capital of France is Paris.",
+            "The opposite of hot is cold."
+          ],
+          "scores": {
+            "arithmetic": 0.0,
+            "retention": 0.0
+          }
+        },
+        "edit": {
+          "actual_sparsity_percentage": 0.09991681134259259,
+          "edit_budget": 884,
+          "edited_weights": 884,
+          "frobenius_norm_delta": 0.9471910565505685,
+          "relative_norm_delta": 0.005000318517837459,
+          "total_weights": 884736
+        },
+        "elapsed_seconds": 4.707709719999912,
+        "kind": "single-tensor-ablation-trial",
+        "license": "Apache-2.0 (verify the downloaded model card before reuse)",
+        "model_info": {
+          "backend": "transformers-local-causal-lm",
+          "base_model": "/home/user/ouroboros/models/smollm2",
+          "base_model_files": {
+            "chat_template.jinja": "872be49dbb638044ad01b60388f48d469ff2980e5f0dccdc22ec907db54d0788",
+            "config.json": "d63221c135cfc8189ec799cd09cc8c9287fdb971d50cd7026ad737d5d2dc092a",
+            "generation_config.json": "4371a906cb4fb6ff3fdc71124a5e3566d034c7d074e7783be28e515e8a0dc954",
+            "model.safetensors": "a672150fb4f99d7c8f4168cecdd464069c0ef3a37d8113f22ddb9d48031d03cd",
+            "special_tokens_map.json": "d1a0a91edd73f8c6718cfcd1b8236da3539bc1e51a1c264d92f5c12218ac6b42",
+            "tokenizer.json": "b554121022512f7655e37bce89eed6849177e17e8466f4fd78fdc25e219c127c",
+            "tokenizer_config.json": "e876f5d69dea1e659fe79041f6ae1edba32e04afbe4338fb42a0241f90c82fbd"
+          },
+          "is_llm": true,
+          "model_config": {
+            "bits": 4,
+            "device": "cpu",
+            "max_new_tokens": 12,
+            "model_name_or_path": "/home/user/ouroboros/models/smollm2",
+            "prompt_format": "chat",
+            "torch_dtype": "float32",
+            "use_qlora": false
+          },
+          "parameters": 134515008,
+          "quantized": false,
+          "trainable_parameters": 0
+        },
+        "model_restored": true,
+        "passed": false,
+        "patch": null,
+        "plan": {
+          "edited_fraction": 0.001,
+          "forgetting_threshold": 0.0,
+          "improvement_threshold": 0.0,
+          "max_patch_bytes": 67108864,
+          "max_relative_norm": 0.02,
+          "parameter_name": "model.layers.28.mlp.down_proj.weight",
+          "seed": 42,
+          "strength": 0.1
+        },
+        "provenance": "SmolLM2-135M-Instruct: explicitly provision original Hub weights or the pinned GitHub Q4_1-derived smoke model. The model receipt records source revision, conversion (if any) and SHA-256 hashes. Public smoke tasks, not benchmark evidence.",
+        "reason": "Mean gain 0.000000 does not meet the promotion threshold",
+        "report_path": "/home/user/ouroboros/outputs/pretrained-local-01/outputs/self-edit/19e4481593804aa799b95e4604120740/trials/c95eada2a5d8465db49f6314349cfc2d/trial.json",
+        "run_id": "c95eada2a5d8465db49f6314349cfc2d",
+        "schema_version": 1,
+        "status": "rejected",
+        "validation_sha256": "474e5754a07931f82f3d90d344516152ee98d42f429a3003443c085493fbe85b"
+      }
+    },
+    {
+      "menu": {
+        "B": {
+          "direction": "unit coordinate of largest-norm output row",
+          "parameter_name": "model.layers.28.mlp.down_proj.weight",
+          "row": 17,
+          "shape": [
+            576,
+            1536
+          ],
+          "strength": 0.25
+        },
+        "C": {
+          "direction": "unit coordinate of largest-norm output row",
+          "parameter_name": "model.layers.29.mlp.down_proj.weight",
+          "row": 507,
+          "shape": [
+            576,
+            1536
+          ],
+          "strength": 0.1
+        },
+        "D": {
+          "direction": "unit coordinate of largest-norm output row",
+          "parameter_name": "model.layers.29.mlp.down_proj.weight",
+          "row": 507,
+          "shape": [
+            576,
+            1536
+          ],
+          "strength": 0.25
+        }
+      },
+      "plan": {
+        "direction": "unit coordinate of largest-norm output row",
+        "parameter_name": "model.layers.28.mlp.down_proj.weight",
+        "row": 17,
+        "shape": [
+          576,
+          1536
+        ],
+        "strength": 0.25
+      },
+      "practice": {
+        "domain_counts": {
+          "arithmetic": 1,
+          "retention": 1
+        },
+        "examples": 2,
+        "macro_accuracy": 0.0,
+        "metric": "normalized_exact_match",
+        "predictions": [
+          "Two plus two is equal to 4.",
+          "A ripe banana is a sweet fruit with a bright red color"
+        ],
+        "scores": {
+          "arithmetic": 0.0,
+          "retention": 0.0
+        }
+      },
+      "proposal": {
+        "choice": "B",
+        "method": "constrained-next-token-choice",
+        "probabilities_within_menu": {
+          "B": 0.7706137299537659,
+          "C": 0.09369061887264252,
+          "D": 0.135695680975914
+        },
+        "proposer_is_target_model": true
+      },
+      "round": 2,
+      "trial": {
+        "baseline": {
+          "domain_counts": {
+            "arithmetic": 2,
+            "retention": 2
+          },
+          "examples": 4,
+          "macro_accuracy": 0.0,
+          "metric": "normalized_exact_match",
+          "predictions": [
+            "To calculate 7 + 5, we need to add",
+            "To calculate 9 - 3, we need to subtract",
+            "The capital of France is Paris.",
+            "The opposite of hot is cold."
+          ],
+          "scores": {
+            "arithmetic": 0.0,
+            "retention": 0.0
+          }
+        },
+        "candidate": {
+          "domain_counts": {
+            "arithmetic": 2,
+            "retention": 2
+          },
+          "examples": 4,
+          "macro_accuracy": 0.0,
+          "metric": "normalized_exact_match",
+          "predictions": [
+            "To calculate 7 + 5, we need to add",
+            "To calculate 9 - 3, we need to subtract",
+            "The capital of France is Paris.",
+            "The opposite of hot is cold."
+          ],
+          "scores": {
+            "arithmetic": 0.0,
+            "retention": 0.0
+          }
+        },
+        "edit": {
+          "actual_sparsity_percentage": 0.09991681134259259,
+          "edit_budget": 884,
+          "edited_weights": 884,
+          "frobenius_norm_delta": 2.367977549763855,
+          "relative_norm_delta": 0.012500795810961536,
+          "total_weights": 884736
+        },
+        "elapsed_seconds": 4.834348445999922,
+        "kind": "single-tensor-ablation-trial",
+        "license": "Apache-2.0 (verify the downloaded model card before reuse)",
+        "model_info": {
+          "backend": "transformers-local-causal-lm",
+          "base_model": "/home/user/ouroboros/models/smollm2",
+          "base_model_files": {
+            "chat_template.jinja": "872be49dbb638044ad01b60388f48d469ff2980e5f0dccdc22ec907db54d0788",
+            "config.json": "d63221c135cfc8189ec799cd09cc8c9287fdb971d50cd7026ad737d5d2dc092a",
+            "generation_config.json": "4371a906cb4fb6ff3fdc71124a5e3566d034c7d074e7783be28e515e8a0dc954",
+            "model.safetensors": "a672150fb4f99d7c8f4168cecdd464069c0ef3a37d8113f22ddb9d48031d03cd",
+            "special_tokens_map.json": "d1a0a91edd73f8c6718cfcd1b8236da3539bc1e51a1c264d92f5c12218ac6b42",
+            "tokenizer.json": "b554121022512f7655e37bce89eed6849177e17e8466f4fd78fdc25e219c127c",
+            "tokenizer_config.json": "e876f5d69dea1e659fe79041f6ae1edba32e04afbe4338fb42a0241f90c82fbd"
+          },
+          "is_llm": true,
+          "model_config": {
+            "bits": 4,
+            "device": "cpu",
+            "max_new_tokens": 12,
+            "model_name_or_path": "/home/user/ouroboros/models/smollm2",
+            "prompt_format": "chat",
+            "torch_dtype": "float32",
+            "use_qlora": false
+          },
+          "parameters": 134515008,
+          "quantized": false,
+          "trainable_parameters": 0
+        },
+        "model_restored": true,
+        "passed": false,
+        "patch": null,
+        "plan": {
+          "edited_fraction": 0.001,
+          "forgetting_threshold": 0.0,
+          "improvement_threshold": 0.0,
+          "max_patch_bytes": 67108864,
+          "max_relative_norm": 0.02,
+          "parameter_name": "model.layers.28.mlp.down_proj.weight",
+          "seed": 42,
+          "strength": 0.25
+        },
+        "provenance": "SmolLM2-135M-Instruct: explicitly provision original Hub weights or the pinned GitHub Q4_1-derived smoke model. The model receipt records source revision, conversion (if any) and SHA-256 hashes. Public smoke tasks, not benchmark evidence.",
+        "reason": "Mean gain 0.000000 does not meet the promotion threshold",
+        "report_path": "/home/user/ouroboros/outputs/pretrained-local-01/outputs/self-edit/19e4481593804aa799b95e4604120740/trials/f36788d8a90546f0a2afe8ad365f8944/trial.json",
+        "run_id": "f36788d8a90546f0a2afe8ad365f8944",
+        "schema_version": 1,
+        "status": "rejected",
+        "validation_sha256": "474e5754a07931f82f3d90d344516152ee98d42f429a3003443c085493fbe85b"
+      }
+    }
+  ],
+  "run_id": "19e4481593804aa799b95e4604120740",
+  "schema_version": 1,
+  "selected_state_sha256": "6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8",
+  "selection_method": "constrained-next-token-choice",
+  "source": {
+    "download_receipt": {
+      "bytes": 541619017,
+      "conversion": "Q4_1 GGUF -> float32 safetensors with Transformers; NOT recovered original precision",
+      "directory": "/home/user/ouroboros/models/smollm2",
+      "files": {
+        "chat_template.jinja": "872be49dbb638044ad01b60388f48d469ff2980e5f0dccdc22ec907db54d0788",
+        "config.json": "d63221c135cfc8189ec799cd09cc8c9287fdb971d50cd7026ad737d5d2dc092a",
+        "generation_config.json": "4371a906cb4fb6ff3fdc71124a5e3566d034c7d074e7783be28e515e8a0dc954",
+        "model.safetensors": "a672150fb4f99d7c8f4168cecdd464069c0ef3a37d8113f22ddb9d48031d03cd",
+        "special_tokens_map.json": "d1a0a91edd73f8c6718cfcd1b8236da3539bc1e51a1c264d92f5c12218ac6b42",
+        "tokenizer.json": "b554121022512f7655e37bce89eed6849177e17e8466f4fd78fdc25e219c127c",
+        "tokenizer_config.json": "e876f5d69dea1e659fe79041f6ae1edba32e04afbe4338fb42a0241f90c82fbd"
+      },
+      "license_metadata": "apache-2.0",
+      "repo_id": "github:simonw/llm-smollm2",
+      "requested_revision": "afed0963b3a8bcca17c83f451a161eb2edbc59fe",
+      "resolved_revision": "afed0963b3a8bcca17c83f451a161eb2edbc59fe",
+      "schema_version": 1,
+      "source": {
+        "bytes": 98362432,
+        "license": "Apache-2.0",
+        "original_model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+        "path": "llm_smollm2/SmolLM2-135M-Instruct.Q4_1.gguf",
+        "quantizer": "QuantFactory/SmolLM2-135M-Instruct-GGUF",
+        "quantizer_revision": "ab810cf68114990406fdf996510dd3d3c6adbdf5",
+        "repository": "https://github.com/simonw/llm-smollm2.git",
+        "revision": "afed0963b3a8bcca17c83f451a161eb2edbc59fe",
+        "sha256": "b179c9523d0e6a0f98a330c7562b682750a6f8c8c15e5bc70ea373728110db53"
+      },
+      "verified": true
+    },
+    "stored_tensor_elements": 134515008
+  },
+  "source_files_unchanged": true,
+  "status": "completed"
+}
