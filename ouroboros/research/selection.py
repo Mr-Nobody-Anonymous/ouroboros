@@ -228,6 +228,7 @@ def compare_fixture(*, episodes=48, candidates=2, seed=17, min_episodes=20, adva
         ),
     }
 
+
 # --- magnitude_v2 (G6) -------------------------------------------------------------------
 # The v1 design scores a proposal with the binary event "did the candidate beat baseline?".
 # Both families beat it in every one of the 20 recorded episodes, so v1 tied in 20/20 and had
@@ -356,11 +357,7 @@ def compare_magnitude(episodes, *, frozen, seed=None):
     differences = [0.0 if abs(value) < floor else value for value in raw]
     ordered = sorted(differences)
     middle = len(ordered) // 2
-    median = (
-        ordered[middle]
-        if len(ordered) % 2
-        else (ordered[middle - 1] + ordered[middle]) / 2
-    )
+    median = ordered[middle] if len(ordered) % 2 else (ordered[middle - 1] + ordered[middle]) / 2
     mean_primary = sum(results[primary]) / len(results[primary])
     mean_null = sum(results[null]) / len(results[null])
     test = sign_flip_test(differences, seed=seed, draws=10_000)

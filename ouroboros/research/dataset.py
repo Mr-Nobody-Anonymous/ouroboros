@@ -217,6 +217,7 @@ def divisibility(n):
 # balanced samples, far above this budget, so a partial rather than saturated score is the
 # expected outcome -- which is exactly what makes the split informative.
 
+
 def _two_digit_plus_one(n, *, carry):
     """Scatter one (two-digit, one-digit) pair per ordinal, on one side of the carry boundary."""
     h = _mix("carry" if carry else "carry-free", n)

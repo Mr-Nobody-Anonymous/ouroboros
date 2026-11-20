@@ -224,6 +224,7 @@ def rank_recipes(recipes, memory, context):
         )
     return sorted(ranked, key=lambda row: (-row["selection_score"], row["proposal_index"]))
 
+
 # --- proposal_v2 (G4): short schema, draft-then-transcribe, syntax-only repair -------------
 # Measured failure of v1: the 135M proposer spent its whole 256-token budget inside one schema
 # slot and degenerated. Constrained decoding guarantees shape, never truncation-safety; the
@@ -362,7 +363,13 @@ def _v2_to_proposal(value, *, context, budget, host_filled):
     """Map the short model answer onto the v1 contract, recording every host-supplied field."""
     action = value.get("action")
     if action == "abstain":
-        return {"schema_version": 1, "action": "abstain", "reason": value["claim"], "hypotheses": [], "recipes": []}
+        return {
+            "schema_version": 1,
+            "action": "abstain",
+            "reason": value["claim"],
+            "hypotheses": [],
+            "recipes": [],
+        }
     domains = list(context["train_domains"])
     if value["family"] == "data_reweight":
         weakest = min(
@@ -509,7 +516,9 @@ def local_proposal_v2(extra, model_config, budget, seed):
         elif schema_kind == "v3":
             value = _v3_to_v2(value)
         host_filled = []
-        proposal = Proposal.parse(_v2_to_proposal(value, context=context, budget=budget, host_filled=host_filled))
+        proposal = Proposal.parse(
+            _v2_to_proposal(value, context=context, budget=budget, host_filled=host_filled)
+        )
         proposal.validate_context(
             [v["id"] for v in context["diagnosis"]["evidence"]], budget, context["train_domains"]
         )
@@ -525,6 +534,7 @@ def local_proposal_v2(extra, model_config, budget, seed):
             else []
         ),
     }
+
 
 # --- proposal_v3 (G4, third interface iteration) -----------------------------------------
 # Measured: with free-form numeric fields a 135M model emits unbounded digit runs (v1 inside a
@@ -587,6 +597,7 @@ def _v3_to_v2(value):
         "claim": value["claim"],
         "confidence": value["confidence_percent"] / 100,
     }
+
 
 # --- proposal_v4 (G4, fourth interface iteration) ----------------------------------------
 # Measured on v3 + minimal context: the model picked a complete, sensible experiment
