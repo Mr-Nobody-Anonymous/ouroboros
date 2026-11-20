@@ -102,7 +102,9 @@ interrupted look still burns the prompts. Reusing them in a second run fails clo
 - Completion re-verifies all auxiliary model inventories, the original config/data hashes,
   role snapshots and the software inventory. Any drift fails the run and withdraws promotion.
 - `verify-run` re-checks the whole artifact tree, the plan containment and the report's
-  binding to the authoritative SQLite result; `--database` supports a relocated ledger.
+  binding to the authoritative SQLite result; `--database` supports a relocated ledger. It was
+  run on this batch's trees: the power run (180 files), a campaign episode (165 files) and the
+  abstained proposer run (21 files) all report `verified` with `report_bound_to_database: true`.
 
 Integrity is not authentication: hashes detect change, they do not prove authorship, and
 they cannot replay inference.
@@ -413,7 +415,7 @@ issues or a changelog entry.
 | G2 | **Closed, with limits stated.** The owned dataset exists (380 unique prompts, 5 domains, 8 independent roles, hashed manifest, verification and tamper detection) and is used by the run above. It is template-generated and not a benchmark; a semantically harder task family is still missing (G3). |
 | G3 | **Open, but past the first gate.** A host-designed LoRA now clears the validation gate on a real pretrained model (0.000 → 0.192, p = 2e-5) and was then rejected at the reserved gate on per-seed reproducibility (0.0078 / 0.0020 vs α = 0.001136) despite a significant pooled effect. Its gain is domain-narrow (two short-answer domains), so no capability claim follows even if a later candidate passes. |
 | G4 | **No independent model proposal of demonstrated value.** Executed: the local proposer on the real 135M model ran out of its 256-token budget and degenerated inside a schema slot, so the controller abstained (`fallback_used: false`). Closing it needs a proposer that emits a short, valid recipe — a smaller schema, a stronger researcher model, or a repair loop that is still host-owned. |
-| G5 | **No useful autonomous edit** under the full gate chain (validation → reserved → final → robustness → retention). |
+| G5 | **Not executed.** No weight-space or architectural edit has been run through this gate chain. The gates, holdout ledger, plan/seal machinery and rollback all exist; what is missing is the wiring between the lab/discovery edit path (its own evaluator, its own data) and these gates. That integration is milestone D, and it cannot reuse the consumed 360M/135M prompts. |
 | G6 | **Executed, null, mechanism identified.** 20 real episodes were collected and replayed under the frozen design (hash unchanged): primary and null tied in 20/20 episodes (p = 1.0) because both candidate families beat the baseline in every episode, so the binary posterior could not separate them. Decision `not_established`, reported as a null. A discriminating design (magnitude-based statistic or families with different success rates) is the next predeclared step; no policy claim is made now. |
 | G7 | **Power is characterized, replication is still thin.** With the power profile the exact per-seed test needs ≥ 10 separating problems to beat α = 0.001136; observed counts were 7 vs 9 and 11 vs 12, and doubling the training role at a fixed step budget hurt. Two seeds and one machine remain: more seeds and larger hidden roles are the next step, and no variance estimate over seeds should be quoted from two of them. |
 
