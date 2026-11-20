@@ -24,12 +24,15 @@ The later evidence follow-up passed **426 full tests / 291 lightweight tests** w
 optional skips; the original distribution snapshots remain labelled separately.
 [Current validation and exact scope](TESTING.md#current-discovery-results-and-evidence-follow-up).
 
-The first source-bound **pretrained 135M study is running locally**. Its completed
-host-controlled small dose improved practice exact accuracy **0/32→3/32** and NLL
-**3.994603→3.675749**, but development **0/32→1/32, p=0.5** failed the unchanged gate;
-reserved stayed unopened. The larger dose harmed NLL/accuracy and was rolled back. These
-are **HOST** choices, not model discoveries. Matched-random controls also finished; model
-conditions remain in progress, with no accepted edit so far.
+The first source-bound **pretrained 135M study was kernel-OOM-killed during
+`schema_full_context` after seven completed arms**. Interrupted-arm resident restoration
+is **unverified**; its stale `running` JSON is not a live process or a completed result.
+Original outputs remain unchanged, without a silent restart. The smaller HOST dose improved
+practice exact accuracy **0/32→3/32** and NLL **3.994603→3.675749**, but development
+**0/32→1/32, p=0.5** failed the unchanged gate; reserved stayed unopened. The larger dose
+harmed practice and was rolled back. These are **HOST** choices, not model discoveries.
+Matched-random controls and four model-authored arms also completed, with no accepted edit.
+[Interruption/resource-confound receipt](evidence/discovery-135m-interruption.json).
 
 The original **361,821,120-parameter 360M Instruct studies at both seeds are complete and
 reviewed: all 22 remote arms, zero model-authored numerical edits, zero accepted candidates**.

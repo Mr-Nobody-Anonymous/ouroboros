@@ -1,14 +1,16 @@
 # Closed-loop discovery: reviewed results, including failures
 
 **Bottom line:** the complete 360M studies produced **zero model-authored numerical
-edits and zero accepted candidates**. A real 135M study is still running; its first seven
-completed arms also contain no accepted autonomous edit. The tooling works mechanically,
+edits and zero accepted candidates**. The real 135M study was **kernel-OOM-killed after
+seven completed arms**; those arms also contain no accepted autonomous edit. The interrupted
+arm has no verified resident-restoration result. The tooling works mechanically,
 but **useful autonomous pretrained self-editing and learned future self-improvement have
 not been demonstrated**. This is a negative scientific result, not a failed integrity check.
 
 [Protocol and reproduction](DISCOVERY_EXPERIMENTS.md) ·
 [Complete 360M compact evidence](evidence/discovery-360m-reviewed.json) ·
-[Explicitly partial 135M snapshot](evidence/discovery-135m-partial.json)
+[Earlier partial 135M snapshot](evidence/discovery-135m-partial.json) ·
+[Subsequent 135M OOM postmortem](evidence/discovery-135m-interruption.json)
 
 ## Which execution was actually reviewed?
 
@@ -20,7 +22,7 @@ not been demonstrated**. This is a negative scientific result, not a failed inte
 | Completed scientific scope | All eleven arms at each fixed seed, 17 and 42; **22/22 remote arms**, not selected favorable notices |
 | Read-only archive review | [44725072525](https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44725072525), exporter `b0cf0a7b35a596f1b2b44d0b4997d1ff2b81fe4b`; no model rerun, new evaluation, candidate selection or gate change |
 | Original ZIPs | Seed 17: artifact **14623630301**, **838,978 bytes**; seed 42: **14621214992**, **812,097 bytes**. Their complete SHA256s are in the evidence receipt |
-| Local study | Receipt-verified, Q4_1-derived float32 135M checkpoint, **134,515,008 parameters**; first **7/22 planned arms** reviewed, process continues under its original plan |
+| Local study | Receipt-verified, Q4_1-derived float32 135M checkpoint, **134,515,008 parameters**; **7/22 planned arms** completed/reviewed, next arm OOM-killed; no silent restart |
 
 GitHub downloaded the **existing** archives, verified their inventory sizes/digests, safely
 extracted JSON and verified original report, journal, event and retention-artifact hashes.
@@ -129,11 +131,14 @@ subsequent edit. **Useful-edit retention is null for every arm**, because no use
 was accepted. None of these
 post-search probes is extended training or evidence of a learned editing policy.
 
-## 135M: partial, not silently completed
+## 135M: interrupted, not silently completed or restarted
 
 The [frozen partial receipt](evidence/discovery-135m-partial.json) covers seed 17's first seven
-completed arms. The original two-seed, eleven-arm process continues; later live progress
-must not be inferred from this snapshot.
+completed arms. **The process subsequently exited 137; the kernel explicitly reports
+`Out of memory: Killed process 56254 (python)`.** The original plan remains incomplete:
+seven completed arms, one interrupted `schema_full_context` arm, **fourteen not started**.
+The old summary/report `running` fields and the earlier receipt's liveness wording are
+stale snapshots, **not** a currently live process. [Read-only postmortem](evidence/discovery-135m-interruption.json).
 
 - `no_edit`: practice **0/32**, NLL **3.9946031943**; no intervention.
 - **HOST** first dose: **0/32→3/32**, NLL **3.994603→3.675749**. Second dose:
@@ -152,9 +157,24 @@ must not be inferred from this snapshot.
   replies and the same invalid saved-name refusal. Without an edit there was no edited
   feedback treatment to compare.
 
-No source, model, data, seed list or threshold was changed under the running study, and it
-was not restarted after inspecting its outcomes. A failed/incomplete arm will remain in
-the evidence rather than being overwritten.
+The interrupted arm persisted **two invalid replies** (one truncated, one invalid saved
+name), no committed hypothesis and no recorded edit attempt. Its final resident-state
+check never ran: **restoration for this arm is unverified**, not assumed from the previous
+seven arms. A separate post-exit disk check verified all **seven model-source files**, the
+five role-file hashes and all **63 runtime source bindings** unchanged. Those disk checks
+do **not** prove resident restoration. Every original study/report byte was left intact.
+
+The shared workspace reported a **3,997,061,120-byte** cgroup ceiling; post-exit cumulative
+OOM counters and the exact killed-PID kernel line are recorded. Follow-up test suites ran
+in that same workspace while the study was live, without memory isolation. Shared resource
+pressure is therefore a confound: this is **not** proof that full-context prompts alone
+caused the OOM or that the interrupted model arm failed scientifically. No isolated
+resource-causality rerun was performed.
+
+No source, model, data, seed list or threshold was changed under the original study. It was
+**not restarted, resumed or retargeted** after the kill; missing/interrupted arms are not
+counted as completed negatives. A changed-resource or changed-protocol follow-up would need
+a new prior plan and output directory, not an overwrite of this evidence.
 
 ## What can and cannot be concluded
 

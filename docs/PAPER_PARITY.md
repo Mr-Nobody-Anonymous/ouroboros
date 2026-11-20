@@ -16,7 +16,9 @@ is an additional engineering protocol, not the paper's exact original method.
 These additions close measurable experimental gaps but **do not** turn tests or gradient-
 assisted host controls into no-gradient paper parity. They also do not certify independent
 semantic circuit discovery, learned future self-improvement or a beneficial pretrained edit.
-The initial 135M local study remains running. The larger 360M Instruct study is now complete
+The initial 135M local study was OOM-killed after seven completed arms; the interrupted
+arm's restoration is unverified, and the original study was not silently restarted.
+The larger 360M Instruct study is complete
 and reviewed at both seeds: **22 arms, zero model-authored numerical edits or accepted
 candidates**. Its HOST control also failed to establish useful pretrained editing.
 [Reviewed results](DISCOVERY_RESULTS.md) are distinct from the earlier negative runs and

@@ -35,8 +35,11 @@ The **complete original 360M study has now been reviewed**, not inferred from pa
 all **22 arms** at both registered seeds, **64 model-editor replies**, **zero model-authored
 numerical edit attempts** and **zero accepted candidates**. Both fixed HOST gradient doses
 harmed practice and rolled back, so a useful pretrained positive control is still absent.
-The separate 135M process remains running; its first seven completed arms were reviewed
-without changing its bound runtime or gates. [Results, negative trajectories, control and
+The separate 135M process was kernel-OOM-killed during `schema_full_context` after seven
+completed arms; interrupted-arm resident restoration is **unverified**. The completed arms
+were reviewed without changing its bound runtime or gates. [Postmortem, shared-resource
+confound and preserved evidence](evidence/discovery-135m-interruption.json). No silent
+restart or retarget was performed. [Results, negative trajectories, control and
 interpretation limits](DISCOVERY_RESULTS.md) · [360M evidence](evidence/discovery-360m-reviewed.json)
 · [partial 135M evidence](evidence/discovery-135m-partial.json).
 

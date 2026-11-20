@@ -167,6 +167,16 @@
     }
   },
   "kind": "ouroboros-discovery-github-execution-and-evidence-transport",
+  "local_135m_current_status": {
+    "completed_arms": 7,
+    "execution_status": "interrupted_by_kernel_oom",
+    "interrupted_arm": "seed 17 / schema_full_context",
+    "interrupted_arm_resident_restoration_verified": false,
+    "original_files_preserved_without_restart": true,
+    "postmortem": "discovery-135m-interruption.json",
+    "raw_running_status_is_stale": true,
+    "source_model_files_independently_rehashed_unchanged_after_exit": true
+  },
   "pull_request": {
     "conclusion": "success",
     "event": "pull_request",
@@ -311,5 +321,28 @@
   "recovery": "Completed: read-only hosted review 44725072525 at b0cf0a7 downloaded and verified both EXISTING archive payloads, safely extracted original JSON, checked report/journal/event/retention hashes and numerical deltas; no inference/new evaluation/reselection. All six bounded Checks parts reconstructed locally with both uncompressed payload SHA256s verified. Complete decoded edit/rollback and fixed-follow-up numerical ledgers independently norm-checked locally. Original ZIP payloads were NOT downloaded in this sandbox.",
   "review_date": "2026-11-19",
   "scientific_model_outcomes_at_this_checkpoint": "Complete reviewed 360M evidence: all 22 arms, 64 actual model-editor replies, 55 parsed / 10 host-valid model commands, ZERO model-authored numerical edit attempts and ZERO accepted candidates. HOST doses harmed practice and were rolled back. No validated useful autonomous pretrained edit, useful-edit retention or learned future editing ability. Separate 135M study remains incomplete.",
-  "source_head_sha": "cb4c0df1008f208016a8bfa941c999bd96bcfc8b"
+  "source_head_sha": "cb4c0df1008f208016a8bfa941c999bd96bcfc8b",
+  "strengthened_read_only_review": {
+    "checks_reconstructed_and_verified_locally": true,
+    "conclusion": "success",
+    "head_sha": "82128dfe3843e5e37181cb5cd844a0413b388e7c",
+    "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44727393281",
+    "id": 44727393281,
+    "model_rerun": false,
+    "seeds": [
+      {
+        "fixed_followup_available_numerical_norms_independently_recomputed": true,
+        "payload_sha256": "5c4d2b3006114d971c32dd2ca0ab988b4dff0593ca99c040b67aaa4ad8ac4b03",
+        "scientific_results_and_complete_numerical_audits_equal_original_export": true,
+        "seed": 17
+      },
+      {
+        "fixed_followup_available_numerical_norms_independently_recomputed": true,
+        "payload_sha256": "a99a0bdfbbbba37cf7da5d306ba3e6e1f93cdaf895277afa819f7f037d64412e",
+        "scientific_results_and_complete_numerical_audits_equal_original_export": true,
+        "seed": 42
+      }
+    ],
+    "status": "completed"
+  }
 }

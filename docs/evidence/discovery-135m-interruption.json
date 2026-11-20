@@ -1,0 +1,167 @@
+{
+  "actions": {
+    "automatic_new_study_launched": false,
+    "new_model_or_hidden_item_evaluation": false,
+    "original_study_files_modified_by_postmortem": false,
+    "resource_or_gate_settings_changed": false,
+    "source_model_overwritten": false,
+    "study_restarted_or_silently_resumed": false
+  },
+  "cgroup": {
+    "interpretation": "Post-exit/cumulative counters, not an allocation trace or exact phase attribution. Kernel log names the killed Python PID; exit 137 alone would not establish OOM. Do not assume a cgroup-limit violation from a global OOM.",
+    "memory_files_after_exit": {
+      "memory.current": "1152135168",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 2\noom_group_kill 0",
+      "memory.events.local": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 2\noom_group_kill 0",
+      "memory.max": "3997061120",
+      "memory.peak": "3941724160"
+    },
+    "process_membership": "0::/user"
+  },
+  "completed_arms": [
+    {
+      "base_restored": true,
+      "condition": "no_edit",
+      "journal_sha256": "b571c9eea49c92faf89ac94146359a1e82385be76193bff2e3108f9cf99f9228",
+      "report_sha256": "af23a91197c9658500399ec289a7b50cc2359592018b6854431f430166ed8e35",
+      "seed": 17,
+      "source_files_unchanged": true
+    },
+    {
+      "base_restored": true,
+      "condition": "human_directed",
+      "journal_sha256": "c7f95e0140a52745e29825cef48dc57736396dde6f77382a6c20e261addc4584",
+      "report_sha256": "612ae4ebed6adce811722d81ba1cb566b06faf8ba6270aba44b5e221fdd0235d",
+      "seed": 17,
+      "source_files_unchanged": true
+    },
+    {
+      "base_restored": true,
+      "condition": "random_valid",
+      "journal_sha256": "a61436134193245deac75890fac9f5ed9b686d65e5ca79a05770f711c1cb769b",
+      "report_sha256": "41b7f093b16492994839773eee24cc52bd54df17a0034b8d118b07c03cc4c8f8",
+      "seed": 17,
+      "source_files_unchanged": true
+    },
+    {
+      "base_restored": true,
+      "condition": "unconstrained",
+      "journal_sha256": "eb2b182e05e45d994872f0132bcc436c409b12cdb9e7ae592e1b256e8a72ea47",
+      "report_sha256": "ac7c135a3e9b12bb0e6053b0a8165d9d117af6192d403d59fa688ff013cbe855",
+      "seed": 17,
+      "source_files_unchanged": true
+    },
+    {
+      "base_restored": true,
+      "condition": "schema",
+      "journal_sha256": "eb2b182e05e45d994872f0132bcc436c409b12cdb9e7ae592e1b256e8a72ea47",
+      "report_sha256": "628b2109ea92f383646aac67bbbaf0099a5f0297ec9cbfcbf5315b60987bf184",
+      "seed": 17,
+      "source_files_unchanged": true
+    },
+    {
+      "base_restored": true,
+      "condition": "model_directed_gradient",
+      "journal_sha256": "6f0ca05fbc54b235e408c9c7dad4483422b837893ef106c928b7a880a863f710",
+      "report_sha256": "1fa6009d24b86dbe5b0b5719bb0297e64ace34c54e35552c0d78a49b29bf87eb",
+      "seed": 17,
+      "source_files_unchanged": true
+    },
+    {
+      "base_restored": true,
+      "condition": "schema_no_feedback",
+      "journal_sha256": "eb2b182e05e45d994872f0132bcc436c409b12cdb9e7ae592e1b256e8a72ea47",
+      "report_sha256": "50004e90492c54b3546ed25cc8a673984c0981cc120685d044ca7c08dee692fb",
+      "seed": 17,
+      "source_files_unchanged": true
+    }
+  ],
+  "concurrent_validation": {
+    "full_test_suites_ran_in_same_workspace_while_study_was_active": true,
+    "memory_isolation_between_study_and_validation": false,
+    "interpretation": "The 425- and 426-test follow-up suites ran while the local study was live. Shared resource pressure is a confound; the kernel confirms OOM and the killed PID, not that full-context prompts alone caused it. No isolated resource-causality rerun was performed. This interrupted arm is not scored as completed model failure."
+  },
+  "earlier_partial_receipt": {
+    "interpretation": "Preserved pre-interruption seven-arm review snapshot. Its copied running status and continues wording describe that earlier snapshot, NOT a currently live or completed process. This postmortem supersedes its liveness statement, not its completed-arm hashes/results.",
+    "path": "discovery-135m-partial.json",
+    "sha256": "f4a2722175de0fc2215ede09d60cf1f5b25251271102bf03d550d1b33ba8b678"
+  },
+  "independent_post_exit_disk_checks": {
+    "all_seven_model_source_files_match_frozen_receipt": true,
+    "five_dataset_role_file_hashes_match_frozen_manifest": true,
+    "frozen_runtime_source_files": 63,
+    "interrupted_report_persisted_event_and_journal_bindings_verified": true,
+    "raw_summary_bytes_match_prior_seven_arm_review": true,
+    "runtime_sources_unchanged": true,
+    "these_disk_checks_do_not_prove_interrupted_resident_restoration": true
+  },
+  "interrupted_arm": {
+    "available_artifact_sha256": {
+      "seed_17/schema_full_context/13d2fce7faee4d338e77193164ee3ffe/evaluation_plan.json": "794e3f7e7e36ea8b014e2a847e7562d6e99d6952ae44fa3127a66c7c5fa4a071",
+      "seed_17/schema_full_context/13d2fce7faee4d338e77193164ee3ffe/lab.json": "80984496cdda13275962486951dd8f0b3fc3ed6970135dfd462f3d0fa72b519f",
+      "seed_17/schema_full_context/13d2fce7faee4d338e77193164ee3ffe/session_01/diagnosis.json": "e1d270c715af26ae6504e058042f6cd55d5cbf509362e9fa86bd2fc4340d0982",
+      "seed_17/schema_full_context/13d2fce7faee4d338e77193164ee3ffe/session_01/edit_journal.json": "eb2b182e05e45d994872f0132bcc436c409b12cdb9e7ae592e1b256e8a72ea47",
+      "seed_17/schema_full_context/13d2fce7faee4d338e77193164ee3ffe/session_01/practice_diagnosis.json": "36a6c56a0b68ba0a44e7b16f35ae3e18cd335cb072d77e053caa7657caf18d75",
+      "seed_17/schema_full_context/13d2fce7faee4d338e77193164ee3ffe/session_01/turn_001.json": "cc87a09813de7e51ba985f731b17afe55fdff9ce7fd9a5338502fbd74269fa4b",
+      "seed_17/schema_full_context/13d2fce7faee4d338e77193164ee3ffe/session_01/turn_002.json": "47ed8db7fb0cea0614bff88a90ecfb2b44f102654d998dd729f96e15a8909296"
+    },
+    "interpretation": "Running-report false/null are unfinished defaults, not a completed failed reversal or proof of source mutation. No final resident-state check survived SIGKILL; do not claim restoration for this arm. Only two persisted editor replies are known; no cause is inferred about unrecorded work.",
+    "last_report_base_restored": false,
+    "last_report_source_files_unchanged": null,
+    "last_report_status": "running",
+    "recorded_edit_or_reversal_attempts": 0,
+    "recorded_editor_events": [
+      {
+        "action": null,
+        "artifact_sha256": "cc87a09813de7e51ba985f731b17afe55fdff9ce7fd9a5338502fbd74269fa4b",
+        "error": "ValueError: Invalid editor reply: Expecting ',' delimiter: line 103 column 7 (char 818)",
+        "prompt_tokens": 4125,
+        "reply_cut": true,
+        "reply_tokens": 512,
+        "status": "error",
+        "turn": 1
+      },
+      {
+        "action": "save",
+        "artifact_sha256": "47ed8db7fb0cea0614bff88a90ecfb2b44f102654d998dd729f96e15a8909296",
+        "error": "ValueError: Saved variant name must be 1-32 letters/digits/_/-",
+        "prompt_tokens": 4296,
+        "reply_cut": false,
+        "reply_tokens": 110,
+        "status": "error",
+        "turn": 2
+      }
+    ],
+    "recorded_hypotheses": 0,
+    "resident_restoration_verified": false,
+    "run_id": "13d2fce7faee4d338e77193164ee3ffe"
+  },
+  "kind": "ouroboros-discovery-135m-interruption-postmortem",
+  "observed_at_checkout_head": "82128dfe3843e5e37181cb5cd844a0413b388e7c",
+  "process": {
+    "exit_code": 137,
+    "kernel_confirmed_oom_kill": true,
+    "kernel_evidence": "[20186.714567] Out of memory: Killed process 56254 (python) total-vm:7294008kB, anon-rss:3396704kB, file-rss:0kB, shmem-rss:0kB, UID:1001 pgtables:9016kB oom_score_adj:100",
+    "python_pid": 56254,
+    "status": "killed",
+    "tool_process_id": "closed-loop-135m-research-study-4e91c43f"
+  },
+  "scientific_boundary": "Seven completed local arms remain partial negative evidence, not a completed 22-arm 135M study. Missing/interrupted arms are not scored as completed failures or successes. The separately completed/reviewed 22 remote 360M arms are unaffected. No useful autonomous pretrained edit or meta-improvement demonstrated.",
+  "study": {
+    "complete": false,
+    "completed_arm_reports": 7,
+    "interrupted_arm": {
+      "condition": "schema_full_context",
+      "seed": 17
+    },
+    "not_started_arms": 14,
+    "observed_execution_status": "interrupted_by_kernel_oom",
+    "plan_sha256": "de5d9baba654ea0cb80f6707cbdb62f10f2a8c187c7e24de7144f668bbc1d696",
+    "planned_arms": 22,
+    "raw_running_status_is_stale": true,
+    "raw_summary_sha256": "42f9a69e0e90b302af1fb31383873473adceeddc279018e1bd1850877a61c66a",
+    "raw_summary_status": "running",
+    "state_sha256": "6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8",
+    "workdir": "outputs/discovery-135m-01"
+  }
+}
