@@ -108,10 +108,16 @@ dependency-light environment (NumPy, safetensors, PyYAML, pytest, Ruff, MCP — 
 | `-m 'not ml'` | **325 passed, 24 expected optional skips, 115 deselected** |
 | Compatibility unittest | **14 passed** |
 | Ruff lint / format, docs checker | Clean; 52 references |
-| Real-model loop tests | **not re-run** — no Torch in this environment |
+| Real-model loop tests | **not run locally** (no Torch here); **re-run and successful in remote CI** for this commit |
 
 The **463-test** full-suite figure belongs to the earlier Torch/PEFT environment at `9dc6aa6`
-and is not reused for this follow-up. Nothing about the catalogue change can affect the
+and is not reused for this follow-up.
+
+Remote CI for **`93c3fe6`** ([PR run 44744034378](https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44744034378))
+passed **all seven jobs**: core on Python 3.10/3.11/3.12, `mcp`, `local-lora` — where the four
+real offline CPU foundation tests (complete loop, LoRA/export/reload, truncation refusal, RSS
+watchdog) actually ran — and `pretrained-self-edit`. The two 360M study jobs are skipped on
+pull requests by the existing workflow, so this is not a new study result. Nothing about the catalogue change can affect the
 real-model tests, but that is reasoning, not a measurement.
 
 ## Current discovery results and evidence follow-up
