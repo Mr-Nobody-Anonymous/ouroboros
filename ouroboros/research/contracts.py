@@ -304,7 +304,7 @@ def load_config(path):
     }
     if (
         not isinstance(value, dict)
-        or set(value) - required - {"teacher"}
+        or set(value) - required - {"teacher", "checkpoint_selection"}
         or required - set(value)
         or type(value["schema_version"]) is not int
         or value["schema_version"] != VERSION
@@ -325,6 +325,10 @@ def load_config(path):
         value["teacher"]["model_name_or_path"] = str(
             (path.parent / teacher.model_name_or_path).absolute()
         )
+    selection = value.get("checkpoint_selection", "final_only")
+    if selection not in ("final_only", "practice_macro_accuracy"):
+        raise ValueError("Unknown checkpoint-selection rule; declare it before the run")
+    value["checkpoint_selection"] = selection
     if not isinstance(value["data"], dict) or set(value["data"]) != set(ROLES):
         raise ValueError("Expected all eight explicit research data paths")
     value["data"] = {

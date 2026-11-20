@@ -147,6 +147,24 @@ def _tree_bytes(root):
     return total
 
 
+def bind_exported_checkpoints(registry, trained):
+    """Bind every exported checkpoint of one training run before any of them is measured.
+
+    Intermediate selection needs several checkpoints from the same run; each is hashed here, so
+    a later evaluator still refuses a swapped or edited candidate.
+    """
+    root = Path(trained["checkpoint"]).parent
+    names = trained.get("checkpoints") or [Path(trained["checkpoint"]).name]
+    bound = []
+    for name in names:
+        path = (root / name).resolve()
+        if path.parent != root or path.is_symlink() or not path.is_dir():
+            raise ValueError("Exported checkpoint escapes its training run")
+        registry[str(path)] = identity(verify_checkpoint(str(path)))
+        bound.append(str(path))
+    return bound
+
+
 class WorkerExecutor:
     def __init__(
         self,
@@ -379,6 +397,7 @@ def _run(config, data, checked, config_path):
         "baseline_id": identity({"model_files": files}),
         "seeds": [config["seed"] + i for i in range(budget.repeats)],
         "selection": "One recipe chosen by worst-seed practice accuracy; seal before validation. Never select a lucky seed.",
+        "checkpoint_selection": config["checkpoint_selection"],
         "gates": {
             "alpha": budget.alpha,
             "family_size": budget.family_size,
@@ -543,15 +562,70 @@ def _run(config, data, checked, config_path):
                 trained = executor.run(
                     "train", inputs={"train": cohort_binding}, recipe=recipe, seed=seed
                 )
-                checkpoint = trained["checkpoint"]
-                marker = verify_checkpoint(checkpoint)
-                evaluation = executor.run(
-                    "evaluate", inputs={"evaluation": bindings["practice"]}, checkpoint=checkpoint
+                rule = config["checkpoint_selection"]
+                registry = getattr(executor, "checkpoints", None)
+                exported = (
+                    bind_exported_checkpoints(registry, trained)
+                    if registry is not None
+                    else [trained["checkpoint"]]
                 )
+                # Practice-only intermediate selection, declared in the config before the run.
+                # Ties fall back to the earliest checkpoint: fewer steps and less overfitting,
+                # never the luckiest late draw. The measured evaluation object is kept intact so
+                # the same admission/validation code applies as for a single final checkpoint.
+                if rule == "practice_macro_accuracy" and len(exported) > 1:
+                    scored = [
+                        {
+                            "step_order": order,
+                            "checkpoint": path,
+                            "evaluation": executor.run(
+                                "evaluate",
+                                inputs={"evaluation": bindings["practice"]},
+                                checkpoint=path,
+                            ),
+                        }
+                        for order, path in enumerate(exported)
+                    ]
+                    chosen = max(
+                        scored,
+                        key=lambda row: (
+                            row["evaluation"]["summary"]["macro_accuracy"],
+                            -row["step_order"],
+                        ),
+                    )
+                    checkpoint = chosen["checkpoint"]
+                    evaluation = chosen["evaluation"]
+                    selection_record = {
+                        "rule": rule,
+                        "chosen_step_order": chosen["step_order"],
+                        "evaluated": len(scored),
+                        "candidates": [
+                            {
+                                "step_order": row["step_order"],
+                                "checkpoint": Path(row["checkpoint"]).name,
+                                "macro_accuracy": row["evaluation"]["summary"]["macro_accuracy"],
+                            }
+                            for row in scored
+                        ],
+                    }
+                else:
+                    checkpoint = trained["checkpoint"]
+                    evaluation = executor.run(
+                        "evaluate",
+                        inputs={"evaluation": bindings["practice"]},
+                        checkpoint=checkpoint,
+                    )
+                    selection_record = {
+                        "rule": "final_only",
+                        "chosen_step_order": len(exported) - 1,
+                        "evaluated": 1,
+                    }
+                marker = verify_checkpoint(checkpoint)
                 result = {
                     "training": trained,
                     "evaluation": evaluation,
                     "checkpoint_manifest_sha256": identity(marker),
+                    "checkpoint_selection": selection_record,
                     "reused_exact_host_control": False,
                 }
                 cache[key] = result
@@ -588,6 +662,10 @@ def _run(config, data, checked, config_path):
                         "replications": [
                             {
                                 "checkpoint": row["training"]["checkpoint"],
+                                "selected_checkpoint": row["checkpoint_selection"][
+                                    "chosen_step_order"
+                                ],
+                                "checkpoint_selection": row["checkpoint_selection"],
                                 "training": row["training"],
                                 "practice": row["evaluation"]["summary"],
                                 "reused_exact_host_control": row["reused_exact_host_control"],
@@ -608,6 +686,12 @@ def _run(config, data, checked, config_path):
                 else [],
                 "checkpoint_manifest_sha256": [
                     r["checkpoint_manifest_sha256"] for r in candidate_rows[index]
+                ]
+                if index is not None
+                else [],
+                "checkpoint_selection_rule": config["checkpoint_selection"],
+                "checkpoint_selection": [
+                    row["checkpoint_selection"] for row in candidate_rows[index]
                 ]
                 if index is not None
                 else [],

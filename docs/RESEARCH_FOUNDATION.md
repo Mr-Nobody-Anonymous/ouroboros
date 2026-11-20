@@ -166,9 +166,10 @@ the real log holds far fewer episodes than its predeclared minimum, so it report
 | Infrastructure reproduces a full gated loop | **yes**, on a random tiny GPT-2 fixture with constant answers (32 fresh workers, 208 optimizer steps, 261 verified artifacts, all five gates plus retention, source unchanged) |
 | A clean loop runs on a **pretrained** model and owned data | **yes** — 134.5M SmolLM2-135M-Instruct (pinned GGUF → float32) on the owned 380-prompt dataset; 12 fresh workers, 200 optimizer steps, 377 s, peak 1251 MB, source unchanged |
 | A host-designed LoRA raises exact-match accuracy on owned data | **measured, not promoted** — practice 0.000 → 0.300 (both seeds), validation 0.000 → 0.267, 16 wrong→right / 0 right→wrong, exact sign-flip p = 0.00195; the predeclared family-corrected alpha 0.05/44 = 0.00114 was *not* met, so the gate rejected |
-| The follow-up/retention stages execute on a real model | **yes** (path check, labelled non-evidence): four matched follow-up cells trained and re-scored, retention gate ran to a verdict |
+| The follow-up/retention stages execute on a real model | **yes** — first on a labelled path check, then inside a full run: four matched follow-up cells trained and re-scored under `g3-focused-02` and the retention gate returned `passed` |
 | A host-designed LoRA clears the **validation** gate on a real pretrained model | **yes** — with the power profile: 0.000 → 0.192 pooled, 23 wrong→right, 0 right→wrong, p = 2e-5 |
-| A host-designed LoRA clears **every** gate | **no** — that candidate was rejected at the reserved gate: pooled p = 0.00049 but per-seed p = 0.0078 and 0.0020 against α = 0.001136 |
+| A host-authored candidate clears **every** gate | **yes, on a narrow task** — the two-domain `focused` profile (`g3-focused-02`, seed 402, fresh data) passed validation 0.000→0.933, reserved →0.500, final →0.842, robustness →0.975 and retention 1.000→1.000, promoting two verified, ledger-bound checkpoints. Saturated template task, host-authored, not a capability result |
+| A host-designed LoRA clears **every** gate on the five-domain task | **no** — that candidate was rejected at the reserved gate: pooled p = 0.00049 but per-seed p = 0.0078 and 0.0020 against α = 0.001136 |
 | A model independently proposes a valid, useful experiment | **not established, with the failure mode recorded** — the local proposer exhausted its token budget and degenerated, the run abstained and no host fallback was executed |
 | A predeclared selection-policy comparison runs on real episodes | **yes, null** — 20 real episodes, frozen design hash unchanged, primary and null tied in 20/20 (mechanism identified), decision `not_established` |
 | An autonomous edit survives all gates | **not established** |
@@ -352,6 +353,91 @@ proposal** (G4 open). What the run *does* establish is the refusal behaviour —
 proposal produces an abstention with the raw output retained, never a silent host-authored
 substitute, and a budget overrun kills the worker instead of letting it run unbounded.
 
+### A two-domain task that runs the whole gate chain (G3), and the retention bug it exposed
+
+The five-domain candidate above died at the reserved gate because its gain was confined to two
+domains. That is a *scientific* limit of a 50-step LoRA on a 135M model, not a protocol defect —
+but it meant the later stages of the chain (final, robustness, retention) had never been reached
+by any candidate. The `focused` profile exists to separate the two questions: it narrows the
+task to the two domains the adapter actually learns (`divisibility`, `comparison`; 460 prompts,
+the same eight roles and the same gates) so that *plumbing* can be exercised end to end. It is a
+narrower task, never a capability result.
+
+Run `g3-focused-01` (seed 401, `checkpoint_selection: practice_macro_accuracy`):
+
+| quantity | value |
+| --- | --- |
+| baseline practice (macro) | 0.000 (`comparison` 0.000, `divisibility` 0.000) |
+| `lora_sft` candidate, practice per seed | 0.975 / 0.750 |
+| `data_reweight` candidate, practice per seed | 1.000 / 1.000 |
+| checkpoint selection, all four trainings | 30-step export 0.425 / 0.500 vs 50-step 1.000 → the final export was chosen every time |
+| gates validation / reserved / final / robustness | **passed / passed / passed / passed** |
+| retention (four-cell follow-up) | **worker failed** — see below |
+| final state | `failed` (1063 s, host-authored candidate, `fallback_used: false`) |
+
+The run exposed a real defect rather than a model limit: the retention follow-up builds its
+effective recipe from the *declared fixed* follow-up plus the candidate's intervention family,
+but it copied the family without the candidate's domain weights. A `lora_sft` follow-up recipe
+therefore became a `data_reweight` recipe with no weights and the worker raised
+`ValueError: A data_reweight intervention needs explicit domain weights`. The fix is
+`followup_effective_recipe(original, fixed)`: the optimizer, schedule, learning rate and step
+count stay fixed and identical for both cells of the paired comparison, while the intervention
+family, adapter structure **and** domain weights come from the sealed candidate, because the
+"after" cell has to continue the same intervention the "before" cell measured. It is covered by
+`test_followup_recipe_keeps_the_candidate_family_structure_and_weights`.
+
+Because `g3-focused-01` consumed its hidden roles, the corrected chain was re-run on **fresh
+data** (`g3-focused-02`, seed 402) rather than resumed. It completed the entire chain:
+
+| gate | baseline | candidate | delta | result |
+| --- | --- | --- | --- | --- |
+| validation (60 prompts) | 0.000 | 0.933 | +0.933 | passed |
+| reserved (60 prompts) | 0.000 | 0.500 | +0.500 | passed |
+| final (60 prompts) | 0.000 | 0.842 | +0.842 | passed |
+| robustness (40 prompts, perturbed) | 0.000 | 0.975 | +0.975 | passed |
+| retention (40 prompts, four-cell follow-up) | 1.000 pre | 1.000 post | 0.000 (no forgetting) | passed |
+
+`state: completed`, `full_gate_passed: true`, two checkpoints promoted, 1159 s, 15 workers,
+candidate `lora_sft` (practice 1.000/1.000 at both seeds, chosen over `data_reweight` by
+worst-seed tie-break), checkpoint selection again picked the 50-step export in all four
+trainings, and `research verify-run` reports 333 files bound to the ledger. `autonomous_
+improvement_demonstrated` remains `false`: the proposal is host-authored.
+
+**What this does and does not show.** It shows the machinery can carry a candidate through
+every gate, including the paired retention follow-up, and promote it with a reproducible,
+ledger-bound record. It does **not** show a capability gain. The task is two template domains
+that a 50-step LoRA saturates (host control also reaches 1.000 practice), the reserved delta
+(0.500) is much lower than practice, and the robustness role is a perturbed copy of the same
+templates. The honest reading is: *the pipeline works end to end on a narrow task*; the open
+scientific question (G3) — a broader task where the gain is not saturation — is unchanged.
+
+### Checkpoint selection (G11): declared, practice-only, sealed
+
+Until now only the final checkpoint of a training run was ever evaluated, so an intervention
+that peaked mid-run could not be represented at all. `checkpoint_selection` is now a config
+field that has to be **declared before the run** and is validated at load time:
+
+* `final_only` — the previous behaviour, unchanged.
+* `practice_macro_accuracy` — every exported checkpoint of every training run (host control
+  included) is evaluated on the **practice** role only; the highest practice accuracy is
+  chosen, and ties go to the *earliest* checkpoint (fewer steps, less overfitting, never the
+  luckiest late draw).
+
+Every exported checkpoint is hashed into the executor's binding registry *before* it is
+measured, so the existing "candidate no longer matches its measured checkpoint binding" check
+covers intermediate checkpoints as well. The chosen step index, the number of checkpoints
+evaluated and each checkpoint's practice accuracy are recorded per replication; the plan
+declares the rule; and `sealed_selection.json` records the rule plus the chosen checkpoint for
+each seed **before** any hidden-role inference. A scripted protocol test
+(`test_intermediate_checkpoint_selection_is_declared_measured_and_sealed`) exports three
+checkpoints where only the earliest is strong and asserts that the earliest is selected, that
+the seal names it, and that an unknown rule is refused before a run starts.
+
+What this does **not** close, hence "partially closed" in the register: selection uses the same
+practice role the recipe ranking already uses, so it consumes no new holdout and provides no
+independent step-selection evidence; and there is no epoch or learning-rate schedule to select
+over.
+
 ## Reproduction
 
 ```bash
@@ -387,6 +473,14 @@ python scripts/run_selection_campaign.py --workdir outputs/g6-campaign \
 
 # Independent model proposal (abstains rather than falling back)
 python -m ouroboros.cli research run --config outputs/g4-local-02/foundation.json
+
+# Two-domain chain with declared intermediate checkpoint selection (fresh data per run)
+python -m ouroboros.cli research data --directory outputs/g3-focused-02 \
+  --model-path models/smollm2-135m-instruct-gguf --seed 402 --profile focused \
+  --checkpoint-selection practice_macro_accuracy
+python -m ouroboros.cli research run --config outputs/g3-focused-02/foundation.json
+python -m ouroboros.cli research verify-run \
+  --report outputs/g3-focused-02/runs/*/research.json
 ```
 
 `scripts/run_foundation_fixture.py` creates a new directory, writes a 1M random model plus a
@@ -413,7 +507,7 @@ issues or a changelog entry.
 | --- | --- |
 | G1 | **Closed for the plumbing, negative for promotion.** A clean pretrained run now completes on owned data (numbers above) and the follow-up/retention path has executed. What remains is *scientific*: with 30 validation problems the exact test cannot go below 2⁻⁹ unless more problems separate the arms, so the α = 0.05/44 gate needs a bigger validation role (G7) before a candidate can pass. |
 | G2 | **Closed, with limits stated.** The owned dataset exists (380 unique prompts, 5 domains, 8 independent roles, hashed manifest, verification and tamper detection) and is used by the run above. It is template-generated and not a benchmark; a semantically harder task family is still missing (G3). |
-| G3 | **Open, but past the first gate.** A host-designed LoRA now clears the validation gate on a real pretrained model (0.000 → 0.192, p = 2e-5) and was then rejected at the reserved gate on per-seed reproducibility (0.0078 / 0.0020 vs α = 0.001136) despite a significant pooled effect. Its gain is domain-narrow (two short-answer domains), so no capability claim follows even if a later candidate passes. |
+| G3 | **Open scientifically, closed for the gate chain.** A two-domain `focused` profile now carries a host candidate through **all five gates** — validation 0.000→0.933, reserved →0.500, final →0.842, robustness →0.975, retention 1.000→1.000 — with two promoted checkpoints (`g3-focused-02`, verified, ledger-bound). The task is saturated and template-based, so this demonstrates plumbing, not capability; the five-domain candidate still fails at the reserved gate. The broader-task question is unchanged. A host-designed LoRA now clears the validation gate on a real pretrained model (0.000 → 0.192, p = 2e-5) and was then rejected at the reserved gate on per-seed reproducibility (0.0078 / 0.0020 vs α = 0.001136) despite a significant pooled effect. Its gain is domain-narrow (two short-answer domains), so no capability claim follows even if a later candidate passes. |
 | G4 | **No independent model proposal of demonstrated value.** Executed: the local proposer on the real 135M model ran out of its 256-token budget and degenerated inside a schema slot, so the controller abstained (`fallback_used: false`). Closing it needs a proposer that emits a short, valid recipe — a smaller schema, a stronger researcher model, or a repair loop that is still host-owned. |
 | G5 | **Not executed.** No weight-space or architectural edit has been run through this gate chain. The gates, holdout ledger, plan/seal machinery and rollback all exist; what is missing is the wiring between the lab/discovery edit path (its own evaluator, its own data) and these gates. That integration is milestone D, and it cannot reuse the consumed 360M/135M prompts. |
 | G6 | **Executed, null, mechanism identified.** 20 real episodes were collected and replayed under the frozen design (hash unchanged): primary and null tied in 20/20 episodes (p = 1.0) because both candidate families beat the baseline in every episode, so the binary posterior could not separate them. Decision `not_established`, reported as a null. A discriminating design (magnitude-based statistic or families with different success rates) is the next predeclared step; no policy claim is made now. |
@@ -426,7 +520,7 @@ issues or a changelog entry.
 | G8 | **No OS sandbox.** Workers are subprocesses with offline flags and watchdogs; hidden files, the ledger and the output tree stay readable by any local process. |
 | G9 | **Cooperative budgets only.** Wall/RSS/output-byte/step/export limits are checked by the controller, not enforced by cgroups or quotas. |
 | G10 | **No mid-step resume.** Optimizer/RNG state is exported with `resume_supported: false`; an interrupted run needs a new plan and fresh confirmation. |
-| G11 | **No intermediate checkpoint-selection protocol.** Only the final checkpoint of each run is evaluated; epoch/step selection with its own holdout is unimplemented. |
+| G11 | **Partially closed.** Intermediate checkpoint selection exists and is declared before the run (`checkpoint_selection: practice_macro_accuracy`), measured only on the practice role, tie-broken toward the earliest checkpoint, hash-bound before measurement and recorded in the sealed selection. It still reuses the practice role (no independent selection holdout), and there is no epoch or learning-rate schedule to select over. |
 | G12 | **No sequence packing**, no gradient accumulation tuning, no mixed precision, no distributed/multi-GPU execution. |
 | G13 | **No architecture or parameter-count intervention** and **no audited direct weight edit** inside this loop (the lab/discovery paths handle weight edits separately, and are not wired to these gates). |
 | G14 | **No learned researcher or bandit policy.** Ranking is still a transparent posterior/cost heuristic. The *counterfactual logging* half of this gap is now done: every trained candidate is recorded (`candidates`), so proposals can be replayed offline (G6). What remains is actual policy training — that is deliberate, since a trained policy needs many more episodes than exist (G6) and would otherwise be fitted to noise. |
@@ -438,9 +532,9 @@ issues or a changelog entry.
 Why the remaining engineering gaps are not simply "more work on this machine": G8 and G9 need
 OS-level isolation (namespaces/cgroups) that a subprocess budget check cannot provide; G10 is a
 deliberate refusal, not a backlog item — an interrupted run must start a new plan rather than
-resume mid-step, because a resumable step is a hidden-truncation risk; G11 needs a
-checkpoint-selection protocol with its own untouched holdout, which the current roles are not
-sized for; G12 needs GPU hardware (mixed precision and sequence packing are cheap to add, but
+resume mid-step, because a resumable step is a hidden-truncation risk; G11's remaining half needs
+a selection holdout that is *not* the practice role, and the current roles are not sized for a
+third visible split; G12 needs GPU hardware (mixed precision and sequence packing are cheap to add, but
 they buy nothing on a two-thread CPU run); G13 needs the lab/discovery weight-edit path wired
 into *these* gates, which is a separate integration with its own evidence; G15 needs
 approval-bound MCP tools rather than read-only mirrors of the CLI; G16 needs a signing key and

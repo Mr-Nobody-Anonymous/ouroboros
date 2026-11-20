@@ -228,10 +228,16 @@ def parser():
     dataset.add_argument("--model-path", help="Local model directory for the generated config")
     dataset.add_argument("--seed", type=int, default=17)
     dataset.add_argument(
+        "--checkpoint-selection",
+        default="final_only",
+        choices=("final_only", "practice_macro_accuracy"),
+        help="Declare before the run: final checkpoint only, or the best practice checkpoint",
+    )
+    dataset.add_argument(
         "--profile",
         default="standard",
-        choices=("standard", "power", "compact"),
-        help="Role sizes: standard 380, power 490 (bigger hidden roles), compact 144",
+        choices=("standard", "power", "focused", "compact"),
+        help="Role sizes: standard 380, power 490 (bigger hidden roles), focused 460 (two domains), compact 144",
     )
     dataset.add_argument("--verify", action="store_true", help="Verify an existing dataset instead")
     selection = research_ops.add_parser(
@@ -513,6 +519,7 @@ def main(argv=None):
                         seed=args.seed,
                         model_path=args.model_path,
                         profile=args.profile,
+                        checkpoint_selection=args.checkpoint_selection,
                     )
                 )
                 emit(result)

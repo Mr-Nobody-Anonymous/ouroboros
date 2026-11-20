@@ -51,6 +51,31 @@ def tuning_for(recipe, budget):
     )
 
 
+def followup_effective_recipe(original, fixed):
+    """The four-cell retention follow-up, made structure-compatible with the sealed candidate.
+
+    The *fixed* recipe owns the optimizer, schedule, learning rate and step count — those are
+    predeclared and identical for both sides of the paired comparison. The intervention family,
+    adapter structure and domain weights come from the sealed candidate, because the "after"
+    cell has to continue the same intervention the "before" cell measured; a `data_reweight`
+    candidate therefore keeps its weights instead of silently becoming an unweighted follow-up.
+    """
+    from .contracts import Recipe
+
+    return Recipe(
+        family=original.family,
+        target_modules=list(original.target_modules),
+        steps=fixed.steps,
+        learning_rate=fixed.learning_rate,
+        rank=original.rank,
+        alpha=original.alpha,
+        optimizer=fixed.optimizer,
+        schedule=fixed.schedule,
+        weight_decay=fixed.weight_decay,
+        domain_weights=dict(original.domain_weights),
+    )
+
+
 def load_target(model_config, budget, *, recipe=None, seed=42, checkpoint=None):
     marker = verify_checkpoint(checkpoint) if checkpoint else None
     if marker:

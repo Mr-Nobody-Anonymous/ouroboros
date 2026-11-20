@@ -36,13 +36,22 @@ from ouroboros.research.provenance import write_once
 from ouroboros.research.researcher import rank_recipes
 
 
-def config_fixture(root):
+def config_fixture(root, *, checkpoint_selection=None):
     model = root / "model"
-    model.mkdir()
+    model.mkdir(parents=True, exist_ok=True)
     save_file({"a": np.zeros((2, 2), dtype=np.float32)}, str(model / "model.safetensors"))
     (model / "config.json").write_text("{}")
     result = init_foundation(root / "project", model)
-    return Path(result["config"])
+    path = Path(result["config"])
+    if checkpoint_selection is not None:
+        value = json.loads(path.read_text())
+        value["checkpoint_selection"] = checkpoint_selection
+        path.write_text(json.dumps(value))
+        # Round-trip through the same validator the controller uses before the run.
+        from ouroboros.research.contracts import load_config
+
+        load_config(path)
+    return path
 
 
 def evaluation(samples, correct=True, *, wrong_domain=None, cut=False):
@@ -421,6 +430,132 @@ class ScriptedExecutor:
                 },
             }
         return value
+
+
+def test_followup_recipe_keeps_the_candidate_family_structure_and_weights():
+    """The retention follow-up must not turn a data_reweight candidate into an unweighted one."""
+    from ouroboros.research.contracts import Recipe
+    from ouroboros.research.training import followup_effective_recipe
+
+    candidate = Recipe(
+        family="data_reweight",
+        target_modules=["q_proj", "v_proj"],
+        steps=50,
+        learning_rate=0.0002,
+        rank=8,
+        alpha=16,
+        domain_weights={"comparison": 2},
+    )
+    fixed = Recipe(
+        family="lora_sft",
+        target_modules=["c_attn"],
+        steps=12,
+        learning_rate=0.001,
+        rank=2,
+        alpha=4,
+        optimizer="sgd",
+        schedule="cosine",
+        weight_decay=0.01,
+    )
+    effective = followup_effective_recipe(candidate, fixed)
+    # Fixed schedule for both cells; candidate structure and data weighting for the after-cells.
+    assert (effective.steps, effective.learning_rate, effective.optimizer, effective.schedule) == (
+        12,
+        0.001,
+        "sgd",
+        "cosine",
+    )
+    assert effective.family == "data_reweight" and effective.domain_weights == {"comparison": 2}
+    assert (effective.rank, effective.alpha, effective.target_modules) == (
+        8,
+        16,
+        ["q_proj", "v_proj"],
+    )
+    # A data_reweight family without weights is exactly what used to crash the retention worker.
+    with pytest.raises(ValueError):
+        Recipe(family="data_reweight", target_modules=["q_proj"], steps=1, learning_rate=0.001)
+
+
+class TwoCheckpointExecutor(ScriptedExecutor):
+    """Fixture training that exports three checkpoints; only the earliest is strong."""
+
+    checkpoints = {}
+    modes = {}
+
+    def run(
+        self,
+        operation,
+        *,
+        inputs=None,
+        recipe=None,
+        checkpoint=None,
+        seed=None,
+        extra=None,
+        model=None,
+    ):
+        from ouroboros.core.checkpoints import CheckpointStore
+
+        result = super().run(
+            operation,
+            inputs=inputs,
+            recipe=recipe,
+            checkpoint=checkpoint,
+            seed=seed,
+            extra=extra,
+            model=model,
+        )
+        if operation == "train":
+
+            class Backend:
+                def save(self, path):
+                    (Path(path) / "fixture.txt").write_text("scripted checkpoint, not weights")
+
+                def describe(self):
+                    return {"is_llm": False}
+
+            store = CheckpointStore(self.root / f"fixture-{self.count}", self.run_id)
+            names = [Path(result["checkpoint"]).name]
+            for step in (10, 20):
+                names.append(store.save(Backend(), step, scores={}, metadata={"scripted": True}))
+            root = Path(result["checkpoint"]).parent
+            self.modes[str(root / names[-1])] = "weak"
+            result = {**result, "checkpoints": names}
+        elif operation == "evaluate" and self.modes.get(str(checkpoint)) == "weak":
+            samples = [
+                Sample.from_dict(row)
+                for row in json.loads(Path(inputs["evaluation"]["file"]).read_text())
+            ]
+            rows = evaluation(samples, True)["records"]
+            for row in rows[2:]:
+                row["correct"], row["text"] = False, "wrong"
+            from ouroboros.research.evaluation import summarize
+
+            return {"records": rows, "summary": summarize(rows)}
+        return result
+
+
+def test_intermediate_checkpoint_selection_is_declared_measured_and_sealed(tmp_path, monkeypatch):
+    path = config_fixture(tmp_path, checkpoint_selection="practice_macro_accuracy")
+    from ouroboros.research.controller import run_research
+
+    monkeypatch.setattr("ouroboros.research.controller.WorkerExecutor", TwoCheckpointExecutor)
+    TwoCheckpointExecutor.mode = "pass"
+    report = run_research(path)
+    assert report["state"] == "completed"
+    for candidate in report["candidates"]:
+        for replication in candidate["replications"]:
+            record = replication["checkpoint_selection"]
+            assert record["rule"] == "practice_macro_accuracy"
+            assert record["evaluated"] >= 2
+            assert record["chosen_step_order"] == 0, "ties and worse checkpoints must not win"
+    sealed = json.loads((Path(report["report_file"]).parent / "sealed_selection.json").read_text())
+    assert sealed["checkpoint_selection_rule"] == "practice_macro_accuracy"
+    assert sealed["checkpoint_selection"]
+    # The sealed checkpoints are the ones whose practice score was measured, not the last export.
+    assert all(name.endswith("generation_0001") for name in sealed["checkpoints"])
+    # A declared rule is validated before the run, so an unknown rule cannot be smuggled in.
+    with pytest.raises(ValueError):
+        config_fixture(tmp_path / "bad", checkpoint_selection="best_gate_score")
 
 
 @pytest.mark.parametrize(

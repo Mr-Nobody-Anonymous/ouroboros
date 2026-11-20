@@ -64,6 +64,22 @@ PROFILES = {
         },
         "domains": DOMAINS,
     },
+    "focused": {
+        # The two short-answer domains a 50-step LoRA actually learns. Narrowing the task is
+        # what lets an intervention be tested against the *whole* gate chain instead of dying
+        # at validation; it is a plumbing demonstration, never a capability result.
+        "sizes": {
+            "train": 120,
+            "practice": 40,
+            "validation": 60,
+            "reserved": 60,
+            "final": 60,
+            "robustness": 40,
+            "retention": 40,
+            "followup": 40,
+        },
+        "domains": ("divisibility", "comparison"),
+    },
     "compact": {
         "sizes": {
             "train": 60,
@@ -230,7 +246,14 @@ def fingerprint(roles):
 
 
 def write_dataset(
-    directory, *, seed=17, model_path, budget=None, researcher=None, profile="standard"
+    directory,
+    *,
+    seed=17,
+    model_path,
+    budget=None,
+    researcher=None,
+    profile="standard",
+    checkpoint_selection="final_only",
 ):
     """Create a new dataset + foundation config; never overwrite an existing directory."""
     root = Path(directory).absolute()
@@ -299,6 +322,7 @@ def write_dataset(
         "data": {role: f"data/{role}.json" for role in ROLES},
         "budget": asdict(budget),
         "researcher": researcher or {"kind": "host_reference"},
+        "checkpoint_selection": checkpoint_selection,
         "output_dir": "runs",
         "database": "experiments.sqlite3",
         "seed": 17,

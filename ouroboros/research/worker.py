@@ -165,7 +165,7 @@ def execute(job):
     torch.set_num_threads(budget.cpu_threads)
     torch.use_deterministic_algorithms(True)
     torch.manual_seed(job["seed"])
-    from .training import load_target, train_audited
+    from .training import followup_effective_recipe, load_target, train_audited
 
     operation = job["operation"]
     recipe = from_dict(Recipe, job["recipe"]) if job["recipe"] else None
@@ -252,17 +252,9 @@ def execute(job):
             # Paired four-cell retention: base/candidate before and after REAL follow-up SFT.
             # Both cells use exactly the candidate's adapter structure and the predeclared
             # follow-up optimizer/data/steps. No merging of hidden-selected weights into baseline.
-            from dataclasses import replace
-
             original = from_dict(Recipe, job["extra"]["original_recipe"])
             fixed = from_dict(Recipe, job["extra"]["followup_recipe"])
-            effective = replace(
-                fixed,
-                family=original.family,
-                rank=original.rank,
-                alpha=original.alpha,
-                target_modules=original.target_modules,
-            )
+            effective = followup_effective_recipe(original, fixed)
             trained = train_audited(
                 backend,
                 cohort(job["inputs"]["followup"]),

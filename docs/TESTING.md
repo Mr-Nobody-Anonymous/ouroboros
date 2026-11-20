@@ -43,8 +43,8 @@ capability result.
 | --- | --- |
 | Foundation protocol + dataset + selection tests | **44 passed**, ~1 s |
 | Foundation real-model tests | **4 passed**, two expected PEFT `Conv1D` warnings, 2m30s |
-| Full offline suite | **474 passed, 0 skipped**, five warnings, 1m38s (this environment has Torch/Transformers/PEFT/GGUF/Math-Verify/LM Format Enforcer, so the optional-parser skips are gone) |
-| No-ML selection (`-m 'not ml'`) | **359 passed, 115 deselected**, ~8 s |
+| Full offline suite | **476 passed, 0 skipped**, five warnings, 2m39s (this environment has Torch/Transformers/PEFT/GGUF/Math-Verify/LM Format Enforcer, so the optional-parser skips are gone) |
+| No-ML selection (`-m 'not ml'`) | **361 passed, 115 deselected**, ~11 s |
 | Compatibility unittest | **14 passed** |
 | Ruff lint / format | Clean; **124 files** formatted |
 | Owned docs / references | Checker OK; **52 references** |
