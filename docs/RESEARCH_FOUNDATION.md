@@ -165,6 +165,8 @@ the real log holds far fewer episodes than its predeclared minimum, so it report
 | A clean loop runs on a **pretrained** model and owned data | **yes** — 134.5M SmolLM2-135M-Instruct (pinned GGUF → float32) on the owned 380-prompt dataset; 12 fresh workers, 200 optimizer steps, 377 s, peak 1251 MB, source unchanged |
 | A host-designed LoRA raises exact-match accuracy on owned data | **measured, not promoted** — practice 0.000 → 0.300 (both seeds), validation 0.000 → 0.267, 16 wrong→right / 0 right→wrong, exact sign-flip p = 0.00195; the predeclared family-corrected alpha 0.05/44 = 0.00114 was *not* met, so the gate rejected |
 | The follow-up/retention stages execute on a real model | **yes** (path check, labelled non-evidence): four matched follow-up cells trained and re-scored, retention gate ran to a verdict |
+| A host-designed LoRA clears the **validation** gate on a real pretrained model | **yes** — with the power profile: 0.000 → 0.192 pooled, 23 wrong→right, 0 right→wrong, p = 2e-5 |
+| A host-designed LoRA clears **every** gate | **no** — that candidate was rejected at the reserved gate: pooled p = 0.00049 but per-seed p = 0.0078 and 0.0020 against α = 0.001136 |
 | A model independently proposes a valid, useful experiment | **not established** |
 | An autonomous edit survives all gates | **not established** |
 | The researcher or selection policy improves with experience | **not established** — no real-data replay yet; the predeclared comparison reports `insufficient_data` on the available log |
@@ -244,6 +246,44 @@ no-regression floors in 262 s. The report is written with
 prompts and cannot promote anything). Writing it caught a real requirement: every retention
 measurement must use one fixed evaluation seed, otherwise the paired guard refuses the
 comparison — that guard fired and was respected, not bypassed.
+
+### Test power, and the first candidate to reach the reserved gate (G3, G7)
+
+The G1 run could not pass validation for a structural reason: with 30 validation problems only
+9 separated the arms, and an exact one-sided sign-flip test over 9 problems bottoms out at
+2⁻⁹ = 0.00195 — above the predeclared α = 0.05/44 = 0.00114. The `power` dataset profile
+therefore enlarges the *hidden* roles (validation/reserved/final 60, robustness/retention 40,
+practice 40) and leaves the training role at the size the recipe was tuned for. Two power runs
+were executed end to end:
+
+| Run | Validation (60 problems, 2 answers each) | Reserved (60 problems) | Outcome |
+| --- | --- | --- | --- |
+| power-02, seed 18, training role 300 | 0.000 → 0.100 / 0.067; 6 and 4 separating problems; p 0.0156 / 0.0625 | not reached | rejected at validation |
+| power-03, seed 19, training role 150 | **passed**: 0.000 → 0.192 pooled; 23 wrong→right, 0 right→wrong; p = 2e-5 (per seed 0.00024 and 0.00049) | **failed**: 0.000 → 0.133 pooled; 16 wrong→right, 0 right→wrong; pooled p = 0.00049 but per-seed p = 0.0078 / 0.0020 | **rejected at reserved** |
+
+Three things are actually established by that table, and one is not:
+
+1. **Power was the blocker, not the recipe.** Same recipe family, same model: 23 separating
+   problems at 60 validation problems give p = 2e-5, while 9 at 30 problems give 0.00195.
+2. **More training data at a fixed step count is not more learning.** Doubling the training
+   role to 300 while keeping 50 optimizer steps under-fit the model (practice 0.225/0.200
+   against 0.300 at 150 examples), so the run failed at validation. The profile was corrected
+   back to 150 rather than quietly raising the step budget after seeing the result.
+3. **The reserved gate is stricter in practice than validation.** The pooled reserved effect
+   stayed significant (p = 0.00049) but the per-seed tests did not (0.0078 and 0.0020 versus
+   α = 0.001136). Because the gate demands reproducibility at every predeclared seed, the
+   candidate was rejected. This is the first real pretrained candidate to clear validation and
+   the gate still refused to promote it.
+4. **What is *not* established:** that the model learned the tasks. Its gain is domain-narrow —
+   divisibility 0.667 and comparison 0.458, with arithmetic, conversion and sequence at 0.000 —
+   i.e. the two short-answer formats, not reasoning. A candidate that passes every gate on this
+   fixture would still be a diagnostic, not a capability.
+
+For G7 that is a characterized power statement rather than a solved one: to clear
+α = 0.001136 an exact per-seed sign-flip test needs **at least 10 separating problems per
+seed**, and the observed counts (7 vs 9, 11 vs 12) show the variance is wide enough that a
+60-problem hidden role is the minimum, not a comfortable margin. More seeds and more hidden
+problems remain the honest next step.
 
 ### Selection-policy comparison (G6)
 
@@ -327,11 +367,11 @@ issues or a changelog entry.
 | --- | --- |
 | G1 | **Closed for the plumbing, negative for promotion.** A clean pretrained run now completes on owned data (numbers above) and the follow-up/retention path has executed. What remains is *scientific*: with 30 validation problems the exact test cannot go below 2⁻⁹ unless more problems separate the arms, so the α = 0.05/44 gate needs a bigger validation role (G7) before a candidate can pass. |
 | G2 | **Closed, with limits stated.** The owned dataset exists (380 unique prompts, 5 domains, 8 independent roles, hashed manifest, verification and tamper detection) and is used by the run above. It is template-generated and not a benchmark; a semantically harder task family is still missing (G3). |
-| G3 | **No beneficial host control on a pretrained model.** Both discovery studies are negative, and the clean G1 rerun measured a real but sub-threshold gain (p = 0.00195 vs α = 0.00114) that the gate rejected. A host-designed recipe that clears the strict gates on real data has not been found. |
+| G3 | **Open, but past the first gate.** A host-designed LoRA now clears the validation gate on a real pretrained model (0.000 → 0.192, p = 2e-5) and was then rejected at the reserved gate on per-seed reproducibility (0.0078 / 0.0020 vs α = 0.001136) despite a significant pooled effect. Its gain is domain-narrow (two short-answer domains), so no capability claim follows even if a later candidate passes. |
 | G4 | **No independent model proposal of demonstrated value.** The local proposer path exists but has never produced a proposal that survived training and gating on a real task. |
 | G5 | **No useful autonomous edit** under the full gate chain (validation → reserved → final → robustness → retention). |
 | G6 | **Machinery closed, evidence open.** The comparison is predeclared, frozen and hash-bound, and the counterfactual candidate log now exists. The real log holds 1 episode against a predeclared minimum of 20, so the reported status is `insufficient_data`; no policy claim is made. Collecting ≥ 20 real episodes is the remaining work. |
-| G7 | **Two-seed replication only**, one machine, one dataset. Seed-level variance and power at this family correction are not characterized. |
+| G7 | **Power is characterized, replication is still thin.** With the power profile the exact per-seed test needs ≥ 10 separating problems to beat α = 0.001136; observed counts were 7 vs 9 and 11 vs 12, and doubling the training role at a fixed step budget hurt. Two seeds and one machine remain: more seeds and larger hidden roles are the next step, and no variance estimate over seeds should be quoted from two of them. |
 
 ### Engineering (implemented but bounded)
 
@@ -343,11 +383,25 @@ issues or a changelog entry.
 | G11 | **No intermediate checkpoint-selection protocol.** Only the final checkpoint of each run is evaluated; epoch/step selection with its own holdout is unimplemented. |
 | G12 | **No sequence packing**, no gradient accumulation tuning, no mixed precision, no distributed/multi-GPU execution. |
 | G13 | **No architecture or parameter-count intervention** and **no audited direct weight edit** inside this loop (the lab/discovery paths handle weight edits separately, and are not wired to these gates). |
-| G14 | **No learned researcher or bandit policy** — ranking is a transparent posterior/cost heuristic; there is no policy training, no offline evaluation of proposals, no counterfactual logging. |
+| G14 | **No learned researcher or bandit policy.** Ranking is still a transparent posterior/cost heuristic. The *counterfactual logging* half of this gap is now done: every trained candidate is recorded (`candidates`), so proposals can be replayed offline (G6). What remains is actual policy training — that is deliberate, since a trained policy needs many more episodes than exist (G6) and would otherwise be fitted to noise. |
 | G15 | **No research MCP tools.** The foundation is CLI/API only; MCP exposure would need new approval bindings. |
 | G16 | **Integrity is not authentication.** Hashes detect edits; there is no signing, no external timestamping, no inference replay. |
 | G17 | **Data admission is not decontamination.** The screen covers normalized question n-grams only; answers, semantics and pretraining contamination are explicitly unknown. |
-| G18 | **No retention under extended training.** Retention uses a fixed tiny follow-up SFT, not continued training or meta-learning. |
+| G18 | **No retention under extended training.** Retention uses a fixed tiny follow-up SFT, not continued training or meta-learning. Closing it needs a declared, budgeted continued-training schedule and a holdout that survives several such schedules — none of the current roles are sized for that. |
+
+Why the remaining engineering gaps are not simply "more work on this machine": G8 and G9 need
+OS-level isolation (namespaces/cgroups) that a subprocess budget check cannot provide; G10 is a
+deliberate refusal, not a backlog item — an interrupted run must start a new plan rather than
+resume mid-step, because a resumable step is a hidden-truncation risk; G11 needs a
+checkpoint-selection protocol with its own untouched holdout, which the current roles are not
+sized for; G12 needs GPU hardware (mixed precision and sequence packing are cheap to add, but
+they buy nothing on a two-thread CPU run); G13 needs the lab/discovery weight-edit path wired
+into *these* gates, which is a separate integration with its own evidence; G15 needs
+approval-bound MCP tools rather than read-only mirrors of the CLI; G16 needs a signing key and
+an external timestamp, neither of which exists here; G17 needs a real contamination corpus to
+screen against (the current screen is bounded question n-grams, and G2's data is generated, so
+there is nothing to decontaminate it from); G18 needs a longer training schedule and holds big
+enough to survive several of them.
 
 ### Scope (deliberately out)
 

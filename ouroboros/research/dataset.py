@@ -38,6 +38,47 @@ ROLE_SIZES = {
     "followup": 30,
 }
 
+# A role block must be wider than the largest role, so ordinals never collide across roles.
+ROLE_BLOCK = 1024
+
+# `power` enlarges the hidden roles so the exact sign-flip test can resolve below the
+# family-corrected alpha (a 30-problem validation role bottoms out around 2^-9). `compact`
+# is a cheap three-domain protocol for accumulating real selection-policy episodes. Every
+# profile shares one generator, so a pass in any of them is still a diagnostic, not a
+# reasoning claim.
+PROFILES = {
+    "standard": {"sizes": ROLE_SIZES, "domains": DOMAINS},
+    "power": {
+        "sizes": {
+            # The training role stays at the size the recipe was tuned for: enlarging it while
+            # keeping 50 optimizer steps only under-fits (measured), and the point of this
+            # profile is test power on the hidden roles, not more training data.
+            "train": 150,
+            "practice": 40,
+            "validation": 60,
+            "reserved": 60,
+            "final": 60,
+            "robustness": 40,
+            "retention": 40,
+            "followup": 40,
+        },
+        "domains": DOMAINS,
+    },
+    "compact": {
+        "sizes": {
+            "train": 60,
+            "practice": 12,
+            "validation": 12,
+            "reserved": 12,
+            "final": 12,
+            "robustness": 12,
+            "retention": 12,
+            "followup": 12,
+        },
+        "domains": ("arithmetic", "comparison", "divisibility"),
+    },
+}
+
 ROLE_ORDER = tuple(ROLE_SIZES)
 
 ROLE_SALT = {
@@ -116,17 +157,22 @@ def sequence(n):
 
 
 def divisibility(n):
-    divisor = 2 + (n // 89) % 9
-    if (n // 801) % 2:
-        value = divisor * (2 + (n // 7209) % 7)
+    # `value` is injective over any dataset's ordinal span (roles sit < 10k apart), so two
+    # roles can never emit the same body and the 10-word overlap screen stays satisfiable.
+    # Parity picks the answer, and the divisor is chosen to match it, so "yes"/"no" stay
+    # balanced instead of letting a constant answer score.
+    value = 12 + n % 30011
+    if n % 2 == 0:
+        divisor = next((d for d in (7, 5, 3, 2) if value % d == 0), 2)
+        answer = "yes"
     else:
-        value = divisor * (2 + (n // 7209) % 7) + 1
+        divisor = next(d for d in (3, 5, 7, 11, 13, 17) if value % d)
+        answer = "no"
     forms = (
         "Is {v} divisible by {d}? Answer yes or no.",
         "Is {v} a multiple of {d}? Answer yes or no.",
         "Does {d} divide {v}? Answer yes or no.",
     )
-    answer = "yes" if value % divisor == 0 else "no"
     return forms[(n // 3) % 3].format(v=value, d=divisor), answer
 
 
@@ -139,19 +185,22 @@ GENERATORS = {
 }
 
 
-def build(seed=17):
+def build(seed=17, *, profile="standard"):
     """Return {role: [Sample, ...]} with balanced domains and globally unique prompts."""
+    if profile not in PROFILES:
+        raise ValueError(f"Unknown dataset profile: {profile}")
+    sizes, domains = PROFILES[profile]["sizes"], PROFILES[profile]["domains"]
     roles, seen = {}, {}
     for role in ROLES:
-        domain_order = [DOMAINS[(i + ROLE_SALT[role]) % len(DOMAINS)] for i in range(len(DOMAINS))]
+        domain_order = [domains[(i + ROLE_SALT[role]) % len(domains)] for i in range(len(domains))]
         rows = []
-        for index in range(ROLE_SIZES[role]):
-            domain = domain_order[index % len(DOMAINS)]
+        for index in range(sizes[role]):
+            domain = domain_order[index % len(domains)]
             # A globally unique fixture ordinal keeps prompts disjoint across roles without
             # revealing the answer; the domain content is still driven by the same ordinal.
-            # 211 > the largest role (150) so role blocks never overlap, and 211 is coprime
-            # with the generator periods (8, 5, 3), so no two roles can emit the same body.
-            ordinal = seed * 100000 + ROLE_ORDER.index(role) * 211 + index
+            # Blocks are wider than the largest role, so no two roles can share an ordinal;
+            # the block offset also shifts every domain phase, so bodies stay distinguishable.
+            ordinal = seed * 1_000_000 + ROLE_ORDER.index(role) * ROLE_BLOCK + index
             body, target = GENERATORS[domain](ordinal)
             instruction = f"Item {ordinal}. {body}"
             key = prompt_key(instruction)
@@ -180,22 +229,27 @@ def fingerprint(roles):
     ).hexdigest()
 
 
-def write_dataset(directory, *, seed=17, model_path, budget=None, researcher=None):
+def write_dataset(
+    directory, *, seed=17, model_path, budget=None, researcher=None, profile="standard"
+):
     """Create a new dataset + foundation config; never overwrite an existing directory."""
     root = Path(directory).absolute()
     if root.exists() or root.is_symlink():
         raise FileExistsError("Research dataset requires a new directory; no overwrite")
     if any(p.is_symlink() for p in root.parents):
         raise ValueError("Dataset parent must not be symlinked")
-    roles = build(seed)
+    roles = build(seed, profile=profile)
+    sizes, domains = PROFILES[profile]["sizes"], PROFILES[profile]["domains"]
     budget = budget or Budget(
         max_steps=60,
         max_seconds=3600,
         max_rss_bytes=1600 * 1024**2,
         max_seq_length=192,
         max_new_tokens=12,
-        max_train_examples=256,
-        max_total_steps=900,
+        # `data_reweight` repeats examples by domain weight, so the admission cap must cover
+        # a bounded multiple of the training role, not just its raw size.
+        max_train_examples=max(256, 4 * sizes["train"]),
+        max_total_steps=max(900, 2 * sizes["train"]),
         max_candidates=2,
         repeats=2,
         checkpoint_every=30,
@@ -217,10 +271,11 @@ def write_dataset(directory, *, seed=17, model_path, budget=None, researcher=Non
         "kind": "ouroboros-owned-research-dataset",
         "generator": GENERATOR,
         "seed": seed,
+        "profile": profile,
         "license": LICENSE,
         "provenance": "generated by ouroboros.research.dataset; no third-party text",
-        "domains": list(DOMAINS),
-        "role_sizes": ROLE_SIZES,
+        "domains": list(domains),
+        "role_sizes": dict(sizes),
         "files": files,
         "dataset_sha256": admitted.fingerprint(),
         "question_overlap_screen": admitted.quality,
@@ -264,7 +319,8 @@ def write_dataset(directory, *, seed=17, model_path, budget=None, researcher=Non
         "config": str(root / "foundation.json"),
         "dataset_sha256": manifest["dataset_sha256"],
         "counts": {role: len(rows) for role, rows in roles.items()},
-        "domains": list(DOMAINS),
+        "domains": list(domains),
+        "profile": profile,
         "model_downloaded": False,
         "redistributable": True,
     }

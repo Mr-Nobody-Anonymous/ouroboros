@@ -164,3 +164,34 @@ def test_candidate_log_rejects_a_second_selection(tmp_path):
             context="c" * 64,
         )
     memory.close()
+
+
+def test_dataset_profiles_keep_roles_disjoint_and_resolvable(tmp_path):
+    compact = owned.write_dataset(
+        tmp_path / "compact", seed=17, model_path=tmp_path / "model", profile="compact"
+    )
+    assert compact["profile"] == "compact"
+    assert compact["counts"]["validation"] == 12
+    assert compact["domains"] == ["arithmetic", "comparison", "divisibility"]
+    power = owned.write_dataset(
+        tmp_path / "power", seed=17, model_path=tmp_path / "model", profile="power"
+    )
+    assert power["profile"] == "power"
+    assert power["counts"]["validation"] == 60
+    assert sum(power["counts"].values()) == 490
+    # A compact dataset has a different domain set, so its episodes live in their own
+    # selection context; that keeps the policy comparison honest about what it pools.
+    assert set(power["domains"]) != set(compact["domains"])
+    # Every profile is unique by prompt and passes the visible/hidden overlap screen.
+    for name in ("compact", "power"):
+        roles = owned.build(17, profile=name)
+        prompts = [s.instruction for rows in roles.values() for s in rows]
+        assert len(prompts) == len(set(prompts))
+        manifest = json.loads((tmp_path / name / "manifest.json").read_text())
+        assert manifest["question_overlap_screen"]["collisions"] == []
+        assert owned.verify_dataset(tmp_path / name)["status"] == "verified"
+
+
+def test_unknown_profile_is_refused():
+    with pytest.raises(ValueError, match="Unknown dataset profile"):
+        owned.build(17, profile="enormous")

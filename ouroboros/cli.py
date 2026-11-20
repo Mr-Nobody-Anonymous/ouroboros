@@ -227,6 +227,12 @@ def parser():
     dataset.add_argument("--directory", required=True)
     dataset.add_argument("--model-path", help="Local model directory for the generated config")
     dataset.add_argument("--seed", type=int, default=17)
+    dataset.add_argument(
+        "--profile",
+        default="standard",
+        choices=("standard", "power", "compact"),
+        help="Role sizes: standard 380, power 490 (bigger hidden roles), compact 144",
+    )
     dataset.add_argument("--verify", action="store_true", help="Verify an existing dataset instead")
     selection = research_ops.add_parser(
         "compare-selection", help="Predeclared offline comparison of selection policies"
@@ -502,7 +508,12 @@ def main(argv=None):
                 result = (
                     verify_dataset(args.directory)
                     if args.verify
-                    else write_dataset(args.directory, seed=args.seed, model_path=args.model_path)
+                    else write_dataset(
+                        args.directory,
+                        seed=args.seed,
+                        model_path=args.model_path,
+                        profile=args.profile,
+                    )
                 )
                 emit(result)
             elif args.research_operation == "compare-selection":
