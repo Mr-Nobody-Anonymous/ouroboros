@@ -96,7 +96,7 @@ python scripts/run_pretrained_smoke.py --workdir outputs/pretrained-check \
 python scripts/run_pretrained_smoke.py --workdir outputs/pretrained-fresh --fetch
 ```
 
-The script fails if no real same-model nonzero trials occur, restoration/source-file checks fail, or final-test control flow is missing. It does **not** require an accuracy gain. [GitHub Actions](../.github/workflows/ci.yml) runs the same pinned smoke and uploads small JSON evidence, never model weights.
+The script fails if no real same-model nonzero trials occur, restoration/source-file checks fail, or final-test control flow is missing. It does **not** require an accuracy gain. [GitHub Actions](../.github/workflows/ci.yml) runs the same pinned smoke and uploads small JSON evidence, never model weights. A compact `Ouroboros pretrained smoke` notice/job summary also exposes measured counts, scores, decisions and restoration hashes through GitHub's API when redirected artifact hosts are unavailable; predictions/private paths are excluded. See [verified run links and retrieval limits](TESTING.md#github-verification).
 
 ## Troubleshooting
 

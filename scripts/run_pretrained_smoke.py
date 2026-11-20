@@ -28,6 +28,41 @@ def cli(*args):
     return json.loads(completed.stdout)
 
 
+def github_evidence(summary, report):
+    """Expose small measured results via GitHub annotations/API when artifact hosts are blocked.
+
+    No predictions, paths or environment secrets are included. Stdout notices and the job summary
+    are emitted only in Actions, after main has verified the actual pretrained/restoration contract.
+    """
+    if os.environ.get("GITHUB_ACTIONS") != "true":
+        return
+    keys = (
+        "model_parameters",
+        "base_restored",
+        "source_files_unchanged",
+        "baseline_macro_accuracy",
+        "candidate_macro_accuracies",
+        "decisions",
+        "changed_entries",
+        "accepted_patches",
+    )
+    evidence = {key: summary[key] for key in keys}
+    evidence.update(
+        kind="pretrained-mechanics-smoke",
+        base_state_sha256=report["base_state_sha256"],
+        restored_state_sha256=report["restored_state_sha256"],
+        final_test_used_for_promotion=report["final_test"]["used_for_promotion"],
+    )
+    encoded = json.dumps(evidence, sort_keys=True, allow_nan=False)
+    print("::notice title=Ouroboros pretrained smoke::" + encoded)
+    if os.environ.get("GITHUB_STEP_SUMMARY"):
+        with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as stream:
+            stream.write(
+                "## Ouroboros pretrained mechanics smoke\n\n```json\n" + encoded + "\n```\n\n"
+                "A rejection is a valid measured result, not a capability gain. Full reports are in the JSON artifact; no model weights are uploaded.\n"
+            )
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--workdir", default="outputs/pretrained-smoke")
@@ -105,6 +140,7 @@ def main(argv=None):
     (root / "pretrained_summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
+    github_evidence(summary, report)
     print(json.dumps(summary, indent=2, sort_keys=True))
     return 0
 

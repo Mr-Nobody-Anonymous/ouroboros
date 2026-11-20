@@ -102,3 +102,40 @@ def test_invalid_repo_ids_never_start_network_access(monkeypatch, tmp_path, repo
     with pytest.raises(ValueError):
         fetch_model(repo, tmp_path / "model")
     assert not calls
+
+
+def test_github_notice_exports_measured_fields_without_paths_predictions_or_secrets(
+    monkeypatch, tmp_path, capsys
+):
+    import json
+
+    from scripts.run_pretrained_smoke import github_evidence
+
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(tmp_path / "summary.md"))
+    summary = {
+        "model_parameters": 134_515_008,
+        "base_restored": True,
+        "source_files_unchanged": True,
+        "baseline_macro_accuracy": 0.0,
+        "candidate_macro_accuracies": [0.0, 0.0],
+        "decisions": ["rejected", "rejected"],
+        "changed_entries": [884, 884],
+        "accepted_patches": 0,
+        "report_path": "PRIVATE_PATH",
+        "model_receipt": {"local": "PRIVATE_PATH"},
+        "final_test": {"predictions": ["PRIVATE_PREDICTION"]},
+    }
+    report = {
+        "base_state_sha256": "a" * 64,
+        "restored_state_sha256": "a" * 64,
+        "final_test": {"used_for_promotion": False},
+    }
+    github_evidence(summary, report)
+    line = capsys.readouterr().out.strip()
+    assert line.startswith("::notice title=Ouroboros pretrained smoke::")
+    result = json.loads(line.split("::", 2)[2])
+    assert result["base_restored"] and result["changed_entries"] == [884, 884]
+    assert result["base_state_sha256"] == result["restored_state_sha256"]
+    assert not result["final_test_used_for_promotion"]
+    assert "PRIVATE_" not in line and "PRIVATE_" not in (tmp_path / "summary.md").read_text()
