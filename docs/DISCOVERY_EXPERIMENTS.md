@@ -20,6 +20,9 @@ maximum edited fraction, 0.1 relative norm and strict accuracy/significance/rete
 The no-Torch core+MCP suite also passed **282** tests; an installed non-editable wheel's
 five-role scaffold/catalogue/check-only and all **16 JSON/TXT resources** were checked
 outside the source checkout. [Implementation/distribution receipt](evidence/discovery-implementation-local.json).
+The later evidence follow-up passed **426 full tests / 291 lightweight tests** with expected
+optional skips; the original distribution snapshots remain labelled separately.
+[Current validation and exact scope](TESTING.md#current-discovery-results-and-evidence-follow-up).
 
 The first source-bound **pretrained 135M study is running locally**. Its completed
 host-controlled small dose improved practice exact accuracy **0/32→3/32** and NLL
@@ -28,14 +31,16 @@ reserved stayed unopened. The larger dose harmed NLL/accuracy and was rolled bac
 are **HOST** choices, not model discoveries. Matched-random controls also finished; model
 conditions remain in progress, with no accepted edit so far.
 
-The original **361,821,120-parameter 360M Instruct studies at both seeds have completed on
-GitHub**, together with all nine push jobs and all six ordinary PR jobs at `cb4c0df`.
-**Their full model evidence is being independently retrieved/reviewed**, not inferred from
-a green check: the first attempt uncovered 4 KB Actions-notice truncation and a notice cap.
-The original ZIP artifacts are preserved; this sandbox cannot fetch their Azure redirect.
-A separate, explicitly read-only artifact-review job now checks those existing archives
-and exports complete bounded Checks API evidence, without any new model run or selection.
-[Execution/transport status](evidence/discovery-github-execution.json).
+The original **361,821,120-parameter 360M Instruct studies at both seeds are complete and
+reviewed: all 22 remote arms, zero model-authored numerical edits, zero accepted candidates**.
+All nine original push jobs and all six ordinary PR jobs passed at `cb4c0df`, but those green
+checks are not the scientific result. A separate read-only GitHub job verified the existing
+ZIP archives and original report/journal/event hashes; its complete Checks API exports were
+reconstructed locally with full payload-hash verification. Every exported edit/rollback and
+both available fixed-follow-up numerical ledgers were independently norm-checked locally.
+The failed local Azure download and truncated original notices remain disclosed.
+[Reviewed results and competing interpretations](DISCOVERY_RESULTS.md) ·
+[Execution/transport receipt](evidence/discovery-github-execution.json).
 
 No beneficial autonomous edit, validated pretrained generalization gain, retention of such
 a gain or learned future self-improvement is currently claimed. Do not infer those outcomes
@@ -245,21 +250,22 @@ were retrievable per seed, so they cannot be treated as complete JSON or a full 
 original artifacts—not reconstructed/truncated notices—remain the source of truth.
 
 The dependency-free reviewer validates source run/head, archive size/digest, safe JSON-only
-extraction, unchanged report/journal/event hashes, start-state equality, complete numerical
-values and independently recomputed delta norms. It does **not** rerun a model, reconstruct
+extraction, unchanged report/journal/event/retention hashes, start-state equality, complete
+numerical values and independently recomputed delta norms, including both available fixed-
+follow-up ledgers. It does **not** rerun a model, reconstruct
 unedited tensor entries, independently repeat Torch replay, regrade hidden items or choose
 an edit. Tensor replay/restoration remain assertions hash-bound to the original runner.
 
 ```bash
 # Local review: NEW output directory, no Torch, network, inference or candidate selection.
-python scripts/review_discovery_experiment.py --study-dir outputs/discovery-135m-01 \\
+python scripts/review_discovery_experiment.py --study-dir outputs/discovery-135m-01 \
   --workdir outputs/discovery-review-135m
 # Only if deliberately reviewing an unfinished study, add --allow-partial.
 
 # Explicit GitHub artifact retrieval (needs normal GitHub access, including its blob host):
-python scripts/review_discovery_experiment.py --github-run 44715379570 \\
-  --expected-head cb4c0df1008f208016a8bfa941c999bd96bcfc8b \\
-  --repo Mr-Nobody-Anonymous/ouroboros --seed 17 --profile 360m \\
+python scripts/review_discovery_experiment.py --github-run 44715379570 \
+  --expected-head cb4c0df1008f208016a8bfa941c999bd96bcfc8b \
+  --repo Mr-Nobody-Anonymous/ouroboros --seed 17 --profile 360m \
   --workdir outputs/discovery-review-360m-17
 ```
 

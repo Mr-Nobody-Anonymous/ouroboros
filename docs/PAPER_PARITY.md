@@ -16,9 +16,11 @@ is an additional engineering protocol, not the paper's exact original method.
 These additions close measurable experimental gaps but **do not** turn tests or gradient-
 assisted host controls into no-gradient paper parity. They also do not certify independent
 semantic circuit discovery, learned future self-improvement or a beneficial pretrained edit.
-The initial 135M local study is running and larger 360M Instruct study configured at this
-implementation checkpoint; their results must be read separately from the earlier negative
-runs and the 412 passing tests. The general 19-action lab comparison below is preserved;
+The initial 135M local study remains running. The larger 360M Instruct study is now complete
+and reviewed at both seeds: **22 arms, zero model-authored numerical edits or accepted
+candidates**. Its HOST control also failed to establish useful pretrained editing.
+[Reviewed results](DISCOVERY_RESULTS.md) are distinct from the earlier negative runs and
+implementation tests. The general 19-action lab comparison below is preserved;
 the opt-in 25-action discovery profile additionally requires explicit per-edit hypotheses.
 
 ## 1. Self-rewriting: missing/partial features and disposition

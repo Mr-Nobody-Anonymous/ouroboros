@@ -29,9 +29,46 @@ ouroboros weights demo
 
 `pytest` runs the full suite; unittest discovery runs the smaller public-API smoke suite. The [CI workflow](../.github/workflows/ci.yml) tests minimal Python 3.10/3.11/3.12 plus a separate Python 3.11 CPU ML job. Remote CI conclusions are distinct from local observations and must be checked before being claimed.
 
-## Current closed-loop discovery implementation
+## Current discovery results and evidence follow-up
 
-The [hypothesis-driven profile](DISCOVERY_EXPERIMENTS.md) returned **412 passed**, three
+The **complete original 360M study has now been reviewed**, not inferred from passing CI:
+all **22 arms** at both registered seeds, **64 model-editor replies**, **zero model-authored
+numerical edit attempts** and **zero accepted candidates**. Both fixed HOST gradient doses
+harmed practice and rolled back, so a useful pretrained positive control is still absent.
+The separate 135M process remains running; its first seven completed arms were reviewed
+without changing its bound runtime or gates. [Results, negative trajectories, control and
+interpretation limits](DISCOVERY_RESULTS.md) · [360M evidence](evidence/discovery-360m-reviewed.json)
+· [partial 135M evidence](evidence/discovery-135m-partial.json).
+
+| New local verification | Observed result |
+| --- | --- |
+| Full offline suite | **426 passed**, three expected PEFT warnings, **24.89 seconds** |
+| Existing no-Torch core+MCP environment | **291 passed, 24 expected optional skips, 111 ML deselected**, **7.23 seconds** |
+| Compatibility unittest | **14 passed** |
+| Ruff lint/format, compile, dependency consistency and whitespace | Passed; **103 Python files** formatted |
+| Owned docs / research references | **38 / 33**, consistent |
+| Frozen study runtime | All **63** source bindings unchanged |
+
+The new dependency-free reviewer tests cover original hash-bound relocation, partial-review
+opt-in/output exclusion, complete numerical norm consistency, both fixed-follow-up cells,
+refused probes without invented ledgers, strict JSON, lossless bounded transport, unsafe ZIP
+refusal and explicit Checks publication. They do not independently execute a pretrained
+model, prove adversarial isolation or replace the original runner's tensor replay assertions.
+[New local verification receipt](evidence/discovery-results-validation.json).
+
+Original runtime **`cb4c0df`** passed all nine push jobs / six ordinary PR jobs. The evidence
+exporter at **`b0cf0a7`** also passed ordinary push/PR checks, and its two read-only review jobs
+verified both existing ZIP payloads on GitHub. **Both complete Checks exports were recovered
+locally and their uncompressed hashes verified**; every exported edit/reversal and both
+available follow-up value ledgers were independently norm-checked. The sandbox's original
+ZIP download failed and remains explicitly unverified **locally**, rather than being
+silently relabelled as a successful download. [Execution/transport receipt and exact run
+links](evidence/discovery-github-execution.json). Later head checks must still be read at
+their own exact commit; earlier green checks do not validate untested edits.
+
+### Original discovery implementation/distribution checkpoint
+
+The [hypothesis-driven profile](DISCOVERY_EXPERIMENTS.md) initially returned **412 passed**, three
 expected PEFT warnings, in **12.80 seconds** after Ruff lint/format. This is **not** a reuse
 of the 390-test publication below. Added checks cover five-role data/hash separation,
 repeatable non-performance-filtered GSM8K selection, dependency-light CLI/check-only and
@@ -58,11 +95,11 @@ completion autograd agrees with central finite differences (epsilon 0.01, relati
 beneficial pretrained edit. `lab experiment --check-only` and the discovery tool catalogue
 also ran with no model load or implicit downloads.
 
-**Pretrained study status at this implementation checkpoint:** 135M study running locally;
-360M Instruct study configured on implementation pushes. Their model outcomes and remote
-verification are **not yet claimed**. Earlier six-job green runs validate only their older
-snapshots. No beneficial autonomous pretrained edit or learned future editing ability is
-inferred from test counts. Full results will be archived separately, including failed trials.
+**Historical status at that 412-test checkpoint:** the 135M study was running and the
+360M study was configured, without reviewed model outcomes. The completed/reviewed 360M
+results and newer local tests are recorded above; the unpublished distribution snapshots
+here were **not rebuilt or relabelled** as those later source trees. No beneficial autonomous
+pretrained edit or learned future editing ability is inferred from any test count.
 
 ## Previous editor/experiment follow-up
 

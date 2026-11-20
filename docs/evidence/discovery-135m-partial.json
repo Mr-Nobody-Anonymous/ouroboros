@@ -1,0 +1,2351 @@
+{
+  "completed_arm_reports": 7,
+  "data_manifest_sha256": "8df373ae03ee058b46f44491c20d77dfcaab7bb8c556593a03a57713f7d9aae7",
+  "dataset_sha256": "1edd8befaaadf4754e42b41d03d9faf4ccfae035c1388e76df7cbaf1cb41789e",
+  "family": {
+    "alpha": 0.05,
+    "arms": [
+      "no_edit",
+      "human_directed",
+      "random_valid",
+      "unconstrained",
+      "schema",
+      "model_directed_gradient",
+      "schema_no_feedback",
+      "schema_full_context",
+      "schema_sparse_ops",
+      "schema_staged",
+      "schema_staged_gradient"
+    ],
+    "method": "Conservative Bonferroni over 2 checkpoints x 2 seeds x 11 arms (44 possible submissions); both sealed development and reserved gates require the same corrected alpha. Subsetting does not loosen it; no result-based repeated attempts.",
+    "models": 2,
+    "per_gate_alpha": 0.0011363636363636365,
+    "seeds": [
+      17,
+      42
+    ]
+  },
+  "kind": "ouroboros-reviewed-source-bound-discovery-results",
+  "learned_future_self_improvement": false,
+  "limitations": "Only completed arms reviewed. No inference/new evaluation/selection. A running/failed study is not complete. Strict exact accuracy/significance and zero-forgetting rules unchanged; practice/raw development gains do not pass them. HOST controls are not autonomous. Last-proposed diagnostic may have been rolled back; it never rescues failed gates. Greedy answers at repeated editor seeds are not independent benchmark replications. Small template-correlated evaluation, source/size/precision confounds and in-process boundaries remain. Numerical/hash review does not independently rerun a model or reconstruct unedited tensor entries.",
+  "local_read_only_numerical_review": {
+    "all_exported_attempt_and_rollback_actual_values_and_norms_rechecked": true,
+    "both_available_fixed_followup_actual_value_ledgers_and_norms_rechecked": true,
+    "raw_hidden_prompts_or_answers_exported_to_this_receipt": false,
+    "reviewer_reexecuted_model_or_tensor_replay": false,
+    "unedited_tensor_entries_independently_reconstructed": false
+  },
+  "model": {
+    "backend": "transformers-research-causal-lm",
+    "generation_tokens": {
+      "eos_token_ids": [
+        2
+      ],
+      "pad_token_id": 2,
+      "source": "model.generation_config",
+      "source_files_rewritten": false,
+      "tokenizer_eos_before": 1,
+      "tokenizer_eos_mismatch": true,
+      "tokenizer_eos_resolved": 2
+    },
+    "is_llm": true,
+    "parameters": 134515008,
+    "quantized": false
+  },
+  "numerical_values_location": "Complete values remain in the original journals/retention artifacts and bounded gzip/base64 Checks export, not duplicated into this compact receipt. Norms were recomputed from the complete decoded arrays, not from the compact summaries here.",
+  "plan_sha256": "de5d9baba654ea0cb80f6707cbdb62f10f2a8c187c7e24de7144f668bbc1d696",
+  "planned_arms": [
+    "no_edit",
+    "human_directed",
+    "random_valid",
+    "unconstrained",
+    "schema",
+    "model_directed_gradient",
+    "schema_no_feedback",
+    "schema_full_context",
+    "schema_sparse_ops",
+    "schema_staged",
+    "schema_staged_gradient"
+  ],
+  "planned_seeds": [
+    17,
+    42
+  ],
+  "profile": "135m",
+  "raw_summary_sha256": "42f9a69e0e90b302af1fb31383873473adceeddc279018e1bd1850877a61c66a",
+  "results": [
+    {
+      "accepted": false,
+      "actual_session_generations": 32,
+      "adaptive_summary": {
+        "actual_deltas_in_order": [],
+        "attempted_edits": 0,
+        "correct_harm_classifications": 0,
+        "correctly_identified_harmful_attempts": 0,
+        "effects_in_order": [],
+        "explicit_reversal_actions": 0,
+        "harm_classifications": 0,
+        "hypotheses": 0,
+        "improved_future_editing_ability_demonstrated": false,
+        "in_context_adaptation_demonstrated": null,
+        "measured_attempts": 0,
+        "metrics_in_order": [],
+        "practice_harmful_attempts": 0,
+        "practice_helpful_attempts": 0,
+        "prediction_squared_errors_in_order": [],
+        "repeated_numerical_programs": 0,
+        "valid_nonempty_edits": 0
+      },
+      "attempted_edit_summaries": [],
+      "base_restored": true,
+      "baseline": {
+        "$ref": "#/shared_aggregates/bb59634c0659335b3e33b5d6df84acfce1e1e518f5018a6b44f86cf61c6b4d59"
+      },
+      "changed_entries_by_edit": [],
+      "complete_numerical_audit_export_canonical_sha256": "c39bfaf1176b143342fe51a138e446d1f4a7d3adc34dc1d9d81cb05533e934e4",
+      "condition": "no_edit",
+      "development_check": null,
+      "edit_attempts": 0,
+      "editor_generations": 0,
+      "editor_trajectory_summary": {
+        "actions_in_order": [],
+        "errors": {},
+        "prompt_tokens_in_order": [],
+        "raw_reply_sha256_in_order": [],
+        "reply_cuts": 0,
+        "reply_tokens_in_order": [],
+        "statuses_in_order": []
+      },
+      "elapsed_seconds": 692.9190464580006,
+      "final_generated_sequences": 64,
+      "frozen_candidates_before_final": {
+        "diagnostic_not_eligible_by_default": true,
+        "selected": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "terminal_diagnostic": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      },
+      "gradient_measurements": 0,
+      "hypotheses": 0,
+      "initial_prompt_sha256": null,
+      "invalid_commands": 0,
+      "journal_sha256": "b571c9eea49c92faf89ac94146359a1e82385be76193bff2e3108f9cf99f9228",
+      "measurement_cache_hits": 0,
+      "milestones": {
+        "command_validity": true,
+        "edit_usefulness": false,
+        "edit_validity": false,
+        "learned_future_self_improvement": false,
+        "retention": null,
+        "unseen_generalization": null,
+        "validated_autonomous_useful_edit": false
+      },
+      "model_authored_actions": false,
+      "parsed_commands": 1,
+      "practice_gradient_evaluated_problems": 0,
+      "practice_loss_evaluated_problems": 32,
+      "report_sha256": "af23a91197c9658500399ec289a7b50cc2359592018b6854431f430166ed8e35",
+      "reserved_check": null,
+      "retention": {
+        "actual_generated_sequences": 128,
+        "actual_loss_evaluated_problems": 128,
+        "base_restored": true,
+        "candidate_kind": "baseline_no_edit",
+        "candidate_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "category_retention": {
+          "$ref": "#/shared_aggregates/71c09805f33beb964e00239e8495a84b0dceb26191e4177803416be8e891ab96"
+        },
+        "completion_nll_retention": {
+          "$ref": "#/shared_aggregates/ac6c40e968ee153ad6bb094d5923e9f49e50b92639454f4245a0e54c518ab41d"
+        },
+        "fixed_intervention": {
+          "$ref": "#/shared_aggregates/cca97415fefef6937d14caeda2808b084a55a5811783e70c07173d91d6220111"
+        },
+        "four_cells": {
+          "$ref": "#/shared_aggregates/827e71ced6b697fcba061c24c1613e459f40b3308cf8c32bce726fda571d5b9e"
+        },
+        "measurement_cache_hits": 1,
+        "retention_of_validated_useful_edit": null,
+        "source_artifact_sha256": "e2aa1b587669a92a68da1967a36eb39102eedd1be0480f0d3c0f5c07e1b7f667",
+        "status": "completed"
+      },
+      "rollback_actions": 0,
+      "seed": 17,
+      "selected_final": {
+        "$ref": "#/shared_aggregates/3d1aed117ea666604a529d4231a2359c0e51fa925f4d7d5656315441a7c69585"
+      },
+      "source_files_unchanged": true,
+      "status": "withdrawn",
+      "terminal_diagnostic_final": null,
+      "valid_action_names": [
+        "stop_and_explain"
+      ],
+      "valid_commands": 1,
+      "valid_nonempty_edits": 0
+    },
+    {
+      "accepted": false,
+      "actual_session_generations": 128,
+      "adaptive_summary": {
+        "actual_deltas_in_order": [
+          -0.3188539370894432,
+          3.2789164632558823
+        ],
+        "attempted_edits": 2,
+        "correct_harm_classifications": 2,
+        "correctly_identified_harmful_attempts": 1,
+        "effects_in_order": [
+          "helpful",
+          "harmful"
+        ],
+        "explicit_reversal_actions": 1,
+        "harm_classifications": 2,
+        "hypotheses": 2,
+        "improved_future_editing_ability_demonstrated": false,
+        "in_context_adaptation_demonstrated": null,
+        "measured_attempts": 2,
+        "metrics_in_order": [
+          "nll",
+          "nll"
+        ],
+        "practice_harmful_attempts": 1,
+        "practice_helpful_attempts": 1,
+        "prediction_squared_errors_in_order": [
+          0.10160407241002073,
+          10.751948966303116
+        ],
+        "repeated_numerical_programs": 0,
+        "valid_nonempty_edits": 2
+      },
+      "attempted_edit_summaries": [
+        {
+          "actual_nonempty_change": true,
+          "changed_entries": 256,
+          "delta_norm": 0.0838068679336472,
+          "hypothesis_id": "h0",
+          "id": "e0",
+          "original_runner_roundtrip_replay": {
+            "passed": true,
+            "scope": "complete stored-dtype tensor hashes, detached forward/reverse replay; no resident write"
+          },
+          "outcome": {
+            "actual_delta": -0.3188539370894432,
+            "effect": "helpful",
+            "expected_delta": -0.0001,
+            "metric": "nll",
+            "practice_only": true,
+            "prediction_falsified": false,
+            "prediction_squared_error": 0.10160407241002073,
+            "prediction_supported": true
+          },
+          "paired_practice": {
+            "accuracy_delta": {
+              "mean": 0.09375,
+              "normal_95_interval": [
+                -0.008858862331829115,
+                0.19635886233182911
+              ],
+              "standard_error": 0.0523514603733822
+            },
+            "baseline": {
+              "accuracy": 0.0,
+              "completion_tokens": 96,
+              "cut_share": 0.21875,
+              "macro_accuracy": 0.0,
+              "problem_mean_nll": 3.99460319429636,
+              "problems": 32,
+              "scores": {
+                "arithmetic": 0.0,
+                "compositional_reasoning": 0.0,
+                "copying": 0.0,
+                "gsm8k": 0.0
+              },
+              "token_mean_nll": 3.8718013068040213
+            },
+            "candidate": {
+              "accuracy": 0.09375,
+              "completion_tokens": 96,
+              "cut_share": 0.09375,
+              "macro_accuracy": 0.09375,
+              "problem_mean_nll": 3.675749257206917,
+              "problems": 32,
+              "scores": {
+                "arithmetic": 0.0,
+                "compositional_reasoning": 0.0,
+                "copying": 0.375,
+                "gsm8k": 0.0
+              },
+              "token_mean_nll": 3.5803070118029914
+            },
+            "completion_nll_delta": {
+              "by_domain": {
+                "arithmetic": -0.005663514137268066,
+                "compositional_reasoning": -0.1827392578125,
+                "copying": -0.49104031920433044,
+                "gsm8k": -0.5959726572036743
+              },
+              "lower_is_better": true,
+              "mean": -0.3188539370894432,
+              "normal_95_interval": [
+                -0.4942962613479891,
+                -0.1434116128308973
+              ],
+              "note": "Problem-mean NLL including EOS; teacher forcing is not answer accuracy or task success. Interval is descriptive, not a sequential-testing correction.",
+              "problems": 32,
+              "standard_error": 0.08951138992782955,
+              "used_for_promotion": false
+            },
+            "problem_sign_flip": {
+              "draws": 8,
+              "method": "exact-problem-sign-flips",
+              "p_value": 0.125
+            },
+            "right_to_wrong": 0,
+            "wrong_to_right": 3
+          },
+          "restored_to_resident_base": true,
+          "selection_diagnostics": [
+            {
+              "changed_entries": 256,
+              "inspected_changed_entries": 256,
+              "interpretation": "Local first-order prediction on inspected entries only; uninspected entries and nonlinear effects are not accounted for. Not a semantic/relevance or causal-understanding certificate.",
+              "matched_practice_sensitivity": true,
+              "name": "model.layers.29.post_attention_layernorm.weight",
+              "partial_first_order_nll_delta": -0.9955665624234555
+            }
+          ],
+          "tensors": [
+            {
+              "after_parameter_sha256": "9d46e1ccfe27f52c759f1c37aae363bb2684fe59fa2ce50098e5fad5d079110d",
+              "before_parameter_sha256": "5c5ebf7496a9efa2c73090ac0b697448f69c7db7c3a0e323cb7471ce261556c4",
+              "changed_entries": 256,
+              "delta_norm": 0.0838068679336472,
+              "dtype": "torch.float32",
+              "name": "model.layers.29.post_attention_layernorm.weight",
+              "shape": [
+                576
+              ],
+              "values_complete": true
+            }
+          ],
+          "validation_result": {
+            "details": {
+              "changed_entries": 256,
+              "estimated_patch_bytes": 6144,
+              "fraction_of_model": 1.9031333663526973e-06,
+              "operations": [
+                {
+                  "name": "model.layers.29.post_attention_layernorm.weight",
+                  "op": "set_entries"
+                }
+              ],
+              "staged": true,
+              "tensors": [
+                {
+                  "changed_entries": 256,
+                  "delta_norm": 0.0838068679336472,
+                  "name": "model.layers.29.post_attention_layernorm.weight",
+                  "relative_norm": 0.009999998828711257
+                }
+              ]
+            },
+            "passed": true
+          }
+        },
+        {
+          "actual_nonempty_change": true,
+          "changed_entries": 256,
+          "delta_norm": 0.25142063870253323,
+          "hypothesis_id": "h1",
+          "id": "e1",
+          "original_runner_roundtrip_replay": {
+            "passed": true,
+            "scope": "complete stored-dtype tensor hashes, detached forward/reverse replay; no resident write"
+          },
+          "outcome": {
+            "actual_delta": 3.2789164632558823,
+            "effect": "harmful",
+            "expected_delta": -0.0001,
+            "metric": "nll",
+            "practice_only": true,
+            "prediction_falsified": true,
+            "prediction_squared_error": 10.751948966303116,
+            "prediction_supported": false
+          },
+          "paired_practice": {
+            "accuracy_delta": {
+              "mean": -0.09375,
+              "normal_95_interval": [
+                -0.19635886233182911,
+                0.008858862331829115
+              ],
+              "standard_error": 0.0523514603733822
+            },
+            "baseline": {
+              "accuracy": 0.09375,
+              "completion_tokens": 96,
+              "cut_share": 0.09375,
+              "macro_accuracy": 0.09375,
+              "problem_mean_nll": 3.675749257206917,
+              "problems": 32,
+              "scores": {
+                "arithmetic": 0.0,
+                "compositional_reasoning": 0.0,
+                "copying": 0.375,
+                "gsm8k": 0.0
+              },
+              "token_mean_nll": 3.5803070118029914
+            },
+            "candidate": {
+              "accuracy": 0.0,
+              "completion_tokens": 96,
+              "cut_share": 1.0,
+              "macro_accuracy": 0.0,
+              "problem_mean_nll": 6.954665720462799,
+              "problems": 32,
+              "scores": {
+                "arithmetic": 0.0,
+                "compositional_reasoning": 0.0,
+                "copying": 0.0,
+                "gsm8k": 0.0
+              },
+              "token_mean_nll": 6.691757649183273
+            },
+            "completion_nll_delta": {
+              "by_domain": {
+                "arithmetic": 3.390617221593857,
+                "compositional_reasoning": 3.0892487466335297,
+                "copying": 3.4312610924243927,
+                "gsm8k": 3.20453879237175
+              },
+              "lower_is_better": true,
+              "mean": 3.2789164632558823,
+              "normal_95_interval": [
+                2.898734434485871,
+                3.6590984920258935
+              ],
+              "note": "Problem-mean NLL including EOS; teacher forcing is not answer accuracy or task success. Interval is descriptive, not a sequential-testing correction.",
+              "problems": 32,
+              "standard_error": 0.19397042284184252,
+              "used_for_promotion": false
+            },
+            "problem_sign_flip": {
+              "draws": 8,
+              "method": "exact-problem-sign-flips",
+              "p_value": 1.0
+            },
+            "right_to_wrong": 3,
+            "wrong_to_right": 0
+          },
+          "restored_to_resident_base": true,
+          "selection_diagnostics": [
+            {
+              "changed_entries": 256,
+              "inspected_changed_entries": 256,
+              "interpretation": "Local first-order prediction on inspected entries only; uninspected entries and nonlinear effects are not accounted for. Not a semantic/relevance or causal-understanding certificate.",
+              "matched_practice_sensitivity": true,
+              "name": "model.layers.29.post_attention_layernorm.weight",
+              "partial_first_order_nll_delta": -0.9779019173230521
+            }
+          ],
+          "tensors": [
+            {
+              "after_parameter_sha256": "dc7249a15244620ed68b38b1f0f9ca02344bb0011590bb56e2f34ee9786e998e",
+              "before_parameter_sha256": "9d46e1ccfe27f52c759f1c37aae363bb2684fe59fa2ce50098e5fad5d079110d",
+              "changed_entries": 256,
+              "delta_norm": 0.25142063870253323,
+              "dtype": "torch.float32",
+              "name": "model.layers.29.post_attention_layernorm.weight",
+              "shape": [
+                576
+              ],
+              "values_complete": true
+            }
+          ],
+          "validation_result": {
+            "details": {
+              "changed_entries": 366,
+              "estimated_patch_bytes": 7904,
+              "fraction_of_model": 2.7208859847073717e-06,
+              "operations": [
+                {
+                  "name": "model.layers.29.post_attention_layernorm.weight",
+                  "op": "set_entries"
+                }
+              ],
+              "staged": true,
+              "tensors": [
+                {
+                  "changed_entries": 366,
+                  "delta_norm": 0.17726160444508507,
+                  "name": "model.layers.29.post_attention_layernorm.weight",
+                  "relative_norm": 0.021151200140658764
+                }
+              ]
+            },
+            "passed": true
+          }
+        }
+      ],
+      "base_restored": true,
+      "baseline": {
+        "$ref": "#/shared_aggregates/bb59634c0659335b3e33b5d6df84acfce1e1e518f5018a6b44f86cf61c6b4d59"
+      },
+      "changed_entries_by_edit": [
+        256,
+        256
+      ],
+      "complete_numerical_audit_export_canonical_sha256": "ddc3c6f5993cd17e1e0a34b38cec95ce682a8eb7348def1df47680513bca827d",
+      "condition": "human_directed",
+      "development_check": {
+        "eligible": false,
+        "paired": {
+          "accuracy_delta": {
+            "mean": 0.03125,
+            "normal_95_interval": [
+              -0.03,
+              0.0925
+            ],
+            "standard_error": 0.03125
+          },
+          "baseline": {
+            "accuracy": 0.0,
+            "answers": 32,
+            "cut_share": 0.28125,
+            "domain_counts": {
+              "arithmetic": 8,
+              "compositional_reasoning": 8,
+              "copying": 8,
+              "gsm8k": 8
+            },
+            "finished_accuracy": 0.0,
+            "loss": {
+              "by_domain": {
+                "arithmetic": 3.3016319572925568,
+                "compositional_reasoning": 4.727313309907913,
+                "copying": 3.3451217859983444,
+                "gsm8k": 5.333806753158569
+              },
+              "completion_tokens": 101,
+              "criterion": "teacher-forced independently tokenized reference plus model EOS; natural log, no truncation",
+              "problem_mean_nll": 4.176968451589346,
+              "problems": 32,
+              "token_mean_nll": 4.088174746768309
+            },
+            "macro_accuracy": 0.0,
+            "mean_new_tokens": 65.21875,
+            "problems": 32,
+            "repetitive_share_of_cuts": 0.0,
+            "scores": {
+              "arithmetic": 0.0,
+              "compositional_reasoning": 0.0,
+              "copying": 0.0,
+              "gsm8k": 0.0
+            }
+          },
+          "candidate": {
+            "accuracy": 0.03125,
+            "answers": 32,
+            "cut_share": 0.125,
+            "domain_counts": {
+              "arithmetic": 8,
+              "compositional_reasoning": 8,
+              "copying": 8,
+              "gsm8k": 8
+            },
+            "finished_accuracy": 0.03571428571428571,
+            "loss": {
+              "by_domain": {
+                "arithmetic": 3.2697000801563263,
+                "compositional_reasoning": 4.470069259405136,
+                "copying": 2.846685066819191,
+                "gsm8k": 4.850736439228058
+              },
+              "completion_tokens": 101,
+              "criterion": "teacher-forced independently tokenized reference plus model EOS; natural log, no truncation",
+              "problem_mean_nll": 3.859297711402178,
+              "problems": 32,
+              "token_mean_nll": 3.779966765111036
+            },
+            "macro_accuracy": 0.03125,
+            "mean_new_tokens": 39.96875,
+            "problems": 32,
+            "repetitive_share_of_cuts": 0.0,
+            "scores": {
+              "arithmetic": 0.0,
+              "compositional_reasoning": 0.0,
+              "copying": 0.125,
+              "gsm8k": 0.0
+            }
+          },
+          "cohorts": {
+            "originally_cut": {
+              "answers": 9,
+              "baseline_correct": 0,
+              "candidate_correct": 0
+            },
+            "originally_finished": {
+              "answers": 23,
+              "baseline_correct": 0,
+              "candidate_correct": 1
+            }
+          },
+          "completion_nll_delta": {
+            "by_domain": {
+              "arithmetic": -0.03193187713623047,
+              "compositional_reasoning": -0.2572440505027771,
+              "copying": -0.49843671917915344,
+              "gsm8k": -0.4830703139305115
+            },
+            "lower_is_better": true,
+            "mean": -0.3176707401871681,
+            "normal_95_interval": [
+              -0.44374758849183515,
+              -0.19159389188250112
+            ],
+            "note": "Problem-mean NLL including EOS; teacher forcing is not answer accuracy or task success. Interval is descriptive, not a sequential-testing correction.",
+            "problems": 32,
+            "standard_error": 0.06432492260442194,
+            "used_for_promotion": false
+          },
+          "cut_share_delta": {
+            "mean": -0.15625,
+            "normal_95_interval": [
+              -0.2840680331438964,
+              -0.028431966856103635
+            ],
+            "standard_error": 0.06521328221627366
+          },
+          "interval_note": "Normal approximation over problems, not a simultaneous or sequential-testing guarantee.",
+          "paired_sign_test_one_sided": 0.5,
+          "problem_sign_flip": {
+            "draws": 2,
+            "method": "exact-problem-sign-flips",
+            "p_value": 0.5
+          },
+          "right_to_wrong": 0,
+          "unit_of_analysis": "problem (samples averaged within each problem)",
+          "wrong_to_right": 1
+        },
+        "reason": "Development problem-clustered significance threshold not met"
+      },
+      "edit_attempts": 2,
+      "editor_generations": 0,
+      "editor_trajectory_summary": {
+        "actions_in_order": [],
+        "errors": {},
+        "prompt_tokens_in_order": [],
+        "raw_reply_sha256_in_order": [],
+        "reply_cuts": 0,
+        "reply_tokens_in_order": [],
+        "statuses_in_order": []
+      },
+      "elapsed_seconds": 1892.7686332660014,
+      "final_generated_sequences": 64,
+      "frozen_candidates_before_final": {
+        "diagnostic_not_eligible_by_default": true,
+        "selected": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "terminal_diagnostic": "b14dfcd7928675fefc4383a4a4b9c22b1e89061bf75b2252fe673a1f74b7f635"
+      },
+      "gradient_measurements": 2,
+      "hypotheses": 2,
+      "initial_prompt_sha256": null,
+      "invalid_commands": 0,
+      "journal_sha256": "c7f95e0140a52745e29825cef48dc57736396dde6f77382a6c20e261addc4584",
+      "measurement_cache_hits": 5,
+      "milestones": {
+        "command_validity": true,
+        "edit_usefulness": false,
+        "edit_validity": true,
+        "learned_future_self_improvement": false,
+        "retention": null,
+        "unseen_generalization": null,
+        "validated_autonomous_useful_edit": false
+      },
+      "model_authored_actions": false,
+      "parsed_commands": 16,
+      "practice_gradient_evaluated_problems": 64,
+      "practice_loss_evaluated_problems": 128,
+      "report_sha256": "612ae4ebed6adce811722d81ba1cb566b06faf8ba6270aba44b5e221fdd0235d",
+      "reserved_check": {
+        "development_failed": true,
+        "eligible": false,
+        "reason": "Development problem-clustered significance threshold not met"
+      },
+      "retention": {
+        "actual_generated_sequences": 128,
+        "actual_loss_evaluated_problems": 128,
+        "base_restored": true,
+        "candidate_kind": "terminal_diagnostic",
+        "candidate_sha256": "b14dfcd7928675fefc4383a4a4b9c22b1e89061bf75b2252fe673a1f74b7f635",
+        "category_retention": {
+          "$ref": "#/shared_aggregates/71c09805f33beb964e00239e8495a84b0dceb26191e4177803416be8e891ab96"
+        },
+        "completion_nll_retention": {
+          "$ref": "#/shared_aggregates/1ea7691ddbfc5690069fac63e4d9fe233b9956f8fc8c0d9883bbd362f617dc76"
+        },
+        "fixed_intervention": {
+          "$ref": "#/shared_aggregates/cca97415fefef6937d14caeda2808b084a55a5811783e70c07173d91d6220111"
+        },
+        "four_cells": {
+          "$ref": "#/shared_aggregates/b2b7320247dbe7ec76583b850b8af597cb30d0a57721cd32ae62a2beb36bd0b0"
+        },
+        "measurement_cache_hits": 2,
+        "retention_of_validated_useful_edit": null,
+        "source_artifact_sha256": "3d06d8b303d7bcb2e6c93f634bd4402c91a12f51923913c4712335628f47c1ae",
+        "status": "completed"
+      },
+      "rollback_actions": 1,
+      "seed": 17,
+      "selected_final": {
+        "$ref": "#/shared_aggregates/3d1aed117ea666604a529d4231a2359c0e51fa925f4d7d5656315441a7c69585"
+      },
+      "source_files_unchanged": true,
+      "status": "rejected",
+      "terminal_diagnostic_final": {
+        "accuracy_delta": {
+          "mean": 0.0,
+          "normal_95_interval": [
+            0.0,
+            0.0
+          ],
+          "standard_error": 0.0
+        },
+        "baseline": {
+          "accuracy": 0.0,
+          "completion_tokens": 263,
+          "cut_share": 0.28125,
+          "macro_accuracy": 0.0,
+          "problem_mean_nll": 3.4944136515259743,
+          "problems": 64,
+          "scores": {
+            "arithmetic": 0.0,
+            "compositional_reasoning": 0.0,
+            "copying": 0.0,
+            "gsm8k": 0.0
+          },
+          "token_mean_nll": 3.0199134091460658
+        },
+        "candidate": {
+          "accuracy": 0.0,
+          "completion_tokens": 263,
+          "cut_share": 1.0,
+          "macro_accuracy": 0.0,
+          "problem_mean_nll": 5.588542729616165,
+          "problems": 64,
+          "scores": {
+            "arithmetic": 0.0,
+            "compositional_reasoning": 0.0,
+            "copying": 0.0,
+            "gsm8k": 0.0
+          },
+          "token_mean_nll": 4.938611328828471
+        },
+        "completion_nll_delta": {
+          "by_domain": {
+            "arithmetic": 1.7613045275211334,
+            "compositional_reasoning": 2.71832238137722,
+            "copying": 1.4964701235294342,
+            "gsm8k": 2.4004192799329758
+          },
+          "lower_is_better": true,
+          "mean": 2.094129078090191,
+          "normal_95_interval": [
+            1.937318920360033,
+            2.250939235820349
+          ],
+          "note": "Problem-mean NLL including EOS; teacher forcing is not answer accuracy or task success. Interval is descriptive, not a sequential-testing correction.",
+          "problems": 64,
+          "standard_error": 0.08000518251538671,
+          "used_for_promotion": false
+        },
+        "problem_sign_flip": {
+          "draws": 1,
+          "method": "exact-problem-sign-flips",
+          "p_value": 1.0
+        },
+        "right_to_wrong": 0,
+        "wrong_to_right": 0
+      },
+      "valid_action_names": [
+        "inspect_gradients",
+        "hypothesize",
+        "edit",
+        "analyze_failure",
+        "record_experiment",
+        "compare_checkpoints",
+        "inspect_gradients",
+        "hypothesize",
+        "edit",
+        "analyze_failure",
+        "record_experiment",
+        "compare_checkpoints",
+        "rollback",
+        "evaluate_candidate",
+        "submit",
+        "confirm"
+      ],
+      "valid_commands": 16,
+      "valid_nonempty_edits": 2
+    },
+    {
+      "accepted": false,
+      "actual_session_generations": 96,
+      "adaptive_summary": {
+        "actual_deltas_in_order": [
+          -0.03221505880355835,
+          -0.0484190359711647
+        ],
+        "attempted_edits": 2,
+        "correct_harm_classifications": 2,
+        "correctly_identified_harmful_attempts": 0,
+        "effects_in_order": [
+          "helpful",
+          "helpful"
+        ],
+        "explicit_reversal_actions": 1,
+        "harm_classifications": 2,
+        "hypotheses": 2,
+        "improved_future_editing_ability_demonstrated": false,
+        "in_context_adaptation_demonstrated": null,
+        "measured_attempts": 2,
+        "metrics_in_order": [
+          "nll",
+          "nll"
+        ],
+        "practice_harmful_attempts": 0,
+        "practice_helpful_attempts": 2,
+        "prediction_squared_errors_in_order": [
+          0.0010313770019560104,
+          0.002334729237182708
+        ],
+        "repeated_numerical_programs": 0,
+        "valid_nonempty_edits": 2
+      },
+      "attempted_edit_summaries": [
+        {
+          "actual_nonempty_change": true,
+          "changed_entries": 256,
+          "delta_norm": 0.08380685543221353,
+          "hypothesis_id": "h0",
+          "id": "e0",
+          "original_runner_roundtrip_replay": {
+            "passed": true,
+            "scope": "complete stored-dtype tensor hashes, detached forward/reverse replay; no resident write"
+          },
+          "outcome": {
+            "actual_delta": -0.03221505880355835,
+            "effect": "helpful",
+            "expected_delta": -0.0001,
+            "metric": "nll",
+            "practice_only": true,
+            "prediction_falsified": false,
+            "prediction_squared_error": 0.0010313770019560104,
+            "prediction_supported": true
+          },
+          "paired_practice": {
+            "accuracy_delta": {
+              "mean": 0.0,
+              "normal_95_interval": [
+                0.0,
+                0.0
+              ],
+              "standard_error": 0.0
+            },
+            "baseline": {
+              "accuracy": 0.0,
+              "completion_tokens": 96,
+              "cut_share": 0.21875,
+              "macro_accuracy": 0.0,
+              "problem_mean_nll": 3.99460319429636,
+              "problems": 32,
+              "scores": {
+                "arithmetic": 0.0,
+                "compositional_reasoning": 0.0,
+                "copying": 0.0,
+                "gsm8k": 0.0
+              },
+              "token_mean_nll": 3.8718013068040213
+            },
+            "candidate": {
+              "accuracy": 0.0,
+              "completion_tokens": 96,
+              "cut_share": 0.1875,
+              "macro_accuracy": 0.0,
+              "problem_mean_nll": 3.9623881354928017,
+              "problems": 32,
+              "scores": {
+                "arithmetic": 0.0,
+                "compositional_reasoning": 0.0,
+                "copying": 0.0,
+                "gsm8k": 0.0
+              },
+              "token_mean_nll": 3.8401742751399675
+            },
+            "completion_nll_delta": {
+              "by_domain": {
+                "arithmetic": -0.027012795209884644,
+                "compositional_reasoning": -0.020317524671554565,
+                "copying": -0.062211453914642334,
+                "gsm8k": -0.019318461418151855
+              },
+              "lower_is_better": true,
+              "mean": -0.03221505880355835,
+              "normal_95_interval": [
+                -0.041655621390250155,
+                -0.022774496216866544
+              ],
+              "note": "Problem-mean NLL including EOS; teacher forcing is not answer accuracy or task success. Interval is descriptive, not a sequential-testing correction.",
+              "problems": 32,
+              "standard_error": 0.004816613564638677,
+              "used_for_promotion": false
+            },
+            "problem_sign_flip": {
+              "draws": 1,
+              "method": "exact-problem-sign-flips",
+              "p_value": 1.0
+            },
+            "right_to_wrong": 0,
+            "wrong_to_right": 0
+          },
+          "restored_to_resident_base": true,
+          "selection_diagnostics": [
+            {
+              "matched_practice_sensitivity": false,
+              "name": "model.layers.29.post_attention_layernorm.weight"
+            }
+          ],
+          "tensors": [
+            {
+              "after_parameter_sha256": "4e15637ad30b3fa7ce6ce809a2fb877b808bb8dcd73dbf453a669fac2d955877",
+              "before_parameter_sha256": "5c5ebf7496a9efa2c73090ac0b697448f69c7db7c3a0e323cb7471ce261556c4",
+              "changed_entries": 256,
+              "delta_norm": 0.08380685543221353,
+              "dtype": "torch.float32",
+              "name": "model.layers.29.post_attention_layernorm.weight",
+              "shape": [
+                576
+              ],
+              "values_complete": true
+            }
+          ],
+          "validation_result": {
+            "details": {
+              "changed_entries": 256,
+              "estimated_patch_bytes": 6144,
+              "fraction_of_model": 1.9031333663526973e-06,
+              "operations": [
+                {
+                  "name": "model.layers.29.post_attention_layernorm.weight",
+                  "op": "set_entries"
+                }
+              ],
+              "staged": true,
+              "tensors": [
+                {
+                  "changed_entries": 256,
+                  "delta_norm": 0.08380685543221353,
+                  "name": "model.layers.29.post_attention_layernorm.weight",
+                  "relative_norm": 0.009999997337015827
+                }
+              ]
+            },
+            "passed": true
+          }
+        },
+        {
+          "actual_nonempty_change": true,
+          "changed_entries": 256,
+          "delta_norm": 0.2514206595199799,
+          "hypothesis_id": "h1",
+          "id": "e2",
+          "original_runner_roundtrip_replay": {
+            "passed": true,
+            "scope": "complete stored-dtype tensor hashes, detached forward/reverse replay; no resident write"
+          },
+          "outcome": {
+            "actual_delta": -0.0484190359711647,
+            "effect": "helpful",
+            "expected_delta": -0.0001,
+            "metric": "nll",
+            "practice_only": true,
+            "prediction_falsified": false,
+            "prediction_squared_error": 0.002334729237182708,
+            "prediction_supported": true
+          },
+          "paired_practice": {
+            "accuracy_delta": {
+              "mean": 0.0,
+              "normal_95_interval": [
+                0.0,
+                0.0
+              ],
+              "standard_error": 0.0
+            },
+            "baseline": {
+              "accuracy": 0.0,
+              "completion_tokens": 96,
+              "cut_share": 0.21875,
+              "macro_accuracy": 0.0,
+              "problem_mean_nll": 3.99460319429636,
+              "problems": 32,
+              "scores": {
+                "arithmetic": 0.0,
+                "compositional_reasoning": 0.0,
+                "copying": 0.0,
+                "gsm8k": 0.0
+              },
+              "token_mean_nll": 3.8718013068040213
+            },
+            "candidate": {
+              "accuracy": 0.0,
+              "completion_tokens": 96,
+              "cut_share": 0.21875,
+              "macro_accuracy": 0.0,
+              "problem_mean_nll": 3.9461841583251953,
+              "problems": 32,
+              "scores": {
+                "arithmetic": 0.0,
+                "compositional_reasoning": 0.0,
+                "copying": 0.0,
+                "gsm8k": 0.0
+              },
+              "token_mean_nll": 3.823070695002874
+            },
+            "completion_nll_delta": {
+              "by_domain": {
+                "arithmetic": -0.005516648292541504,
+                "compositional_reasoning": -0.04671066999435425,
+                "copying": -0.089211106300354,
+                "gsm8k": -0.05223771929740906
+              },
+              "lower_is_better": true,
+              "mean": -0.0484190359711647,
+              "normal_95_interval": [
+                -0.06265920388334895,
+                -0.03417886805898047
+              ],
+              "note": "Problem-mean NLL including EOS; teacher forcing is not answer accuracy or task success. Interval is descriptive, not a sequential-testing correction.",
+              "problems": 32,
+              "standard_error": 0.007265391791930733,
+              "used_for_promotion": false
+            },
+            "problem_sign_flip": {
+              "draws": 1,
+              "method": "exact-problem-sign-flips",
+              "p_value": 1.0
+            },
+            "right_to_wrong": 0,
+            "wrong_to_right": 0
+          },
+          "restored_to_resident_base": true,
+          "selection_diagnostics": [
+            {
+              "matched_practice_sensitivity": false,
+              "name": "model.layers.29.post_attention_layernorm.weight"
+            }
+          ],
+          "tensors": [
+            {
+              "after_parameter_sha256": "de245111e4b4d3a04a1516eddeb3e93893f78dc5eddb057ccc496eddf57afa9e",
+              "before_parameter_sha256": "5c5ebf7496a9efa2c73090ac0b697448f69c7db7c3a0e323cb7471ce261556c4",
+              "changed_entries": 256,
+              "delta_norm": 0.2514206595199799,
+              "dtype": "torch.float32",
+              "name": "model.layers.29.post_attention_layernorm.weight",
+              "shape": [
+                576
+              ],
+              "values_complete": true
+            }
+          ],
+          "validation_result": {
+            "details": {
+              "changed_entries": 256,
+              "estimated_patch_bytes": 6144,
+              "fraction_of_model": 1.9031333663526973e-06,
+              "operations": [
+                {
+                  "name": "model.layers.29.post_attention_layernorm.weight",
+                  "op": "set_entries"
+                }
+              ],
+              "staged": true,
+              "tensors": [
+                {
+                  "changed_entries": 256,
+                  "delta_norm": 0.2514206595199799,
+                  "name": "model.layers.29.post_attention_layernorm.weight",
+                  "relative_norm": 0.030000003134638024
+                }
+              ]
+            },
+            "passed": true
+          }
+        }
+      ],
+      "base_restored": true,
+      "baseline": {
+        "$ref": "#/shared_aggregates/bb59634c0659335b3e33b5d6df84acfce1e1e518f5018a6b44f86cf61c6b4d59"
+      },
+      "changed_entries_by_edit": [
+        256,
+        256
+      ],
+      "complete_numerical_audit_export_canonical_sha256": "a644d00e984e70754905c0070d0c034544ee5ea074b1642b4fd5993206c241d3",
+      "condition": "random_valid",
+      "development_check": {
+        "eligible": false,
+        "paired": {
+          "accuracy_delta": {
+            "mean": 0.0,
+            "normal_95_interval": [
+              0.0,
+              0.0
+            ],
+            "standard_error": 0.0
+          },
+          "baseline": {
+            "accuracy": 0.0,
+            "answers": 32,
+            "cut_share": 0.28125,
+            "domain_counts": {
+              "arithmetic": 8,
+              "compositional_reasoning": 8,
+              "copying": 8,
+              "gsm8k": 8
+            },
+            "finished_accuracy": 0.0,
+            "loss": {
+              "by_domain": {
+                "arithmetic": 3.3016319572925568,
+                "compositional_reasoning": 4.727313309907913,
+                "copying": 3.3451217859983444,
+                "gsm8k": 5.333806753158569
+              },
+              "completion_tokens": 101,
+              "criterion": "teacher-forced independently tokenized reference plus model EOS; natural log, no truncation",
+              "problem_mean_nll": 4.176968451589346,
+              "problems": 32,
+              "token_mean_nll": 4.088174746768309
+            },
+            "macro_accuracy": 0.0,
+            "mean_new_tokens": 65.21875,
+            "problems": 32,
+            "repetitive_share_of_cuts": 0.0,
+            "scores": {
+              "arithmetic": 0.0,
+              "compositional_reasoning": 0.0,
+              "copying": 0.0,
+              "gsm8k": 0.0
+            }
+          },
+          "candidate": {
+            "accuracy": 0.0,
+            "answers": 32,
+            "cut_share": 0.21875,
+            "domain_counts": {
+              "arithmetic": 8,
+              "compositional_reasoning": 8,
+              "copying": 8,
+              "gsm8k": 8
+            },
+            "finished_accuracy": 0.0,
+            "loss": {
+              "by_domain": {
+                "arithmetic": 3.275209426879883,
+                "compositional_reasoning": 4.676509261131287,
+                "copying": 3.235424369573593,
+                "gsm8k": 5.305381268262863
+              },
+              "completion_tokens": 101,
+              "criterion": "teacher-forced independently tokenized reference plus model EOS; natural log, no truncation",
+              "problem_mean_nll": 4.123131081461906,
+              "problems": 32,
+              "token_mean_nll": 4.034631856597296
+            },
+            "macro_accuracy": 0.0,
+            "mean_new_tokens": 59.96875,
+            "problems": 32,
+            "repetitive_share_of_cuts": 0.0,
+            "scores": {
+              "arithmetic": 0.0,
+              "compositional_reasoning": 0.0,
+              "copying": 0.0,
+              "gsm8k": 0.0
+            }
+          },
+          "cohorts": {
+            "originally_cut": {
+              "answers": 9,
+              "baseline_correct": 0,
+              "candidate_correct": 0
+            },
+            "originally_finished": {
+              "answers": 23,
+              "baseline_correct": 0,
+              "candidate_correct": 0
+            }
+          },
+          "completion_nll_delta": {
+            "by_domain": {
+              "arithmetic": -0.02642253041267395,
+              "compositional_reasoning": -0.05080404877662659,
+              "copying": -0.10969741642475128,
+              "gsm8k": -0.028425484895706177
+            },
+            "lower_is_better": true,
+            "mean": -0.0538373701274395,
+            "normal_95_interval": [
+              -0.06850052631885564,
+              -0.03917421393602336
+            ],
+            "note": "Problem-mean NLL including EOS; teacher forcing is not answer accuracy or task success. Interval is descriptive, not a sequential-testing correction.",
+            "problems": 32,
+            "standard_error": 0.007481202138477621,
+            "used_for_promotion": false
+          },
+          "cut_share_delta": {
+            "mean": -0.0625,
+            "normal_95_interval": [
+              -0.21333570959929407,
+              0.08833570959929407
+            ],
+            "standard_error": 0.07695699469351738
+          },
+          "interval_note": "Normal approximation over problems, not a simultaneous or sequential-testing guarantee.",
+          "paired_sign_test_one_sided": 1.0,
+          "problem_sign_flip": {
+            "draws": 1,
+            "method": "exact-problem-sign-flips",
+            "p_value": 1.0
+          },
+          "right_to_wrong": 0,
+          "unit_of_analysis": "problem (samples averaged within each problem)",
+          "wrong_to_right": 0
+        },
+        "reason": "Mean gain 0.000000 does not meet the promotion threshold"
+      },
+      "edit_attempts": 2,
+      "editor_generations": 0,
+      "editor_trajectory_summary": {
+        "actions_in_order": [],
+        "errors": {},
+        "prompt_tokens_in_order": [],
+        "raw_reply_sha256_in_order": [],
+        "reply_cuts": 0,
+        "reply_tokens_in_order": [],
+        "statuses_in_order": []
+      },
+      "elapsed_seconds": 944.6288691489972,
+      "final_generated_sequences": 64,
+      "frozen_candidates_before_final": {
+        "diagnostic_not_eligible_by_default": true,
+        "selected": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "terminal_diagnostic": "5993690106705bd56447b652be9afafa0c5f6bd8c50da4919efd3a984dbed7f4"
+      },
+      "gradient_measurements": 0,
+      "hypotheses": 2,
+      "initial_prompt_sha256": null,
+      "invalid_commands": 0,
+      "journal_sha256": "a61436134193245deac75890fac9f5ed9b686d65e5ca79a05770f711c1cb769b",
+      "matched_random_audit": [
+        {
+          "host_actual_delta_norm": 0.0838068679336472,
+          "host_experiment": "e0",
+          "random_actual_delta_norm": 0.08380685543221353,
+          "random_experiment": "e0",
+          "relative_norm_discrepancy": 1.4916956061337875e-07,
+          "same_actual_support": true,
+          "same_tensor": true
+        },
+        {
+          "host_actual_delta_norm": 0.25142063870253323,
+          "host_experiment": "e1",
+          "random_actual_delta_norm": 0.2514206595199799,
+          "random_experiment": "e2",
+          "relative_norm_discrepancy": 8.279927520196814e-08,
+          "same_actual_support": true,
+          "same_tensor": true
+        }
+      ],
+      "measurement_cache_hits": 6,
+      "milestones": {
+        "command_validity": true,
+        "edit_usefulness": false,
+        "edit_validity": true,
+        "learned_future_self_improvement": false,
+        "retention": null,
+        "unseen_generalization": null,
+        "validated_autonomous_useful_edit": false
+      },
+      "model_authored_actions": false,
+      "parsed_commands": 14,
+      "practice_gradient_evaluated_problems": 0,
+      "practice_loss_evaluated_problems": 96,
+      "report_sha256": "41b7f093b16492994839773eee24cc52bd54df17a0034b8d118b07c03cc4c8f8",
+      "reserved_check": {
+        "development_failed": true,
+        "eligible": false,
+        "reason": "Mean gain 0.000000 does not meet the promotion threshold"
+      },
+      "retention": {
+        "actual_generated_sequences": 128,
+        "actual_loss_evaluated_problems": 128,
+        "base_restored": true,
+        "candidate_kind": "terminal_diagnostic",
+        "candidate_sha256": "5993690106705bd56447b652be9afafa0c5f6bd8c50da4919efd3a984dbed7f4",
+        "category_retention": {
+          "$ref": "#/shared_aggregates/71c09805f33beb964e00239e8495a84b0dceb26191e4177803416be8e891ab96"
+        },
+        "completion_nll_retention": {
+          "$ref": "#/shared_aggregates/bc3e3ee4809c3237e0a3ee17c5616e49a980db21c6a83d8585b001eef4044b4d"
+        },
+        "fixed_intervention": {
+          "$ref": "#/shared_aggregates/cca97415fefef6937d14caeda2808b084a55a5811783e70c07173d91d6220111"
+        },
+        "four_cells": {
+          "$ref": "#/shared_aggregates/1679877b86a541f990dcceb14305e3e54520530ed224d9953ddbf8855abcfb37"
+        },
+        "measurement_cache_hits": 2,
+        "retention_of_validated_useful_edit": null,
+        "source_artifact_sha256": "d44fbc478b83c4344c319ca53782930ad13d1595de4a716af1db644699886392",
+        "status": "completed"
+      },
+      "rollback_actions": 1,
+      "seed": 17,
+      "selected_final": {
+        "$ref": "#/shared_aggregates/3d1aed117ea666604a529d4231a2359c0e51fa925f4d7d5656315441a7c69585"
+      },
+      "source_files_unchanged": true,
+      "status": "rejected",
+      "terminal_diagnostic_final": {
+        "accuracy_delta": {
+          "mean": 0.0,
+          "normal_95_interval": [
+            0.0,
+            0.0
+          ],
+          "standard_error": 0.0
+        },
+        "baseline": {
+          "accuracy": 0.0,
+          "completion_tokens": 263,
+          "cut_share": 0.28125,
+          "macro_accuracy": 0.0,
+          "problem_mean_nll": 3.4944136515259743,
+          "problems": 64,
+          "scores": {
+            "arithmetic": 0.0,
+            "compositional_reasoning": 0.0,
+            "copying": 0.0,
+            "gsm8k": 0.0
+          },
+          "token_mean_nll": 3.0199134091460658
+        },
+        "candidate": {
+          "accuracy": 0.0,
+          "completion_tokens": 263,
+          "cut_share": 0.265625,
+          "macro_accuracy": 0.0,
+          "problem_mean_nll": 3.4702184852212667,
+          "problems": 64,
+          "scores": {
+            "arithmetic": 0.0,
+            "compositional_reasoning": 0.0,
+            "copying": 0.0,
+            "gsm8k": 0.0
+          },
+          "token_mean_nll": 2.993717884382821
+        },
+        "completion_nll_delta": {
+          "by_domain": {
+            "arithmetic": 0.0005240738391876221,
+            "compositional_reasoning": -0.02874055504798889,
+            "copying": -0.041245318949222565,
+            "gsm8k": -0.027318865060806274
+          },
+          "lower_is_better": true,
+          "mean": -0.024195166304707527,
+          "normal_95_interval": [
+            -0.029702664802785425,
+            -0.01868766780662963
+          ],
+          "note": "Problem-mean NLL including EOS; teacher forcing is not answer accuracy or task success. Interval is descriptive, not a sequential-testing correction.",
+          "problems": 64,
+          "standard_error": 0.002809948213305049,
+          "used_for_promotion": false
+        },
+        "problem_sign_flip": {
+          "draws": 1,
+          "method": "exact-problem-sign-flips",
+          "p_value": 1.0
+        },
+        "right_to_wrong": 0,
+        "wrong_to_right": 0
+      },
+      "valid_action_names": [
+        "hypothesize",
+        "edit",
+        "analyze_failure",
+        "record_experiment",
+        "compare_checkpoints",
+        "rollback",
+        "hypothesize",
+        "edit",
+        "analyze_failure",
+        "record_experiment",
+        "compare_checkpoints",
+        "evaluate_candidate",
+        "submit",
+        "confirm"
+      ],
+      "valid_commands": 14,
+      "valid_nonempty_edits": 2
+    },
+    {
+      "accepted": false,
+      "actual_session_generations": 0,
+      "adaptive_summary": {
+        "actual_deltas_in_order": [],
+        "attempted_edits": 0,
+        "correct_harm_classifications": 0,
+        "correctly_identified_harmful_attempts": 0,
+        "effects_in_order": [],
+        "explicit_reversal_actions": 0,
+        "harm_classifications": 0,
+        "hypotheses": 0,
+        "improved_future_editing_ability_demonstrated": false,
+        "in_context_adaptation_demonstrated": null,
+        "measured_attempts": 0,
+        "metrics_in_order": [],
+        "practice_harmful_attempts": 0,
+        "practice_helpful_attempts": 0,
+        "prediction_squared_errors_in_order": [],
+        "repeated_numerical_programs": 0,
+        "valid_nonempty_edits": 0
+      },
+      "attempted_edit_summaries": [],
+      "base_restored": true,
+      "baseline": {
+        "$ref": "#/shared_aggregates/bb59634c0659335b3e33b5d6df84acfce1e1e518f5018a6b44f86cf61c6b4d59"
+      },
+      "changed_entries_by_edit": [],
+      "complete_numerical_audit_export_canonical_sha256": "6ce65111edafe58ef61178af3127abacdddbe26b364c1f40929de9e4eb821473",
+      "condition": "unconstrained",
+      "development_check": null,
+      "edit_attempts": 0,
+      "editor_generations": 4,
+      "editor_trajectory_summary": {
+        "actions_in_order": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "errors": {
+          "ValueError: Invalid editor reply: Expecting value: line 1 column 1 (char 0)": 3,
+          "ValueError: Invalid editor reply: Extra data: line 1 column 20 (char 19)": 1
+        },
+        "prompt_tokens_in_order": [
+          2827,
+          2992,
+          3158,
+          3325
+        ],
+        "raw_reply_sha256_in_order": [
+          "6885a5d00d78b75db4f5b0f9139fa12f809e945eafacf296baa5a593dc15de2a",
+          "fa9d91fa974af7a521dd615ca3b5459a7a87ab6f6f3531a43c6d3410be166dfd",
+          "70b9960718cba7b0f20d2420e255320b987bee1fe133426c31fd2ee65108496f",
+          "bd1281c988c48b601cb386bf171a5679f3da8b7b544d1afef3cf04fe5bc0243e"
+        ],
+        "reply_cuts": 3,
+        "reply_tokens_in_order": [
+          512,
+          512,
+          109,
+          512
+        ],
+        "statuses_in_order": [
+          "error",
+          "error",
+          "error",
+          "error"
+        ]
+      },
+      "elapsed_seconds": 402.94730324000193,
+      "final_generated_sequences": 0,
+      "frozen_candidates_before_final": {
+        "diagnostic_not_eligible_by_default": true,
+        "selected": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "terminal_diagnostic": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      },
+      "gradient_measurements": 0,
+      "hypotheses": 0,
+      "initial_prompt_sha256": "df7be77857a5019682206cc51eaa4f31efad28ce7477224bc5bcf029922d07e3",
+      "invalid_commands": 4,
+      "journal_sha256": "eb2b182e05e45d994872f0132bcc436c409b12cdb9e7ae592e1b256e8a72ea47",
+      "measurement_cache_hits": 1,
+      "milestones": {
+        "command_validity": false,
+        "edit_usefulness": false,
+        "edit_validity": false,
+        "learned_future_self_improvement": false,
+        "retention": null,
+        "unseen_generalization": null,
+        "validated_autonomous_useful_edit": false
+      },
+      "model_authored_actions": true,
+      "parsed_commands": 0,
+      "practice_gradient_evaluated_problems": 0,
+      "practice_loss_evaluated_problems": 0,
+      "report_sha256": "ac7c135a3e9b12bb0e6053b0a8165d9d117af6192d403d59fa688ff013cbe855",
+      "reserved_check": null,
+      "retention": {
+        "actual_generated_sequences": 0,
+        "actual_loss_evaluated_problems": 0,
+        "base_restored": true,
+        "candidate_kind": "baseline_no_edit",
+        "candidate_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "category_retention": {
+          "$ref": "#/shared_aggregates/71c09805f33beb964e00239e8495a84b0dceb26191e4177803416be8e891ab96"
+        },
+        "completion_nll_retention": {
+          "$ref": "#/shared_aggregates/ac6c40e968ee153ad6bb094d5923e9f49e50b92639454f4245a0e54c518ab41d"
+        },
+        "fixed_intervention": {
+          "$ref": "#/shared_aggregates/cca97415fefef6937d14caeda2808b084a55a5811783e70c07173d91d6220111"
+        },
+        "four_cells": {
+          "$ref": "#/shared_aggregates/827e71ced6b697fcba061c24c1613e459f40b3308cf8c32bce726fda571d5b9e"
+        },
+        "measurement_cache_hits": 3,
+        "retention_of_validated_useful_edit": null,
+        "source_artifact_sha256": "80f335965fe93dac37675e9ea15e4c0acad354827b0b7afc056da7d7fbeba69a",
+        "status": "completed"
+      },
+      "rollback_actions": 0,
+      "seed": 17,
+      "selected_final": {
+        "$ref": "#/shared_aggregates/3d1aed117ea666604a529d4231a2359c0e51fa925f4d7d5656315441a7c69585"
+      },
+      "source_files_unchanged": true,
+      "status": "budget_exhausted",
+      "terminal_diagnostic_final": null,
+      "valid_action_names": [],
+      "valid_commands": 0,
+      "valid_nonempty_edits": 0
+    },
+    {
+      "accepted": false,
+      "actual_session_generations": 0,
+      "adaptive_summary": {
+        "actual_deltas_in_order": [],
+        "attempted_edits": 0,
+        "correct_harm_classifications": 0,
+        "correctly_identified_harmful_attempts": 0,
+        "effects_in_order": [],
+        "explicit_reversal_actions": 0,
+        "harm_classifications": 0,
+        "hypotheses": 0,
+        "improved_future_editing_ability_demonstrated": false,
+        "in_context_adaptation_demonstrated": null,
+        "measured_attempts": 0,
+        "metrics_in_order": [],
+        "practice_harmful_attempts": 0,
+        "practice_helpful_attempts": 0,
+        "prediction_squared_errors_in_order": [],
+        "repeated_numerical_programs": 0,
+        "valid_nonempty_edits": 0
+      },
+      "attempted_edit_summaries": [],
+      "base_restored": true,
+      "baseline": {
+        "$ref": "#/shared_aggregates/bb59634c0659335b3e33b5d6df84acfce1e1e518f5018a6b44f86cf61c6b4d59"
+      },
+      "changed_entries_by_edit": [],
+      "complete_numerical_audit_export_canonical_sha256": "5f384ae8bc28608291c41296fc346e6ccafcb44a41f8174e77b4b817640fdb2a",
+      "condition": "schema",
+      "development_check": null,
+      "edit_attempts": 0,
+      "editor_generations": 4,
+      "editor_trajectory_summary": {
+        "actions_in_order": [
+          null,
+          "save",
+          null,
+          null
+        ],
+        "errors": {
+          "ValueError: Invalid editor reply: Expecting ',' delimiter: line 105 column 7 (char 825)": 3,
+          "ValueError: Saved variant name must be 1-32 letters/digits/_/-": 1
+        },
+        "prompt_tokens_in_order": [
+          2827,
+          2998,
+          3245,
+          3417
+        ],
+        "raw_reply_sha256_in_order": [
+          "d8a80bb98db9f8dec6bb54e6fe5a5cf8cc924f61e066b80f9180e594f931992f",
+          "837d953b79d931bc55975d13614ea5670651dd5d943d5fceb448de2f32c99f05",
+          "d8a80bb98db9f8dec6bb54e6fe5a5cf8cc924f61e066b80f9180e594f931992f",
+          "d8a80bb98db9f8dec6bb54e6fe5a5cf8cc924f61e066b80f9180e594f931992f"
+        ],
+        "reply_cuts": 3,
+        "reply_tokens_in_order": [
+          512,
+          92,
+          512,
+          512
+        ],
+        "statuses_in_order": [
+          "error",
+          "error",
+          "error",
+          "error"
+        ]
+      },
+      "elapsed_seconds": 408.8904196600015,
+      "final_generated_sequences": 0,
+      "frozen_candidates_before_final": {
+        "diagnostic_not_eligible_by_default": true,
+        "selected": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "terminal_diagnostic": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      },
+      "gradient_measurements": 0,
+      "hypotheses": 0,
+      "initial_prompt_sha256": "df7be77857a5019682206cc51eaa4f31efad28ce7477224bc5bcf029922d07e3",
+      "invalid_commands": 4,
+      "journal_sha256": "eb2b182e05e45d994872f0132bcc436c409b12cdb9e7ae592e1b256e8a72ea47",
+      "measurement_cache_hits": 1,
+      "milestones": {
+        "command_validity": false,
+        "edit_usefulness": false,
+        "edit_validity": false,
+        "learned_future_self_improvement": false,
+        "retention": null,
+        "unseen_generalization": null,
+        "validated_autonomous_useful_edit": false
+      },
+      "model_authored_actions": true,
+      "parsed_commands": 1,
+      "practice_gradient_evaluated_problems": 0,
+      "practice_loss_evaluated_problems": 0,
+      "report_sha256": "628b2109ea92f383646aac67bbbaf0099a5f0297ec9cbfcbf5315b60987bf184",
+      "reserved_check": null,
+      "retention": {
+        "actual_generated_sequences": 0,
+        "actual_loss_evaluated_problems": 0,
+        "base_restored": true,
+        "candidate_kind": "baseline_no_edit",
+        "candidate_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "category_retention": {
+          "$ref": "#/shared_aggregates/71c09805f33beb964e00239e8495a84b0dceb26191e4177803416be8e891ab96"
+        },
+        "completion_nll_retention": {
+          "$ref": "#/shared_aggregates/ac6c40e968ee153ad6bb094d5923e9f49e50b92639454f4245a0e54c518ab41d"
+        },
+        "fixed_intervention": {
+          "$ref": "#/shared_aggregates/cca97415fefef6937d14caeda2808b084a55a5811783e70c07173d91d6220111"
+        },
+        "four_cells": {
+          "$ref": "#/shared_aggregates/827e71ced6b697fcba061c24c1613e459f40b3308cf8c32bce726fda571d5b9e"
+        },
+        "measurement_cache_hits": 3,
+        "retention_of_validated_useful_edit": null,
+        "source_artifact_sha256": "80f335965fe93dac37675e9ea15e4c0acad354827b0b7afc056da7d7fbeba69a",
+        "status": "completed"
+      },
+      "rollback_actions": 0,
+      "seed": 17,
+      "selected_final": {
+        "$ref": "#/shared_aggregates/3d1aed117ea666604a529d4231a2359c0e51fa925f4d7d5656315441a7c69585"
+      },
+      "source_files_unchanged": true,
+      "status": "budget_exhausted",
+      "terminal_diagnostic_final": null,
+      "valid_action_names": [],
+      "valid_commands": 0,
+      "valid_nonempty_edits": 0
+    },
+    {
+      "accepted": false,
+      "actual_session_generations": 0,
+      "adaptive_summary": {
+        "actual_deltas_in_order": [],
+        "attempted_edits": 0,
+        "correct_harm_classifications": 0,
+        "correctly_identified_harmful_attempts": 0,
+        "effects_in_order": [],
+        "explicit_reversal_actions": 0,
+        "harm_classifications": 0,
+        "hypotheses": 0,
+        "improved_future_editing_ability_demonstrated": false,
+        "in_context_adaptation_demonstrated": null,
+        "measured_attempts": 0,
+        "metrics_in_order": [],
+        "practice_harmful_attempts": 0,
+        "practice_helpful_attempts": 0,
+        "prediction_squared_errors_in_order": [],
+        "repeated_numerical_programs": 0,
+        "valid_nonempty_edits": 0
+      },
+      "attempted_edit_summaries": [],
+      "base_restored": true,
+      "baseline": {
+        "$ref": "#/shared_aggregates/bb59634c0659335b3e33b5d6df84acfce1e1e518f5018a6b44f86cf61c6b4d59"
+      },
+      "changed_entries_by_edit": [],
+      "complete_numerical_audit_export_canonical_sha256": "31de315bae47620e8d937643fc73ce798d932894abfc76106fa94cb1e8b79e4b",
+      "condition": "model_directed_gradient",
+      "development_check": null,
+      "edit_attempts": 0,
+      "editor_generations": 6,
+      "editor_trajectory_summary": {
+        "actions_in_order": [
+          null,
+          "inspect_gradients",
+          null,
+          null,
+          "save",
+          null
+        ],
+        "errors": {
+          "Turn/invalid-action/time budget exhausted": 1,
+          "ValueError: Invalid editor reply: Expecting ',' delimiter: line 105 column 7 (char 825)": 3
+        },
+        "prompt_tokens_in_order": [
+          2827,
+          2998,
+          3479,
+          3650,
+          3822,
+          3959
+        ],
+        "raw_reply_sha256_in_order": [
+          "d8a80bb98db9f8dec6bb54e6fe5a5cf8cc924f61e066b80f9180e594f931992f",
+          "8a9bea58e3aa5fe780b1b0160ea01335494c65252765eab123acbd74b89d63b1",
+          "d8a80bb98db9f8dec6bb54e6fe5a5cf8cc924f61e066b80f9180e594f931992f",
+          "d8a80bb98db9f8dec6bb54e6fe5a5cf8cc924f61e066b80f9180e594f931992f",
+          "d1f123322ae0f25cab70102c63b2dc5b2e92b289c0d161d6bee9cb68ddba2134",
+          "d8a80bb98db9f8dec6bb54e6fe5a5cf8cc924f61e066b80f9180e594f931992f"
+        ],
+        "reply_cuts": 4,
+        "reply_tokens_in_order": [
+          512,
+          121,
+          512,
+          512,
+          91,
+          512
+        ],
+        "statuses_in_order": [
+          "error",
+          "ok",
+          "error",
+          "error",
+          "ok",
+          "budget_exhausted"
+        ]
+      },
+      "elapsed_seconds": 657.2106907630005,
+      "final_generated_sequences": 0,
+      "frozen_candidates_before_final": {
+        "diagnostic_not_eligible_by_default": true,
+        "selected": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "terminal_diagnostic": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      },
+      "gradient_measurements": 1,
+      "hypotheses": 0,
+      "initial_prompt_sha256": "e6f41c2af159e00664c543a5697a23074a42f7c855533185f7af9b44336480f7",
+      "invalid_commands": 3,
+      "journal_sha256": "6f0ca05fbc54b235e408c9c7dad4483422b837893ef106c928b7a880a863f710",
+      "measurement_cache_hits": 1,
+      "milestones": {
+        "command_validity": true,
+        "edit_usefulness": false,
+        "edit_validity": false,
+        "learned_future_self_improvement": false,
+        "retention": null,
+        "unseen_generalization": null,
+        "validated_autonomous_useful_edit": false
+      },
+      "model_authored_actions": true,
+      "parsed_commands": 2,
+      "practice_gradient_evaluated_problems": 1,
+      "practice_loss_evaluated_problems": 0,
+      "report_sha256": "1fa6009d24b86dbe5b0b5719bb0297e64ace34c54e35552c0d78a49b29bf87eb",
+      "reserved_check": null,
+      "retention": {
+        "actual_generated_sequences": 0,
+        "actual_loss_evaluated_problems": 0,
+        "base_restored": true,
+        "candidate_kind": "baseline_no_edit",
+        "candidate_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "category_retention": {
+          "$ref": "#/shared_aggregates/71c09805f33beb964e00239e8495a84b0dceb26191e4177803416be8e891ab96"
+        },
+        "completion_nll_retention": {
+          "$ref": "#/shared_aggregates/ac6c40e968ee153ad6bb094d5923e9f49e50b92639454f4245a0e54c518ab41d"
+        },
+        "fixed_intervention": {
+          "$ref": "#/shared_aggregates/cca97415fefef6937d14caeda2808b084a55a5811783e70c07173d91d6220111"
+        },
+        "four_cells": {
+          "$ref": "#/shared_aggregates/827e71ced6b697fcba061c24c1613e459f40b3308cf8c32bce726fda571d5b9e"
+        },
+        "measurement_cache_hits": 3,
+        "retention_of_validated_useful_edit": null,
+        "source_artifact_sha256": "80f335965fe93dac37675e9ea15e4c0acad354827b0b7afc056da7d7fbeba69a",
+        "status": "completed"
+      },
+      "rollback_actions": 0,
+      "seed": 17,
+      "selected_final": {
+        "$ref": "#/shared_aggregates/3d1aed117ea666604a529d4231a2359c0e51fa925f4d7d5656315441a7c69585"
+      },
+      "source_files_unchanged": true,
+      "status": "budget_exhausted",
+      "terminal_diagnostic_final": null,
+      "valid_action_names": [
+        "inspect_gradients",
+        "save"
+      ],
+      "valid_commands": 2,
+      "valid_nonempty_edits": 0
+    },
+    {
+      "accepted": false,
+      "actual_session_generations": 0,
+      "adaptive_summary": {
+        "actual_deltas_in_order": [],
+        "attempted_edits": 0,
+        "correct_harm_classifications": 0,
+        "correctly_identified_harmful_attempts": 0,
+        "effects_in_order": [],
+        "explicit_reversal_actions": 0,
+        "harm_classifications": 0,
+        "hypotheses": 0,
+        "improved_future_editing_ability_demonstrated": false,
+        "in_context_adaptation_demonstrated": null,
+        "measured_attempts": 0,
+        "metrics_in_order": [],
+        "practice_harmful_attempts": 0,
+        "practice_helpful_attempts": 0,
+        "prediction_squared_errors_in_order": [],
+        "repeated_numerical_programs": 0,
+        "valid_nonempty_edits": 0
+      },
+      "attempted_edit_summaries": [],
+      "base_restored": true,
+      "baseline": {
+        "$ref": "#/shared_aggregates/bb59634c0659335b3e33b5d6df84acfce1e1e518f5018a6b44f86cf61c6b4d59"
+      },
+      "changed_entries_by_edit": [],
+      "complete_numerical_audit_export_canonical_sha256": "6122a7528cc50a7181da771cae126d8c079b35588d1fc2497c5b84aee56cfb59",
+      "condition": "schema_no_feedback",
+      "development_check": null,
+      "edit_attempts": 0,
+      "editor_generations": 4,
+      "editor_trajectory_summary": {
+        "actions_in_order": [
+          null,
+          "save",
+          null,
+          null
+        ],
+        "errors": {
+          "ValueError: Invalid editor reply: Expecting ',' delimiter: line 105 column 7 (char 825)": 3,
+          "ValueError: Saved variant name must be 1-32 letters/digits/_/-": 1
+        },
+        "prompt_tokens_in_order": [
+          2827,
+          2998,
+          3245,
+          3417
+        ],
+        "raw_reply_sha256_in_order": [
+          "d8a80bb98db9f8dec6bb54e6fe5a5cf8cc924f61e066b80f9180e594f931992f",
+          "837d953b79d931bc55975d13614ea5670651dd5d943d5fceb448de2f32c99f05",
+          "d8a80bb98db9f8dec6bb54e6fe5a5cf8cc924f61e066b80f9180e594f931992f",
+          "d8a80bb98db9f8dec6bb54e6fe5a5cf8cc924f61e066b80f9180e594f931992f"
+        ],
+        "reply_cuts": 3,
+        "reply_tokens_in_order": [
+          512,
+          92,
+          512,
+          512
+        ],
+        "statuses_in_order": [
+          "error",
+          "error",
+          "error",
+          "error"
+        ]
+      },
+      "elapsed_seconds": 430.81456633799826,
+      "final_generated_sequences": 0,
+      "frozen_candidates_before_final": {
+        "diagnostic_not_eligible_by_default": true,
+        "selected": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "terminal_diagnostic": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      },
+      "gradient_measurements": 0,
+      "hypotheses": 0,
+      "initial_prompt_sha256": "ecd9adfbe138fdc340c1d0dcf54808941d1dfef7849e1796217a1feb9549614c",
+      "invalid_commands": 4,
+      "journal_sha256": "eb2b182e05e45d994872f0132bcc436c409b12cdb9e7ae592e1b256e8a72ea47",
+      "measurement_cache_hits": 1,
+      "milestones": {
+        "command_validity": false,
+        "edit_usefulness": false,
+        "edit_validity": false,
+        "learned_future_self_improvement": false,
+        "retention": null,
+        "unseen_generalization": null,
+        "validated_autonomous_useful_edit": false
+      },
+      "model_authored_actions": true,
+      "parsed_commands": 1,
+      "practice_gradient_evaluated_problems": 0,
+      "practice_loss_evaluated_problems": 0,
+      "report_sha256": "50004e90492c54b3546ed25cc8a673984c0981cc120685d044ca7c08dee692fb",
+      "reserved_check": null,
+      "retention": {
+        "actual_generated_sequences": 0,
+        "actual_loss_evaluated_problems": 0,
+        "base_restored": true,
+        "candidate_kind": "baseline_no_edit",
+        "candidate_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "category_retention": {
+          "$ref": "#/shared_aggregates/71c09805f33beb964e00239e8495a84b0dceb26191e4177803416be8e891ab96"
+        },
+        "completion_nll_retention": {
+          "$ref": "#/shared_aggregates/ac6c40e968ee153ad6bb094d5923e9f49e50b92639454f4245a0e54c518ab41d"
+        },
+        "fixed_intervention": {
+          "$ref": "#/shared_aggregates/cca97415fefef6937d14caeda2808b084a55a5811783e70c07173d91d6220111"
+        },
+        "four_cells": {
+          "$ref": "#/shared_aggregates/827e71ced6b697fcba061c24c1613e459f40b3308cf8c32bce726fda571d5b9e"
+        },
+        "measurement_cache_hits": 3,
+        "retention_of_validated_useful_edit": null,
+        "source_artifact_sha256": "80f335965fe93dac37675e9ea15e4c0acad354827b0b7afc056da7d7fbeba69a",
+        "status": "completed"
+      },
+      "rollback_actions": 0,
+      "seed": 17,
+      "selected_final": {
+        "$ref": "#/shared_aggregates/3d1aed117ea666604a529d4231a2359c0e51fa925f4d7d5656315441a7c69585"
+      },
+      "source_files_unchanged": true,
+      "status": "budget_exhausted",
+      "terminal_diagnostic_final": null,
+      "valid_action_names": [],
+      "valid_commands": 0,
+      "valid_nonempty_edits": 0
+    }
+  ],
+  "runtime_code_bindings": {
+    "canonical_sha256": "93260c6cd476ff7630c601330bbd7f40622cf20477ec869b7098349f70664ffb",
+    "files": 63,
+    "match_original_local_135m_plan": true
+  },
+  "scope": "Explicitly partial snapshot: completed arms only. The existing plan-bound 135M process continues unchanged; no retarget, adaptive extra seed, hidden-item re-evaluation or model restart for this review. This is not the final two-seed study.",
+  "shared_aggregate_resolution": "Each $ref is a JSON Pointer into shared_aggregates in THIS seed study, keyed by its canonical JSON SHA256. This deduplicates repeated baseline/final/retention aggregates, not independent trials. No external reference resolution is needed.",
+  "shared_aggregates": {
+    "1679877b86a541f990dcceb14305e3e54520530ed224d9953ddbf8855abcfb37": {
+      "base": {
+        "accuracy": 0.0,
+        "completion_tokens": 264,
+        "cut_share": 0.296875,
+        "macro_accuracy": 0.0,
+        "problem_mean_nll": 3.2587372176349163,
+        "problems": 64,
+        "scores": {
+          "arithmetic": 0.0,
+          "compositional_reasoning": 0.0,
+          "copying": 0.0,
+          "gsm8k": 0.0
+        },
+        "token_mean_nll": 2.8412920988418837
+      },
+      "candidate": {
+        "accuracy": 0.0,
+        "completion_tokens": 264,
+        "cut_share": 0.28125,
+        "macro_accuracy": 0.0,
+        "problem_mean_nll": 3.2386527387425303,
+        "problems": 64,
+        "scores": {
+          "arithmetic": 0.0,
+          "compositional_reasoning": 0.0,
+          "copying": 0.0,
+          "gsm8k": 0.0
+        },
+        "token_mean_nll": 2.8188454937754255
+      },
+      "candidate_plus_subsequent": {
+        "accuracy": 0.0,
+        "completion_tokens": 264,
+        "cut_share": 0.28125,
+        "macro_accuracy": 0.0,
+        "problem_mean_nll": 3.2386310873553157,
+        "problems": 64,
+        "scores": {
+          "arithmetic": 0.0,
+          "compositional_reasoning": 0.0,
+          "copying": 0.0,
+          "gsm8k": 0.0
+        },
+        "token_mean_nll": 2.8188290483120717
+      },
+      "subsequent_only": {
+        "accuracy": 0.0,
+        "completion_tokens": 264,
+        "cut_share": 0.296875,
+        "macro_accuracy": 0.0,
+        "problem_mean_nll": 3.258715473115444,
+        "problems": 64,
+        "scores": {
+          "arithmetic": 0.0,
+          "compositional_reasoning": 0.0,
+          "copying": 0.0,
+          "gsm8k": 0.0
+        },
+        "token_mean_nll": 2.841275480660525
+      }
+    },
+    "1ea7691ddbfc5690069fac63e4d9fe233b9956f8fc8c0d9883bbd362f617dc76": {
+      "after": {
+        "arithmetic": 4.924407511949539,
+        "compositional_reasoning": 7.035716325044632,
+        "copying": 2.6681240424513817,
+        "gsm8k": 6.679917216300964
+      },
+      "floors_lower_is_better": {
+        "arithmetic": 3.0241625607013702,
+        "compositional_reasoning": 4.337114840745926,
+        "copying": 1.222623735666275,
+        "gsm8k": 4.451047733426094
+      },
+      "note": "Descriptive loss retention is distinct from the primary accuracy/category gate; a tiny loss regression remains visible.",
+      "passed": false,
+      "used_for_promotion": false
+    },
+    "3d1aed117ea666604a529d4231a2359c0e51fa925f4d7d5656315441a7c69585": {
+      "accuracy_delta": {
+        "mean": 0.0,
+        "normal_95_interval": [
+          0.0,
+          0.0
+        ],
+        "standard_error": 0.0
+      },
+      "baseline": {
+        "accuracy": 0.0,
+        "completion_tokens": 263,
+        "cut_share": 0.28125,
+        "macro_accuracy": 0.0,
+        "problem_mean_nll": 3.4944136515259743,
+        "problems": 64,
+        "scores": {
+          "arithmetic": 0.0,
+          "compositional_reasoning": 0.0,
+          "copying": 0.0,
+          "gsm8k": 0.0
+        },
+        "token_mean_nll": 3.0199134091460658
+      },
+      "candidate": {
+        "accuracy": 0.0,
+        "completion_tokens": 263,
+        "cut_share": 0.28125,
+        "macro_accuracy": 0.0,
+        "problem_mean_nll": 3.4944136515259743,
+        "problems": 64,
+        "scores": {
+          "arithmetic": 0.0,
+          "compositional_reasoning": 0.0,
+          "copying": 0.0,
+          "gsm8k": 0.0
+        },
+        "token_mean_nll": 3.0199134091460658
+      },
+      "completion_nll_delta": {
+        "by_domain": {
+          "arithmetic": 0.0,
+          "compositional_reasoning": 0.0,
+          "copying": 0.0,
+          "gsm8k": 0.0
+        },
+        "lower_is_better": true,
+        "mean": 0.0,
+        "normal_95_interval": [
+          0.0,
+          0.0
+        ],
+        "note": "Problem-mean NLL including EOS; teacher forcing is not answer accuracy or task success. Interval is descriptive, not a sequential-testing correction.",
+        "problems": 64,
+        "standard_error": 0.0,
+        "used_for_promotion": false
+      },
+      "problem_sign_flip": {
+        "draws": 1,
+        "method": "exact-problem-sign-flips",
+        "p_value": 1.0
+      },
+      "right_to_wrong": 0,
+      "wrong_to_right": 0
+    },
+    "71c09805f33beb964e00239e8495a84b0dceb26191e4177803416be8e891ab96": {
+      "floors": {
+        "arithmetic": 0.0,
+        "compositional_reasoning": 0.0,
+        "copying": 0.0,
+        "gsm8k": 0.0
+      },
+      "passed": true,
+      "rule": "Every domain >= both original and pre-followup candidate, zero tolerance; equality is retention, never improvement.",
+      "scores": {
+        "arithmetic": 0.0,
+        "compositional_reasoning": 0.0,
+        "copying": 0.0,
+        "gsm8k": 0.0
+      }
+    },
+    "827e71ced6b697fcba061c24c1613e459f40b3308cf8c32bce726fda571d5b9e": {
+      "base": {
+        "accuracy": 0.0,
+        "completion_tokens": 264,
+        "cut_share": 0.296875,
+        "macro_accuracy": 0.0,
+        "problem_mean_nll": 3.2587372176349163,
+        "problems": 64,
+        "scores": {
+          "arithmetic": 0.0,
+          "compositional_reasoning": 0.0,
+          "copying": 0.0,
+          "gsm8k": 0.0
+        },
+        "token_mean_nll": 2.8412920988418837
+      },
+      "candidate": {
+        "accuracy": 0.0,
+        "completion_tokens": 264,
+        "cut_share": 0.296875,
+        "macro_accuracy": 0.0,
+        "problem_mean_nll": 3.2587372176349163,
+        "problems": 64,
+        "scores": {
+          "arithmetic": 0.0,
+          "compositional_reasoning": 0.0,
+          "copying": 0.0,
+          "gsm8k": 0.0
+        },
+        "token_mean_nll": 2.8412920988418837
+      },
+      "candidate_plus_subsequent": {
+        "accuracy": 0.0,
+        "completion_tokens": 264,
+        "cut_share": 0.296875,
+        "macro_accuracy": 0.0,
+        "problem_mean_nll": 3.258715473115444,
+        "problems": 64,
+        "scores": {
+          "arithmetic": 0.0,
+          "compositional_reasoning": 0.0,
+          "copying": 0.0,
+          "gsm8k": 0.0
+        },
+        "token_mean_nll": 2.841275480660525
+      },
+      "subsequent_only": {
+        "accuracy": 0.0,
+        "completion_tokens": 264,
+        "cut_share": 0.296875,
+        "macro_accuracy": 0.0,
+        "problem_mean_nll": 3.258715473115444,
+        "problems": 64,
+        "scores": {
+          "arithmetic": 0.0,
+          "compositional_reasoning": 0.0,
+          "copying": 0.0,
+          "gsm8k": 0.0
+        },
+        "token_mean_nll": 2.841275480660525
+      }
+    },
+    "ac6c40e968ee153ad6bb094d5923e9f49e50b92639454f4245a0e54c518ab41d": {
+      "after": {
+        "arithmetic": 3.0241533666849136,
+        "compositional_reasoning": 4.337057918310165,
+        "copying": 1.222626119852066,
+        "gsm8k": 4.451024487614632
+      },
+      "floors_lower_is_better": {
+        "arithmetic": 3.0241625607013702,
+        "compositional_reasoning": 4.337114840745926,
+        "copying": 1.222623735666275,
+        "gsm8k": 4.451047733426094
+      },
+      "note": "Descriptive loss retention is distinct from the primary accuracy/category gate; a tiny loss regression remains visible.",
+      "passed": false,
+      "used_for_promotion": false
+    },
+    "b2b7320247dbe7ec76583b850b8af597cb30d0a57721cd32ae62a2beb36bd0b0": {
+      "base": {
+        "accuracy": 0.0,
+        "completion_tokens": 264,
+        "cut_share": 0.296875,
+        "macro_accuracy": 0.0,
+        "problem_mean_nll": 3.2587372176349163,
+        "problems": 64,
+        "scores": {
+          "arithmetic": 0.0,
+          "compositional_reasoning": 0.0,
+          "copying": 0.0,
+          "gsm8k": 0.0
+        },
+        "token_mean_nll": 2.8412920988418837
+      },
+      "candidate": {
+        "accuracy": 0.0,
+        "completion_tokens": 264,
+        "cut_share": 1.0,
+        "macro_accuracy": 0.0,
+        "problem_mean_nll": 5.32706593349576,
+        "problems": 64,
+        "scores": {
+          "arithmetic": 0.0,
+          "compositional_reasoning": 0.0,
+          "copying": 0.0,
+          "gsm8k": 0.0
+        },
+        "token_mean_nll": 4.73075444951202
+      },
+      "candidate_plus_subsequent": {
+        "accuracy": 0.0,
+        "completion_tokens": 264,
+        "cut_share": 1.0,
+        "macro_accuracy": 0.0,
+        "problem_mean_nll": 5.327041273936629,
+        "problems": 64,
+        "scores": {
+          "arithmetic": 0.0,
+          "compositional_reasoning": 0.0,
+          "copying": 0.0,
+          "gsm8k": 0.0
+        },
+        "token_mean_nll": 4.7307350260741785
+      },
+      "subsequent_only": {
+        "accuracy": 0.0,
+        "completion_tokens": 264,
+        "cut_share": 0.296875,
+        "macro_accuracy": 0.0,
+        "problem_mean_nll": 3.258715473115444,
+        "problems": 64,
+        "scores": {
+          "arithmetic": 0.0,
+          "compositional_reasoning": 0.0,
+          "copying": 0.0,
+          "gsm8k": 0.0
+        },
+        "token_mean_nll": 2.841275480660525
+      }
+    },
+    "bb59634c0659335b3e33b5d6df84acfce1e1e518f5018a6b44f86cf61c6b4d59": {
+      "accuracy": 0.0,
+      "completion_tokens": 96,
+      "cut_share": 0.21875,
+      "macro_accuracy": 0.0,
+      "problem_mean_nll": 3.99460319429636,
+      "problems": 32,
+      "scores": {
+        "arithmetic": 0.0,
+        "compositional_reasoning": 0.0,
+        "copying": 0.0,
+        "gsm8k": 0.0
+      },
+      "token_mean_nll": 3.8718013068040213
+    },
+    "bc3e3ee4809c3237e0a3ee17c5616e49a980db21c6a83d8585b001eef4044b4d": {
+      "after": {
+        "arithmetic": 3.0268551260232925,
+        "compositional_reasoning": 4.312403202056885,
+        "copying": 1.1859256736934185,
+        "gsm8k": 4.429340347647667
+      },
+      "floors_lower_is_better": {
+        "arithmetic": 3.0241625607013702,
+        "compositional_reasoning": 4.312459498643875,
+        "copying": 1.1859227679669857,
+        "gsm8k": 4.429364427924156
+      },
+      "note": "Descriptive loss retention is distinct from the primary accuracy/category gate; a tiny loss regression remains visible.",
+      "passed": false,
+      "used_for_promotion": false
+    },
+    "cca97415fefef6937d14caeda2808b084a55a5811783e70c07173d91d6220111": {
+      "authorship": "preregistered host-designed subsequent edit, not autonomous training",
+      "falsification": "Any retention category below either floor. No assessment of learned future editing ability.",
+      "hypothesis": "A useful edit should survive this independently fixed subsequent perturbation without a category falling below original or pre-followup performance.",
+      "operations": [
+        {
+          "indices": [
+            0
+          ],
+          "name": "model.layers.29.post_attention_layernorm.weight",
+          "op": "add",
+          "value": 0.001
+        }
+      ]
+    }
+  },
+  "source_receipt": {
+    "bytes": 541619017,
+    "conversion": "Q4_1 GGUF -> float32 safetensors with Transformers; NOT recovered original precision",
+    "files": {
+      "chat_template.jinja": "872be49dbb638044ad01b60388f48d469ff2980e5f0dccdc22ec907db54d0788",
+      "config.json": "d63221c135cfc8189ec799cd09cc8c9287fdb971d50cd7026ad737d5d2dc092a",
+      "generation_config.json": "4371a906cb4fb6ff3fdc71124a5e3566d034c7d074e7783be28e515e8a0dc954",
+      "model.safetensors": "a672150fb4f99d7c8f4168cecdd464069c0ef3a37d8113f22ddb9d48031d03cd",
+      "special_tokens_map.json": "d1a0a91edd73f8c6718cfcd1b8236da3539bc1e51a1c264d92f5c12218ac6b42",
+      "tokenizer.json": "b554121022512f7655e37bce89eed6849177e17e8466f4fd78fdc25e219c127c",
+      "tokenizer_config.json": "e876f5d69dea1e659fe79041f6ae1edba32e04afbe4338fb42a0241f90c82fbd"
+    },
+    "license_metadata": "apache-2.0",
+    "repo_id": "github:simonw/llm-smollm2",
+    "requested_revision": "afed0963b3a8bcca17c83f451a161eb2edbc59fe",
+    "resolved_revision": "afed0963b3a8bcca17c83f451a161eb2edbc59fe",
+    "schema_version": 1,
+    "source": {
+      "bytes": 98362432,
+      "license": "Apache-2.0",
+      "original_model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+      "path": "llm_smollm2/SmolLM2-135M-Instruct.Q4_1.gguf",
+      "quantizer": "QuantFactory/SmolLM2-135M-Instruct-GGUF",
+      "quantizer_revision": "ab810cf68114990406fdf996510dd3d3c6adbdf5",
+      "repository": "https://github.com/simonw/llm-smollm2.git",
+      "revision": "afed0963b3a8bcca17c83f451a161eb2edbc59fe",
+      "sha256": "b179c9523d0e6a0f98a330c7562b682750a6f8c8c15e5bc70ea373728110db53"
+    },
+    "verified": true
+  },
+  "source_reviewer_integrity_assertions": {
+    "actual_stored_dtype_numerical_deltas_complete": true,
+    "completed_reports_journals_and_events_hash_verified": true,
+    "fixed_followup_available_numerical_norms_independently_recomputed": true,
+    "numerical_norms_independently_recomputed": true,
+    "original_runner_confirmed_tensor_replay_and_resident_restoration": true,
+    "reviewer_reexecuted_model_or_tensor_replay": false,
+    "starting_state_equality_verified": true,
+    "whole_study_complete": false
+  },
+  "source_runtime_commit": "cb4c0df1008f208016a8bfa941c999bd96bcfc8b",
+  "state_sha256": "6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8",
+  "study_status": "running",
+  "validated_autonomous_useful_edit": false
+}

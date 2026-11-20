@@ -98,6 +98,33 @@ def numeric_audit(experiment, state_sha256):
         raise ValueError("Combined numerical edit count/norm is inconsistent")
 
 
+def followup_audit(retention, state_sha256):
+    """Check both fixed-intervention ledgers, including any available refused-probe ledger."""
+    if (
+        retention["status"] not in ("completed", "refused")
+        or not retention["base_restored"]
+        or retention["original_checkpoint_sha256"] != state_sha256
+    ):
+        raise ValueError("Fixed follow-up integrity/start-state binding failed")
+    for changes, replay in (
+        ("subsequent_only_changes", "subsequent_only_roundtrip_replay"),
+        ("changes", "roundtrip_replay"),
+    ):
+        if changes not in retention and retention["status"] == "refused":
+            continue
+        if changes not in retention or replay not in retention:
+            raise ValueError("Completed fixed follow-up is missing its numerical ledger/replay")
+        numeric_audit(
+            {
+                "changes": retention[changes],
+                "roundtrip_replay": retention[replay],
+                "restored_to_resident_base": retention["base_restored"],
+                "original_checkpoint_sha256": retention["original_checkpoint_sha256"],
+            },
+            state_sha256,
+        )
+
+
 def review_study(directory, *, allow_partial=False):
     """Verify original hashes and numbers; never replay weights or re-evaluate hidden items."""
     root = Path(directory).resolve()
@@ -231,6 +258,7 @@ def review_study(directory, *, allow_partial=False):
             report_path.parent / "retention_measurement.json",
             report["retention"]["artifact_sha256"],
         )
+        followup_audit(retention, summary["state_sha256"])
         rows.append(row)
         audits.append(
             {
@@ -272,6 +300,7 @@ def review_study(directory, *, allow_partial=False):
             "starting_state_equality_verified": True,
             "actual_stored_dtype_numerical_deltas_complete": True,
             "numerical_norms_independently_recomputed": True,
+            "fixed_followup_available_numerical_norms_independently_recomputed": True,
             "original_runner_confirmed_tensor_replay_and_resident_restoration": True,
             "reviewer_reexecuted_model_or_tensor_replay": False,
             "whole_study_complete": summary["status"] == "completed",

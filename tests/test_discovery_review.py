@@ -42,7 +42,16 @@ def portable_study(tmp_path):
     )
     retention = save(
         directory / "retention_measurement.json",
-        {"status": "completed", "measurement": {"raw_hidden_prompt": "PRIVATE HIDDEN MARKER"}},
+        {
+            "status": "completed",
+            "base_restored": True,
+            "original_checkpoint_sha256": "a" * 64,
+            "changes": {"changed_entries": 0, "delta_norm": 0.0, "tensors": []},
+            "roundtrip_replay": {"passed": True},
+            "subsequent_only_changes": {"changed_entries": 0, "delta_norm": 0.0, "tensors": []},
+            "subsequent_only_roundtrip_replay": {"passed": True},
+            "measurement": {"raw_hidden_prompt": "PRIVATE HIDDEN MARKER"},
+        },
     )
     report = save(
         directory / "lab.json",
@@ -170,6 +179,32 @@ def test_numeric_review_refuses_incomplete_or_inconsistent_values():
     trial["changes"]["tensors"][0]["values_complete"] = False
     with pytest.raises(ValueError, match="Incomplete"):
         review.numeric_audit(trial, "a" * 64)
+
+
+def test_fixed_followup_review_checks_both_cells_without_fabricating_refused_ledgers():
+    value = {
+        "status": "refused",
+        "base_restored": True,
+        "original_checkpoint_sha256": "a" * 64,
+    }
+    review.followup_audit(value, "a" * 64)
+    assert "changes" not in value and "subsequent_only_changes" not in value
+    value["status"] = "completed"
+    with pytest.raises(ValueError, match="missing its numerical ledger/replay"):
+        review.followup_audit(value, "a" * 64)
+    for key, replay in (
+        ("changes", "roundtrip_replay"),
+        ("subsequent_only_changes", "subsequent_only_roundtrip_replay"),
+    ):
+        value[key] = {"changed_entries": 0, "delta_norm": 0.0, "tensors": []}
+        value[replay] = {"passed": True}
+    review.followup_audit(value, "a" * 64)
+    value["subsequent_only_changes"]["delta_norm"] = 0.25
+    with pytest.raises(ValueError, match="count/norm is inconsistent"):
+        review.followup_audit(value, "a" * 64)
+    value["base_restored"] = False
+    with pytest.raises(ValueError, match="integrity/start-state"):
+        review.followup_audit(value, "a" * 64)
 
 
 def test_strict_json_and_lossless_bounded_check_parts():

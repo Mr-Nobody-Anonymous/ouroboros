@@ -32,6 +32,140 @@
       "size_in_bytes": 29929
     }
   ],
+  "exporter_followup_ci": {
+    "pr": {
+      "checks_reported_as_jobs": [
+        {
+          "conclusion": "success",
+          "id": 136250315378,
+          "name": "mcp"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250315710,
+          "name": "pretrained-self-edit"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250315733,
+          "name": "core (3.12)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250315746,
+          "name": "core (3.10)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250315758,
+          "name": "local-lora"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250315984,
+          "name": "core (3.11)"
+        },
+        {
+          "conclusion": "skipped",
+          "id": 136250317273,
+          "name": "discovery-scope"
+        },
+        {
+          "conclusion": "skipped",
+          "id": 136250317594,
+          "name": "pretrained-discovery-360m"
+        }
+      ],
+      "conclusion": "success",
+      "discovery_inference_rerun": false,
+      "event": "pull_request",
+      "head_sha": "b0cf0a7b35a596f1b2b44d0b4997d1ff2b81fe4b",
+      "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44725078724",
+      "id": 44725078724,
+      "status": "completed"
+    },
+    "push": {
+      "checks_reported_as_jobs": [
+        {
+          "conclusion": "success",
+          "id": 136250293433,
+          "name": "pretrained-self-edit"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250293590,
+          "name": "core (3.10)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250293648,
+          "name": "core (3.12)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250293693,
+          "name": "local-lora"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250293737,
+          "name": "core (3.11)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250293812,
+          "name": "discovery-scope"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250293998,
+          "name": "mcp"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250373619,
+          "name": "Ouroboros evidence 360m seed 17 (1/3)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250379871,
+          "name": "Ouroboros evidence 360m seed 17 (2/3)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250384547,
+          "name": "Ouroboros evidence 360m seed 17 (3/3)"
+        },
+        {
+          "conclusion": "skipped",
+          "id": 136250412580,
+          "name": "pretrained-discovery-360m"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250422904,
+          "name": "Ouroboros evidence 360m seed 42 (1/3)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250427244,
+          "name": "Ouroboros evidence 360m seed 42 (2/3)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250432023,
+          "name": "Ouroboros evidence 360m seed 42 (3/3)"
+        }
+      ],
+      "conclusion": "success",
+      "discovery_inference_rerun": false,
+      "event": "push",
+      "head_sha": "b0cf0a7b35a596f1b2b44d0b4997d1ff2b81fe4b",
+      "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44725072345",
+      "id": 44725072345,
+      "status": "completed"
+    }
+  },
   "kind": "ouroboros-discovery-github-execution-and-evidence-transport",
   "pull_request": {
     "conclusion": "success",
@@ -114,8 +248,68 @@
   ],
   "raw_zip_downloaded_in_local_sandbox": false,
   "raw_zip_failure": "An explicit download of discovery-360m-evidence-42 failed with EOF at the Azure blob redirect. No unchanged retry or claim that this sandbox inspected the ZIP.",
-  "recovery": "Separate read-only artifact review on GitHub: download and check the EXISTING source ZIP digest, hash-verify reports/journals/events and numerical norms, publish complete bounded machine-readable Checks output without inference/new evaluation/reselection. Recovery execution/decoded data not yet verified at this checkpoint.",
+  "recovered_evidence": {
+    "archive_payload_verified_on_hosted_runner": true,
+    "both_complete_checks_payload_sha256_verified_locally": true,
+    "compact_reviewed_evidence": "discovery-360m-reviewed.json",
+    "exporter_commit": "b0cf0a7b35a596f1b2b44d0b4997d1ff2b81fe4b",
+    "local_original_zip_downloaded": false,
+    "review_run_id": 44725072525,
+    "review_run_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44725072525",
+    "scientific_results": "../DISCOVERY_RESULTS.md",
+    "studies": [
+      {
+        "archive_sha256": "sha256:fc3108e8c636748ecd75b73a04ff6d3645f67a60b32d4f60e880678f48b838f6",
+        "checks_payload_sha256": "b335c260c5002ed2d5a66a13f476122e81cf5d952e67c1ae6b9459c4d3484d4b",
+        "decoded_bytes": 514000,
+        "parts": [
+          {
+            "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/runs/136250373619",
+            "id": 136250373619,
+            "name": "Ouroboros evidence 360m seed 17 (1/3)"
+          },
+          {
+            "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/runs/136250379871",
+            "id": 136250379871,
+            "name": "Ouroboros evidence 360m seed 17 (2/3)"
+          },
+          {
+            "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/runs/136250384547",
+            "id": 136250384547,
+            "name": "Ouroboros evidence 360m seed 17 (3/3)"
+          }
+        ],
+        "plan_sha256": "19111d66efa6e1162d588cefb2a2d16c2d00b7b5b2bbec18683f8e4f7d2fb2da",
+        "seed": 17
+      },
+      {
+        "archive_sha256": "sha256:44bbd8f62f4884c28d3ea764b295948cd7c66223ab8a8766c540158f5a31a621",
+        "checks_payload_sha256": "12035786865ddbb53063ef45bd51b758d9f5e4bf5a2f39d4c2714fc6301f6de5",
+        "decoded_bytes": 512692,
+        "parts": [
+          {
+            "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/runs/136250422904",
+            "id": 136250422904,
+            "name": "Ouroboros evidence 360m seed 42 (1/3)"
+          },
+          {
+            "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/runs/136250427244",
+            "id": 136250427244,
+            "name": "Ouroboros evidence 360m seed 42 (2/3)"
+          },
+          {
+            "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/runs/136250432023",
+            "id": 136250432023,
+            "name": "Ouroboros evidence 360m seed 42 (3/3)"
+          }
+        ],
+        "plan_sha256": "3967f76d3b06c254a8fc12e228977439822f366d86f4dc8db000c60caa5b0df3",
+        "seed": 42
+      }
+    ]
+  },
+  "recovery": "Completed: read-only hosted review 44725072525 at b0cf0a7 downloaded and verified both EXISTING archive payloads, safely extracted original JSON, checked report/journal/event/retention hashes and numerical deltas; no inference/new evaluation/reselection. All six bounded Checks parts reconstructed locally with both uncompressed payload SHA256s verified. Complete decoded edit/rollback and fixed-follow-up numerical ledgers independently norm-checked locally. Original ZIP payloads were NOT downloaded in this sandbox.",
   "review_date": "2026-11-19",
-  "scientific_model_outcomes_at_this_checkpoint": "Await full original artifact review; successful CI execution alone does not establish a useful autonomous edit, generalization, retention or improved future editing policy.",
+  "scientific_model_outcomes_at_this_checkpoint": "Complete reviewed 360M evidence: all 22 arms, 64 actual model-editor replies, 55 parsed / 10 host-valid model commands, ZERO model-authored numerical edit attempts and ZERO accepted candidates. HOST doses harmed practice and were rolled back. No validated useful autonomous pretrained edit, useful-edit retention or learned future editing ability. Separate 135M study remains incomplete.",
   "source_head_sha": "cb4c0df1008f208016a8bfa941c999bd96bcfc8b"
 }
