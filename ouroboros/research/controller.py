@@ -305,6 +305,29 @@ class WorkerExecutor:
         return result
 
 
+def _candidate_log(report, sealed_index):
+    """Every trained candidate, including rejected ones, for offline policy replay."""
+    baseline = report.get("baseline_practice", {}).get("macro_accuracy")
+    if baseline is None or not report.get("candidates"):
+        return []
+    rows = []
+    for index, candidate in enumerate(report["candidates"]):
+        scores = [row["practice"]["macro_accuracy"] for row in candidate["replications"]]
+        if not scores:
+            continue
+        rows.append(
+            {
+                "family": candidate["recipe"]["family"],
+                "recipe_sha256": identity(candidate["recipe"]),
+                "practice": min(scores),
+                "baseline": baseline,
+                "selected": index == sealed_index,
+                "gate_passed": bool(index == sealed_index and report["full_gate_passed"]),
+            }
+        )
+    return rows
+
+
 def run_research(config_path, *, check_only=False):
     config, data = load_config(config_path)
     checked = preflight(config, data)
@@ -397,6 +420,7 @@ def _run(config, data, checked, config_path):
         "worker_separation_is_not_os_sandbox": True,
     }
     family, state = "none", "failed"
+    sealed_index = None
     registered = False
     try:
         memory.register_baseline({"model_files": files})
@@ -575,6 +599,7 @@ def _run(config, data, checked, config_path):
             index = choose_practice(
                 baseline, [[r["evaluation"] for r in rows] for rows in candidate_rows]
             )
+            sealed_index = index
             # Seal the exact recipe/all seed checkpoints BEFORE even validation inference.
             frozen = {
                 "selected_recipe_index": index,
@@ -753,6 +778,10 @@ def _run(config, data, checked, config_path):
             }
             memory.transition(
                 run_id, state, {"result_sha256": identity(result), "report": report_binding}
+            )
+            # Counterfactual log: needed to ask later whether the ranking policy chose well.
+            memory.record_candidates(
+                run_id, _candidate_log(report, sealed_index), context=context_id
             )
             memory.record_result(run_id, **result)
         memory.verify()

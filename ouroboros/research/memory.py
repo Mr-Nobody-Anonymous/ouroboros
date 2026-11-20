@@ -84,6 +84,14 @@ class ExperimentMemory:
                     prompt_sha256 TEXT PRIMARY KEY, role TEXT NOT NULL,
                     experiment_id TEXT NOT NULL REFERENCES experiments(id)
                 );
+                CREATE TABLE IF NOT EXISTS candidates(
+                    experiment_id TEXT NOT NULL REFERENCES experiments(id),
+                    ordinal INTEGER NOT NULL, family TEXT NOT NULL, recipe_sha256 TEXT NOT NULL,
+                    practice_macro_accuracy REAL NOT NULL, baseline_macro_accuracy REAL NOT NULL,
+                    gate_passed INTEGER NOT NULL CHECK(gate_passed IN(0,1)),
+                    selected INTEGER NOT NULL CHECK(selected IN(0,1)),
+                    PRIMARY KEY(experiment_id, ordinal)
+                );
             """)
             for table in (
                 "baselines",
@@ -93,6 +101,7 @@ class ExperimentMemory:
                 "claims",
                 "holdouts",
                 "prompt_roles",
+                "candidates",
             ):
                 for operation in ("UPDATE", "DELETE"):
                     self.db.execute(
@@ -225,6 +234,102 @@ class ExperimentMemory:
             self.db.execute("ROLLBACK")
             raise
 
+    def record_candidates(self, experiment_id, rows, *, context):
+        """Log *every* trained candidate, not only the selected one.
+
+        Without this counterfactual record an offline policy comparison can only see the
+        winner, which makes "did the policy choose well?" unanswerable. Practice accuracy is
+        a measured host value; `gate_passed` is only ever 1 for the sealed candidate that
+        actually cleared every independent gate.
+        """
+        if self.state(experiment_id) not in TERMINAL:
+            raise ValueError("Candidate log is written once, at the terminal state")
+        if not isinstance(rows, list) or len(rows) > 8:
+            raise ValueError("Expected at most 8 bounded candidate rows")
+        if not rows:  # interrupted before any candidate finished training
+            return 0
+        text(context, "candidate context", 100)
+        prepared = []
+        for ordinal, row in enumerate(rows):
+            if (
+                not isinstance(row, dict)
+                or set(row)
+                - {"family", "recipe_sha256", "practice", "baseline", "selected", "gate_passed"}
+                or row.get("family") is None
+            ):
+                raise ValueError("Invalid candidate log row")
+            family = text(row["family"], "candidate family", 100)
+            recipe = text(row["recipe_sha256"], "candidate recipe hash", 100)
+            practice = float(row["practice"])
+            baseline = float(row["baseline"])
+            for name, value in (("practice", practice), ("baseline", baseline)):
+                if not math.isfinite(value) or not 0 <= value <= 1:
+                    raise ValueError(f"Candidate {name} must be a finite accuracy")
+            selected = row.get("selected", False)
+            passed = row.get("gate_passed", False)
+            if type(selected) is not bool or type(passed) is not bool:
+                raise ValueError("Candidate flags must be booleans")
+            if passed and not selected:
+                raise ValueError("Only the sealed candidate can carry a gate result")
+            prepared.append(
+                (
+                    experiment_id,
+                    ordinal,
+                    family,
+                    recipe,
+                    practice,
+                    baseline,
+                    int(passed),
+                    int(selected),
+                )
+            )
+        if sum(row[-1] for row in prepared) > 1:
+            raise ValueError("At most one candidate may be selected per experiment")
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            self.db.executemany("INSERT INTO candidates VALUES(?,?,?,?,?,?,?,?)", prepared)
+            self.db.execute("COMMIT")
+        except BaseException:
+            self.db.execute("ROLLBACK")
+            raise
+
+    def candidate_episodes(self, *, limit=2000):
+        """Ordered episodes for policy replay: context plus every logged candidate."""
+        rows = self.db.execute(
+            "SELECT c.experiment_id,c.ordinal,c.family,c.recipe_sha256,"
+            "c.practice_macro_accuracy,c.baseline_macro_accuracy,c.gate_passed,c.selected,"
+            "r.context,e.created "
+            "FROM candidates c JOIN experiments e ON e.id=c.experiment_id "
+            "LEFT JOIN results r ON r.experiment_id=c.experiment_id "
+            "ORDER BY e.created, c.experiment_id, c.ordinal LIMIT ?",
+            (limit,),
+        ).fetchall()
+        episodes = {}
+        for row in rows:
+            episode = episodes.setdefault(
+                row["experiment_id"],
+                {
+                    "experiment_id": row["experiment_id"],
+                    "context": row["context"] or "",
+                    "created": row["created"],
+                    "candidates": [],
+                },
+            )
+            episode["candidates"].append(
+                {
+                    "ordinal": row["ordinal"],
+                    "family": row["family"],
+                    "recipe_sha256": row["recipe_sha256"],
+                    "practice": row["practice_macro_accuracy"],
+                    "baseline": row["baseline_macro_accuracy"],
+                    "gate_passed": bool(row["gate_passed"]),
+                    "selected": bool(row["selected"]),
+                }
+            )
+        return [
+            episodes[key] for key in sorted(episodes, key=lambda k: (episodes[k]["created"], k))
+        ]
+
     def record_result(self, experiment_id, *, context, family, useful, cost, summary):
         if (
             self.state(experiment_id) not in TERMINAL
@@ -355,6 +460,19 @@ class ExperimentMemory:
                 previous, state = expected, event["state"]
             if state is None:
                 raise ValueError("Registered experiment has no initial event")
+            candidates = self.db.execute(
+                "SELECT * FROM candidates WHERE experiment_id=? ORDER BY ordinal", (row["id"],)
+            ).fetchall()
+            if candidates:
+                if sum(c["selected"] for c in candidates) > 1:
+                    raise ValueError("Candidate log must mark at most one sealed candidate")
+                for candidate in candidates:
+                    if not 0 <= candidate["practice_macro_accuracy"] <= 1 or not (
+                        0 <= candidate["baseline_macro_accuracy"] <= 1
+                    ):
+                        raise ValueError("Candidate practice accuracy out of range")
+                    if candidate["gate_passed"] and not candidate["selected"]:
+                        raise ValueError("Only the sealed candidate can carry a gate result")
             result = self.db.execute(
                 "SELECT * FROM results WHERE experiment_id=?", (row["id"],)
             ).fetchone()

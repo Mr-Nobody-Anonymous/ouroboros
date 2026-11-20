@@ -36,18 +36,25 @@ capability result.
 
 | Level | Command | What it establishes |
 | --- | --- | --- |
-| Protocol (no Torch) | `python -m pytest -q tests/test_research_foundation.py tests/test_research_data_quality.py` | Contracts, admission, gates, memory chains, recovery, CLI and the DeepSeek matrix — with **scripted** executors |
+| Protocol (no Torch) | `python -m pytest -q tests/test_research_foundation.py tests/test_research_data_quality.py tests/test_research_dataset_selection.py` | Contracts, admission, gates, memory chains, recovery, CLI, the DeepSeek matrix, the owned dataset and the selection-policy replay — with **scripted** executors and **synthetic** episodes |
 | Real offline CPU | `python -m pytest -q tests/test_research_foundation_ml.py` | Actual PEFT/full-SFT steps, frozen base, optimizer/RNG export, no silent truncation, a complete gated loop and an RSS watchdog, on a **random** tiny GPT-2 |
 
 | Observed in this pass | Value |
 | --- | --- |
-| Foundation protocol tests | **33 passed**, ~1 s |
-| Foundation real-model tests | **4 passed**, two expected PEFT `Conv1D` warnings, 2m08s |
-| Full offline suite | **463 passed**, five warnings, 2m32s (latest run; 2m18s the run before) |
-| No-ML selection (`-m 'not ml'`) | **348 passed, 115 deselected**, ~9 s |
+| Foundation protocol + dataset + selection tests | **42 passed**, ~2 s |
+| Foundation real-model tests | **4 passed**, two expected PEFT `Conv1D` warnings, 2m30s |
+| Full offline suite | **472 passed, 0 skipped**, five warnings, 3m11s (this environment now has Torch/Transformers/PEFT/GGUF/Math-Verify/LM Format Enforcer, so the optional-parser skips are gone) |
+| No-ML selection (`-m 'not ml'`) | **357 passed, 115 deselected**, ~15 s |
 | Compatibility unittest | **14 passed** |
-| Ruff lint / format | Clean; **119 files** formatted |
-| Owned docs / references | Checker OK; **34 references** |
+| Ruff lint / format | Clean; **123 files** formatted |
+| Owned docs / references | Checker OK; **52 references** |
+
+The same pass also produced the new scientific artifacts: the owned dataset
+(`research data`), a clean pretrained foundation run (`research run`), the frozen
+selection comparison (`research compare-selection`) and the follow-up path check
+(`scripts/run_followup_path_check.py`). Those numbers are in
+[the foundation document](RESEARCH_FOUNDATION.md#the-clean-pretrained-run-g1); test counts are
+not evidence for them.
 
 The historical **426 full / 291 lightweight** numbers predate this work and are not reused.
 The earlier no-Torch environment was not recreated in this pass, so its exact skip profile is

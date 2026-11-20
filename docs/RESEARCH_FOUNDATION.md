@@ -123,7 +123,8 @@ plan and fresh independent confirmation.
 ## Memory and strategy
 
 SQLite holds `baselines`, `experiments`, `events` (hash-chained), `results`, `claims`,
-`holdouts` and `prompt_roles`, with `UPDATE`/`DELETE` triggers that abort. Model claims are
+`holdouts`, `prompt_roles` and `candidates` (the counterfactual log of every trained
+candidate), with `UPDATE`/`DELETE` triggers that abort. Model claims are
 stored with `verified = 0` and never become measurements. `results.useful` requires a
 terminal `completed` state **and** `full_gate_passed`.
 
@@ -133,9 +134,10 @@ recipes. The researcher's history context is restricted to
 `context/family/useful/cost` — never prior report bodies, so a model cannot mine earlier
 hidden-set outcomes.
 
-An updated posterior is **not** evidence that future experiment selection improved. That
-milestone needs a predeclared comparison of selection policies on fresh tasks and has not
-been run.
+An updated posterior is **not** evidence that future experiment selection improved. The
+predeclared comparison now exists and is frozen before analysis (`selection.py`, see G6), but
+the real log holds far fewer episodes than its predeclared minimum, so it reports
+`insufficient_data` rather than a win.
 
 ## Status by subsystem
 
@@ -147,10 +149,11 @@ been run.
 | Competing hypotheses and ranking | implemented | alternatives, missing information, prediction audit per candidate |
 | Immutable controlled designs | implemented | write-once plan/design/sealed selection |
 | Multiple intervention types | partial | `lora_sft`, `full_sft`, `data_reweight`, `distill_sft`; architectural edits and audited direct weight edits are outside this loop |
+| Owned task data generator | implemented | 5 domains, 8 independent roles, 380 unique prompts, hashed manifest, verification + tamper detection; template fixture, not a benchmark |
 | Reproducible training | partial | deterministic flags, seeded order, full traces, optimizer/RNG export; no mid-step resume, no sequence packing |
 | Independent evaluation | implemented (this scope) | fresh worker, per-seed, clustered tests, holdout ledger |
 | Persistent experiment memory | implemented | SQLite authority + hash-bound JSON/checkpoints |
-| Strategy learning | partial | transparent posterior/bandit ranking only; improvement not demonstrated |
+| Strategy learning | partial | transparent posterior ranking plus a predeclared, hash-frozen selection-policy comparison; real evidence is `insufficient_data` |
 | Recovery and safety | partial | state machine, lock, watchdogs, interruption, explicit recovery; **not** an OS sandbox |
 | Bounded orchestration | implemented | one loop plus a finite, explicitly capped campaign |
 
@@ -159,10 +162,12 @@ been run.
 | Claim | Status |
 | --- | --- |
 | Infrastructure reproduces a full gated loop | **yes**, on a random tiny GPT-2 fixture with constant answers (32 fresh workers, 208 optimizer steps, 261 verified artifacts, all five gates plus retention, source unchanged) |
-| A host-designed control benefits a real pretrained model | **not established** |
+| A clean loop runs on a **pretrained** model and owned data | **yes** — 134.5M SmolLM2-135M-Instruct (pinned GGUF → float32) on the owned 380-prompt dataset; 12 fresh workers, 200 optimizer steps, 377 s, peak 1251 MB, source unchanged |
+| A host-designed LoRA raises exact-match accuracy on owned data | **measured, not promoted** — practice 0.000 → 0.300 (both seeds), validation 0.000 → 0.267, 16 wrong→right / 0 right→wrong, exact sign-flip p = 0.00195; the predeclared family-corrected alpha 0.05/44 = 0.00114 was *not* met, so the gate rejected |
+| The follow-up/retention stages execute on a real model | **yes** (path check, labelled non-evidence): four matched follow-up cells trained and re-scored, retention gate ran to a verdict |
 | A model independently proposes a valid, useful experiment | **not established** |
 | An autonomous edit survives all gates | **not established** |
-| The researcher or selection policy improves with experience | **not established** |
+| The researcher or selection policy improves with experience | **not established** — no real-data replay yet; the predeclared comparison reports `insufficient_data` on the available log |
 
 The 360M study (22 arms, 64 model replies, 0 numerical edits) and the OOM-interrupted 135M
 study are preserved unchanged in [discovery results](DISCOVERY_RESULTS.md); the foundation
@@ -174,26 +179,142 @@ truncated), LoRA 0/12 at both seeds, full SFT 12/12 at both seeds, host referenc
 hypothesis predicting a +0.01 delta was off by +0.99 — reported, not hidden. See
 [testing](TESTING.md#what-the-first-complete-loop-actually-did).
 
-A first real-model loop attempt reached the follow-up stage and failed on a worker contract
-bug (the training worker read a retention measurement it must not see). That is fixed: the
-follow-up worker now returns only its training record plus
-`evaluation_requires_fresh_worker: true`, and post-follow-up scoring happens in a separate
-evaluator process. A clean **pretrained** rerun is still required before any result on a real
-model is quoted.
+### The owned dataset (G2)
+
+`ouroboros/research/dataset.py` generates the data locally; no third-party question text is
+downloaded, and the manifest records the licence (MIT, this repository) so the set is
+redistributable.
+
+* 5 exact-answer domains: arithmetic, comparison, unit conversion, digit sequences and
+  divisibility (yes/no, so answers are never always numeric).
+* 8 roles with their own salted ordinal blocks:
+  train 150, practice 30, validation 30, reserved 40, final 40, robustness 30, retention 30,
+  followup 30 — **380 prompts, globally unique**, so a training item can never double as
+  hidden evidence.
+* Every sample passes the same `ResearchData` admission screen the controller applies, and the
+  question-overlap screen ran 1991 normalized 10-word checks with **0 collisions** between the
+  visible roles (train/practice/followup) and the hidden ones.
+* `manifest.json` carries per-file hashes, the dataset fingerprint
+  (`6351b718…c32bbb` for seed 17), the overlap report and the non-claims;
+  `verify_dataset()` re-hashes everything and refuses a changed file.
+
+Non-claims, repeated because they matter: this is a **template-generated diagnostic fixture**,
+not a benchmark, not comparable to GSM8K/MATH/IFEval, not decontaminated against any model's
+pretraining corpus, and a gain on it is not a reasoning or generalization result. The `Item N.`
+ordinal prefix is fixture scaffolding that keeps prompts disjoint — it also means a model could
+in principle key on it, which is one more reason the numbers above are diagnostics only.
+
+### The clean pretrained run (G1)
+
+The run below replaces the earlier attempt that died on a worker contract bug. It used the
+pinned pretrained source in `ouroboros/model_files.py` (`simonw/llm-smollm2`, revision
+`afed0963…`, GGUF sha256 `b179c952…10db53`, Apache-2.0) dequantised to float32 safetensors by
+`fetch_smoke_model`, and the owned dataset described under G2. Numbers come from
+`outputs/g1-owned-01/runs/research-3c10902ee2654d289b79c51adbee5dc1/research.json`; that tree
+is git-ignored, so the record lives here.
+
+| Stage | Baseline | LoRA SFT (r=4, α=8, lr 2e-4, 50 steps) |
+| --- | --- | --- |
+| Practice macro-accuracy (30 problems) | 0.000 | 0.300 (seed 17) / 0.300 (seed 18) |
+| Validation (30 problems, 2 answers each) | 0.000 | 0.233 (p 0.0078) / 0.300 (p 0.00195) |
+| Pooled validation (both seeds) | 0.000 | 0.267, 16 wrong→right, 0 right→wrong, p = 0.001953 |
+| Predeclared gate | — | **rejected**: 0.001953 > α = 0.05/44 = 0.001136 |
+
+The second candidate family (`data_reweight`) scored 0.267/0.300 on practice; the sealed
+selection rule (worst-seed practice accuracy) chose `lora_sft`. Nothing was promoted, no
+checkpoint was applied to the baseline, and the rejection stands exactly as recorded.
+
+Read this honestly. The baseline is at the floor: it answers 0.000 because a 135M instruct
+model rarely emits the exact short string in 12 new tokens, so the measured gain is mostly
+*task and answer-format acquisition*, not reasoning. The effect is real (exact one-sided
+sign-flip test over problems, zero right→wrong) but it does not clear the family-corrected
+threshold fixed before the run, which is what the gate is for. With 30 validation problems
+only 9 differ, and the exact test bottoms out at 2⁻⁹ = 0.00195 — so at this dataset size a
+candidate has to win on more problems, not just win bigger, to pass α ≈ 0.00114.
+
+### The follow-up/retention path (G1 continuation)
+
+Because the candidate was rejected at validation, the controller never entered the follow-up
+stage. `scripts/run_followup_path_check.py` therefore replays the four-cell retention design
+on the recorded run so the downstream code path is exercised with real training:
+before base 0.000, before candidates 0.067/0.133; after the fixed follow-up SFT 0.000/0.000
+base and 0.067/0.133 candidate; `retention_gate` returned `passed: true` on the
+no-regression floors in 262 s. The report is written with
+`scientific_evidence: false` and explicit non-claims (it replays a rejected candidate, adds no
+prompts and cannot promote anything). Writing it caught a real requirement: every retention
+measurement must use one fixed evaluation seed, otherwise the paired guard refuses the
+comparison — that guard fired and was respected, not bypassed.
+
+### Selection-policy comparison (G6)
+
+`ouroboros/research/selection.py` freezes the design *before* it looks at any outcome:
+policies `proposal_order` / `posterior_optimistic` (primary) / `random_fixed_seed`, one-sided
+paired sign-flip test over episodes, α = 0.05, minimum 20 episodes, chronological episode
+order, information set restricted to strictly earlier episodes, no online learning, no trained
+researcher, no hidden data. The design is written once to
+`outputs/g1-owned-01/selection/selection_design.json` (sha256 `23505c2a…`) and cannot be
+rewritten.
+
+To make the replay possible at all, the controller now logs **every** trained candidate, not
+only the winner, into a `candidates` table (ordinal, family, recipe hash, practice accuracy,
+baseline accuracy, `gate_passed`, `selected`). The G1 run logged its two candidates. That is
+**one** episode against a predeclared minimum of 20, so the honest output is:
+
+```text
+status: insufficient_data   episodes: 1   required: 20
+improved_future_selection_demonstrated: false
+```
+
+No policy claim is made on real data. The machinery itself is checked two ways, both labelled
+non-evidence: a synthetic 48–60 episode fixture with a known family advantage yields
+`policy_better_on_replay` at p ≈ 1.2e-4 with the null policy never winning, an ambiguous
+fixture stays `not_established`, and a unit test replays 24 logged episodes through the real
+SQLite log. Reaching the predeclared threshold needs ≥ 20 real episodes, i.e. ≥ 20 foundation
+runs on fresh datasets (roughly two hours of CPU at the settings above); that is a data
+collection cost, not a code change, and it is listed as the remaining G6 work.
 
 ## Reproduction
 
 ```bash
-# Protocol-only (no Torch): contracts, admission, gates, memory, CLI
-python -m pytest -q tests/test_research_foundation.py tests/test_research_data_quality.py
+# Protocol-only (no Torch): contracts, admission, gates, memory, dataset, selection CLI
+python -m pytest -q tests/test_research_foundation.py tests/test_research_data_quality.py \
+  tests/test_research_dataset_selection.py
 
 # Real offline CPU loop on a random fixture; never a pretrained claim
 python scripts/run_foundation_fixture.py --workdir outputs/foundation-fixture-01
+
+# Pinned pretrained source (GitHub only, hash-verified): 98 MB GGUF -> float32 safetensors
+python -c "from ouroboros.model_files import fetch_smoke_model; \
+print(fetch_smoke_model('models/smollm2-135m-instruct-gguf')['verified'])"
+
+# Owned dataset + a clean pretrained run on a brand-new directory
+python -m ouroboros.cli research data --directory outputs/g1-owned-01 \
+  --model-path models/smollm2-135m-instruct-gguf
+python -m ouroboros.cli research data --directory outputs/g1-owned-01 --verify
+python -m ouroboros.cli research run --config outputs/g1-owned-01/foundation.json
+python -m ouroboros.cli research verify-run --report outputs/g1-owned-01/runs/*/research.json
+
+# Predeclared selection comparison: real log first, synthetic machinery check second
+python -m ouroboros.cli research compare-selection \
+  --database outputs/g1-owned-01/experiments.sqlite3 --output outputs/g1-owned-01/selection
+python -m ouroboros.cli research compare-selection --fixture   # labelled non-evidence
+
+# Follow-up/retention path check on the recorded run (real training, non-evidence)
+python scripts/run_followup_path_check.py
 ```
 
 `scripts/run_foundation_fixture.py` creates a new directory, writes a 1M random model plus a
 constant-answer scaffold, runs the loop, verifies the artifact tree and writes
 `fixture_summary.json` with explicit non-claims.
+
+Environment note: in a 4 GB cgroup `pip install '.[train,llm,smoke]'` is killed (exit 137)
+while resolving the 906 MB Torch/CUDA bundle. The working recipe used here is
+`pip download --no-deps torch==2.5.1`, `pip install --no-deps --no-cache-dir` of that wheel and
+of each `nvidia-*-cu12` runtime library in its own invocation, then the pinned
+`transformers`/`peft`/`accelerate`/`tokenizers`/`huggingface-hub`/`gguf` wheels with
+`--no-deps` plus their small pure-Python dependencies. Version-skew warnings between the
+Torch-pinned CUDA 12.4 libraries and newer 12.9 packages are benign; missing `.so` files are
+not.
 
 ## Open gaps
 
@@ -204,12 +325,12 @@ issues or a changelog entry.
 
 | ID | Gap |
 | --- | --- |
-| G1 | **No clean pretrained rerun.** The only complete loop uses a random 1M GPT-2 fixture. The earlier pretrained attempt died at the follow-up stage on a now-fixed contract bug; it must be re-run end to end before any real-model statement. |
-| G2 | **No real task data.** The scaffold is eight constant-answer prompt sets in one synthetic domain. A licensed, verified multi-domain dataset with genuinely independent hidden roles is required. |
+| G1 | **Closed for the plumbing, negative for promotion.** A clean pretrained run now completes on owned data (numbers above) and the follow-up/retention path has executed. What remains is *scientific*: with 30 validation problems the exact test cannot go below 2⁻⁹ unless more problems separate the arms, so the α = 0.05/44 gate needs a bigger validation role (G7) before a candidate can pass. |
+| G2 | **Closed, with limits stated.** The owned dataset exists (380 unique prompts, 5 domains, 8 independent roles, hashed manifest, verification and tamper detection) and is used by the run above. It is template-generated and not a benchmark; a semantically harder task family is still missing (G3). |
 | G3 | **No beneficial host control on a pretrained model.** Both discovery studies are negative; a host-designed LoRA/full-SFT recipe that passes strict gates on real data has not been found. |
 | G4 | **No independent model proposal of demonstrated value.** The local proposer path exists but has never produced a proposal that survived training and gating on a real task. |
 | G5 | **No useful autonomous edit** under the full gate chain (validation → reserved → final → robustness → retention). |
-| G6 | **No evidence that experience improves future selection** (milestone E). Posteriors update; the selection policy's superiority has never been predeclared and tested. |
+| G6 | **Machinery closed, evidence open.** The comparison is predeclared, frozen and hash-bound, and the counterfactual candidate log now exists. The real log holds 1 episode against a predeclared minimum of 20, so the reported status is `insufficient_data`; no policy claim is made. Collecting ≥ 20 real episodes is the remaining work. |
 | G7 | **Two-seed replication only**, one machine, one dataset. Seed-level variance and power at this family correction are not characterized. |
 
 ### Engineering (implemented but bounded)

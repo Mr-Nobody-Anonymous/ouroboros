@@ -221,6 +221,21 @@ def parser():
         "deepseek",
         help="Source-linked DeepSeek features: adopted, partial, deferred, not applicable",
     )
+    dataset = research_ops.add_parser(
+        "data", help="Build or verify the owned multi-domain research dataset (no downloads)"
+    )
+    dataset.add_argument("--directory", required=True)
+    dataset.add_argument("--model-path", help="Local model directory for the generated config")
+    dataset.add_argument("--seed", type=int, default=17)
+    dataset.add_argument("--verify", action="store_true", help="Verify an existing dataset instead")
+    selection = research_ops.add_parser(
+        "compare-selection", help="Predeclared offline comparison of selection policies"
+    )
+    selection.add_argument("--database")
+    selection.add_argument("--fixture", action="store_true", help="Synthetic machinery check only")
+    selection.add_argument("--min-episodes", type=int, default=20)
+    selection.add_argument("--alpha", type=float, default=0.05)
+    selection.add_argument("--output", help="Directory for the frozen selection design")
     foundation_run = research_ops.add_parser(
         "run", help="One frozen research loop; never overwrite a baseline"
     )
@@ -481,6 +496,36 @@ def main(argv=None):
                 emit(result)
                 if result["missing_local_evidence"]:
                     return 2
+            elif args.research_operation == "data":
+                from .research.dataset import verify_dataset, write_dataset
+
+                result = (
+                    verify_dataset(args.directory)
+                    if args.verify
+                    else write_dataset(args.directory, seed=args.seed, model_path=args.model_path)
+                )
+                emit(result)
+            elif args.research_operation == "compare-selection":
+                from .research.memory import ExperimentMemory
+                from .research.selection import analyse, compare_fixture
+
+                if args.fixture:
+                    result = compare_fixture(min_episodes=args.min_episodes)
+                else:
+                    if not args.database:
+                        raise ValueError("compare-selection needs --database or --fixture")
+                    memory = ExperimentMemory(args.database, readonly=True)
+                    try:
+                        result = analyse(
+                            memory,
+                            alpha=args.alpha,
+                            min_episodes=args.min_episodes,
+                            directory=args.output,
+                        )
+                    finally:
+                        memory.close()
+                emit(result)
+                return 3 if result["status"] == "insufficient_data" else 0
             elif args.research_operation == "run":
                 from .research.controller import run_research
 
