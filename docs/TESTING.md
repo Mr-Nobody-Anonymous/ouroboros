@@ -41,12 +41,12 @@ capability result.
 
 | Observed in this pass | Value |
 | --- | --- |
-| Foundation protocol + dataset + selection tests | **42 passed**, ~2 s |
+| Foundation protocol + dataset + selection tests | **44 passed**, ~1 s |
 | Foundation real-model tests | **4 passed**, two expected PEFT `Conv1D` warnings, 2m30s |
-| Full offline suite | **472 passed, 0 skipped**, five warnings, 3m11s (this environment now has Torch/Transformers/PEFT/GGUF/Math-Verify/LM Format Enforcer, so the optional-parser skips are gone) |
-| No-ML selection (`-m 'not ml'`) | **357 passed, 115 deselected**, ~15 s |
+| Full offline suite | **474 passed, 0 skipped**, five warnings, 1m38s (this environment has Torch/Transformers/PEFT/GGUF/Math-Verify/LM Format Enforcer, so the optional-parser skips are gone) |
+| No-ML selection (`-m 'not ml'`) | **359 passed, 115 deselected**, ~8 s |
 | Compatibility unittest | **14 passed** |
-| Ruff lint / format | Clean; **123 files** formatted |
+| Ruff lint / format | Clean; **124 files** formatted |
 | Owned docs / references | Checker OK; **52 references** |
 
 Remote CI for **`9409d08`** ([push run 44754054133](https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44754054133))

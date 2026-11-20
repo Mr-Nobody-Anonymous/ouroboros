@@ -167,7 +167,8 @@ the real log holds far fewer episodes than its predeclared minimum, so it report
 | The follow-up/retention stages execute on a real model | **yes** (path check, labelled non-evidence): four matched follow-up cells trained and re-scored, retention gate ran to a verdict |
 | A host-designed LoRA clears the **validation** gate on a real pretrained model | **yes** — with the power profile: 0.000 → 0.192 pooled, 23 wrong→right, 0 right→wrong, p = 2e-5 |
 | A host-designed LoRA clears **every** gate | **no** — that candidate was rejected at the reserved gate: pooled p = 0.00049 but per-seed p = 0.0078 and 0.0020 against α = 0.001136 |
-| A model independently proposes a valid, useful experiment | **not established** |
+| A model independently proposes a valid, useful experiment | **not established, with the failure mode recorded** — the local proposer exhausted its token budget and degenerated, the run abstained and no host fallback was executed |
+| A predeclared selection-policy comparison runs on real episodes | **yes, null** — 20 real episodes, frozen design hash unchanged, primary and null tied in 20/20 (mechanism identified), decision `not_established` |
 | An autonomous edit survives all gates | **not established** |
 | The researcher or selection policy improves with experience | **not established** — no real-data replay yet; the predeclared comparison reports `insufficient_data` on the available log |
 
@@ -285,33 +286,69 @@ seed**, and the observed counts (7 vs 9, 11 vs 12) show the variance is wide eno
 60-problem hidden role is the minimum, not a comfortable margin. More seeds and more hidden
 problems remain the honest next step.
 
-### Selection-policy comparison (G6)
+### Selection-policy comparison (G6): 20 real episodes, null result
 
 `ouroboros/research/selection.py` freezes the design *before* it looks at any outcome:
 policies `proposal_order` / `posterior_optimistic` (primary) / `random_fixed_seed`, one-sided
-paired sign-flip test over episodes, α = 0.05, minimum 20 episodes, chronological episode
-order, information set restricted to strictly earlier episodes, no online learning, no trained
-researcher, no hidden data. The design is written once to
-`outputs/g1-owned-01/selection/selection_design.json` (sha256 `23505c2a…`) and cannot be
-rewritten.
+paired sign-flip test over episodes, α = 0.05, minimum 20 episodes, chronological episode order,
+information set restricted to strictly earlier episodes, no online learning, no trained
+researcher, no hidden data. `scripts/run_selection_campaign.py` built the episodes: 20 complete
+foundation runs, each on its own freshly generated `compact` dataset (seeds 201–220, three
+domains, 144 prompts each, no prompt reused) writing into one authoritative ledger.
 
-To make the replay possible at all, the controller now logs **every** trained candidate, not
-only the winner, into a `candidates` table (ordinal, family, recipe hash, practice accuracy,
-baseline accuracy, `gate_passed`, `selected`). The G1 run logged its two candidates. That is
-**one** episode against a predeclared minimum of 20, so the honest output is:
+The frozen design hash is `23505c2a…ffe7` — identical to the hash recorded in this document
+*before* the episodes existed, which is the check that the design was not fitted afterwards.
 
-```text
-status: insufficient_data   episodes: 1   required: 20
-improved_future_selection_demonstrated: false
-```
+What the log contains, and what the replay returned:
 
-No policy claim is made on real data. The machinery itself is checked two ways, both labelled
-non-evidence: a synthetic 48–60 episode fixture with a known family advantage yields
-`policy_better_on_replay` at p ≈ 1.2e-4 with the null policy never winning, an ambiguous
-fixture stays `not_established`, and a unit test replays 24 logged episodes through the real
-SQLite log. Reaching the predeclared threshold needs ≥ 20 real episodes, i.e. ≥ 20 foundation
-runs on fresh datasets (roughly two hours of CPU at the settings above); that is a data
-collection cost, not a code change, and it is listed as the remaining G6 work.
+| Quantity | Value |
+| --- | --- |
+| Episodes with a logged candidate set | 20, two candidates each (`lora_sft`, `data_reweight`) |
+| Episodes where the candidate beat its own baseline | 20 / 20 for **both** families |
+| Better family per episode | `lora_sft` 13, `data_reweight` 7 |
+| Mean practice gain of the better candidate | 0.287 (min 0.167, max 0.500) |
+| Terminal states | 20 rejected (12-problem validation cannot reach α = 0.001136) |
+| Mean selected improvement, `proposal_order` | 0.250 |
+| Mean selected improvement, `posterior_optimistic` | 0.250 |
+| Mean selected improvement, `random_fixed_seed` | 0.267 |
+| Primary minus null | 0 better, 0 worse, **20 ties**, exact p = 1.0 |
+| Decision | **`not_established`** |
+
+The null is reported as a null — and its mechanism is identified rather than hidden. The
+policy's statistic is binary ("did this candidate beat the baseline?"). Both families beat the
+baseline in all 20 episodes, so the Beta posterior never separates them, the optimistic policy
+ties and takes the first proposal, and the primary policy therefore selects exactly what
+`proposal_order` selects in 20 of 20 episodes. That is a replay that *cannot* discriminate, not
+evidence that the two policies are equivalent; the `random_fixed_seed` arm scoring 0.267 is
+noise from the same tie-breaking. Making the comparison informative is a new predeclared design,
+not a retrofitted one: rank by measured magnitude (the log stores practice accuracy, so a
+magnitude-based statistic is testable offline) or compare families whose success rates actually
+differ. Until then G6 keeps its `not_established` verdict.
+
+The machinery itself was checked separately, always labelled non-evidence: a synthetic 48–60
+episode fixture with a known family advantage yields `policy_better_on_replay` at p ≈ 1.2e-4
+with the null never winning, an ambiguous fixture stays `not_established`, fewer than 20
+episodes returns `insufficient_data`, and a unit test replays 24 logged episodes through the
+real SQLite log.
+
+### Independent model proposal (G4): abstention, no fallback
+
+The proposer path was executed twice with `researcher.kind: local_model` on the same pinned
+pretrained model, on fresh datasets (standard profile, seeds 301 and 302).
+
+* Attempt 1 died honestly: the `research` worker peaked at 1.69 GiB and the **RSS watchdog
+  stopped it** (budget 1.6 GiB), and the run was recorded as `failed` rather than retried
+  silently.
+* Attempt 2, with the worker budget raised to 2.4 GiB, ran to completion and the model emitted a
+  schema-shaped proposal that **exhausted its 256-token budget** (`finish_reason: length`,
+  `cut: true`) and degenerated inside the `target_modules` slot into a long unbroken digit
+  string. The controller recorded `state: abstained`, `proposal_origin: same-target-model`,
+  `fallback_used: false` and the raw generation in the worker result.
+
+So the honest status is unchanged: **a 135M model has still not produced a valid, useful
+proposal** (G4 open). What the run *does* establish is the refusal behaviour — an invalid
+proposal produces an abstention with the raw output retained, never a silent host-authored
+substitute, and a budget overrun kills the worker instead of letting it run unbounded.
 
 ## Reproduction
 
@@ -341,6 +378,13 @@ python -m ouroboros.cli research compare-selection --fixture   # labelled non-ev
 
 # Follow-up/retention path check on the recorded run (real training, non-evidence)
 python scripts/run_followup_path_check.py
+
+# 20 real selection episodes (fresh compact datasets, one ledger) + frozen replay
+python scripts/run_selection_campaign.py --workdir outputs/g6-campaign \
+  --episodes 20 --model models/smollm2-135m-instruct-gguf --analyse
+
+# Independent model proposal (abstains rather than falling back)
+python -m ouroboros.cli research run --config outputs/g4-local-02/foundation.json
 ```
 
 `scripts/run_foundation_fixture.py` creates a new directory, writes a 1M random model plus a
@@ -368,9 +412,9 @@ issues or a changelog entry.
 | G1 | **Closed for the plumbing, negative for promotion.** A clean pretrained run now completes on owned data (numbers above) and the follow-up/retention path has executed. What remains is *scientific*: with 30 validation problems the exact test cannot go below 2⁻⁹ unless more problems separate the arms, so the α = 0.05/44 gate needs a bigger validation role (G7) before a candidate can pass. |
 | G2 | **Closed, with limits stated.** The owned dataset exists (380 unique prompts, 5 domains, 8 independent roles, hashed manifest, verification and tamper detection) and is used by the run above. It is template-generated and not a benchmark; a semantically harder task family is still missing (G3). |
 | G3 | **Open, but past the first gate.** A host-designed LoRA now clears the validation gate on a real pretrained model (0.000 → 0.192, p = 2e-5) and was then rejected at the reserved gate on per-seed reproducibility (0.0078 / 0.0020 vs α = 0.001136) despite a significant pooled effect. Its gain is domain-narrow (two short-answer domains), so no capability claim follows even if a later candidate passes. |
-| G4 | **No independent model proposal of demonstrated value.** The local proposer path exists but has never produced a proposal that survived training and gating on a real task. |
+| G4 | **No independent model proposal of demonstrated value.** Executed: the local proposer on the real 135M model ran out of its 256-token budget and degenerated inside a schema slot, so the controller abstained (`fallback_used: false`). Closing it needs a proposer that emits a short, valid recipe — a smaller schema, a stronger researcher model, or a repair loop that is still host-owned. |
 | G5 | **No useful autonomous edit** under the full gate chain (validation → reserved → final → robustness → retention). |
-| G6 | **Machinery closed, evidence open.** The comparison is predeclared, frozen and hash-bound, and the counterfactual candidate log now exists. The real log holds 1 episode against a predeclared minimum of 20, so the reported status is `insufficient_data`; no policy claim is made. Collecting ≥ 20 real episodes is the remaining work. |
+| G6 | **Executed, null, mechanism identified.** 20 real episodes were collected and replayed under the frozen design (hash unchanged): primary and null tied in 20/20 episodes (p = 1.0) because both candidate families beat the baseline in every episode, so the binary posterior could not separate them. Decision `not_established`, reported as a null. A discriminating design (magnitude-based statistic or families with different success rates) is the next predeclared step; no policy claim is made now. |
 | G7 | **Power is characterized, replication is still thin.** With the power profile the exact per-seed test needs ≥ 10 separating problems to beat α = 0.001136; observed counts were 7 vs 9 and 11 vs 12, and doubling the training role at a fixed step budget hurt. Two seeds and one machine remain: more seeds and larger hidden roles are the next step, and no variance estimate over seeds should be quoted from two of them. |
 
 ### Engineering (implemented but bounded)
