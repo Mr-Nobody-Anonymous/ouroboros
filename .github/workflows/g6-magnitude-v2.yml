@@ -15,12 +15,18 @@ on:
         required: false
         default: '701'
         type: string
+      report_run_id:
+        description: Download and report a completed G6 artifact without rerunning the campaign
+        required: false
+        default: ''
+        type: string
 
 permissions:
   contents: read
 
 jobs:
   magnitude-v2-replay:
+    if: ${{ !(github.event_name == 'push' && contains(github.event.head_commit.message, '[g6-report-only]')) && (github.event_name != 'workflow_dispatch' || inputs.report_run_id == '') }}
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
@@ -88,7 +94,9 @@ jobs:
           print(f"- Logged episodes: {result.get('episodes')}")
           print(f"- Decision: **{result.get('decision')}**")
           print(f"- Primary-minus-null median: {contrast.get('median_difference')}")
-          print(f"- Exact p-value: {contrast.get('p_value')}")
+          method = contrast.get("method", "unknown")
+          label = "exact" if method == "exact-problem-sign-flips" else "Monte Carlo"
+          print(f"- Sign-flip p-value ({label}; {method}): {contrast.get('p_value')}")
           print(f"- Better / worse / ties: {contrast.get('episodes_primary_better')} / {contrast.get('episodes_null_better')} / {contrast.get('ties')}")
           print("\nThis is an offline selection-policy replay, not evidence of autonomous improvement or general capability.")
           PY
@@ -111,3 +119,103 @@ jobs:
             outputs/g6-magnitude-v2/runs/**/research.json
           if-no-files-found: warn
           retention-days: 90
+
+  report-result:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.report_run_id != '' }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      issues: write
+    steps:
+      - name: Download completed replay evidence
+        uses: actions/download-artifact@v6
+        with:
+          name: g6-magnitude-v2-evidence-${{ inputs.report_run_id }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.report_run_id }}
+          github-token: ${{ github.token }}
+          path: outputs/g6-magnitude-v2-artifact
+      - name: Publish measured summary to the pull request
+        uses: actions/github-script@v7
+        env:
+          SOURCE_RUN_ID: ${{ inputs.report_run_id }}
+        with:
+          script: |
+            const fs = require("fs");
+            const path = require("path");
+            const runId = Number(process.env.SOURCE_RUN_ID);
+            if (!Number.isSafeInteger(runId) || runId <= 0) {
+              throw new Error("report_run_id must be a positive integer");
+            }
+            const root = path.resolve("outputs/g6-magnitude-v2-artifact");
+            function locateAll(dir, filename, found = []) {
+              for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+                const full = path.join(dir, entry.name);
+                if (entry.isFile() && entry.name === filename) found.push(full);
+                if (entry.isDirectory()) locateAll(full, filename, found);
+              }
+              return found;
+            }
+            const resultFiles = locateAll(root, "selection_result.json");
+            if (resultFiles.length !== 1) throw new Error("Artifact must contain one selection_result.json");
+            const result = JSON.parse(fs.readFileSync(resultFiles[0], "utf8"));
+            const expectedHash = "f166076cfc02432e604bf089056006da3e2589c7425df42fa8f19afb9caa43e5";
+            if (result.design_sha256 !== expectedHash) throw new Error("Artifact design hash mismatch");
+            if (result.episodes !== 20 || result.episodes_logged !== 20) {
+              throw new Error("Artifact does not contain 20 complete logged episodes");
+            }
+            const configs = locateAll(root, "foundation.json");
+            const seeds = configs.map(file => JSON.parse(fs.readFileSync(file, "utf8")).seed)
+              .sort((left, right) => left - right);
+            if (seeds.length !== 20 || new Set(seeds).size !== 20 || seeds.some((seed, index) => seed !== seeds[0] + index)) {
+              throw new Error("Artifact does not prove one contiguous block of 20 unique episode seeds");
+            }
+            if ([[201, 220], [601, 620]].some(([first, last]) => seeds[0] <= last && seeds[19] >= first)) {
+              throw new Error("Artifact episode seeds overlap a known consumed range");
+            }
+            const { owner, repo } = context.repo;
+            const source = await github.rest.actions.getWorkflowRun({ owner, repo, run_id: runId });
+            if (source.data.conclusion !== "success") {
+              throw new Error(`Source run ${runId} did not complete successfully`);
+            }
+            if (source.data.head_branch !== "arena/4dd3ddb6-ouroboros") {
+              throw new Error("Source run is not from the active campaign branch");
+            }
+            const contrast = result.primary_minus_null;
+            const means = Object.entries(result.mean_by_policy || {})
+              .map(([policy, value]) => `${policy}=${Number(value).toFixed(4)}`)
+              .join(", ");
+            const body = [
+              `<!-- g6-magnitude-v2-source-run:${runId} -->`,
+              "## G6 magnitude_v2 fresh replay result",
+              "",
+              `- Source: [GitHub Actions run #${runId}](${source.data.html_url})`,
+              `- Commit: \`${source.data.head_sha}\``,
+              `- Fresh episodes: **${seeds.length}** (seeds ${seeds[0]}–${seeds[seeds.length - 1]}; complete candidate sets logged)`,
+              "- Model: pinned SmolLM2-135M-Instruct smoke checkpoint (receipt is in the run artifact)",
+              `- Frozen design SHA-256: \`${result.design_sha256}\``,
+              `- Mean practice delta by policy: ${means}`,
+              `- Primary vs null: \`${contrast.primary}\` vs \`${contrast.null}\`; mean difference \`${Number(contrast.mean_difference).toFixed(4)}\`, median \`${Number(contrast.median_difference).toFixed(4)}\`.`,
+              `- Primary better / null better / ties: **${contrast.episodes_primary_better} / ${contrast.episodes_null_better} / ${contrast.ties}**.`,
+              `- Sign-flip p-value: \`${contrast.p_value}\` (\`${contrast.method}\`); decision: **${result.decision}**.`,
+              `- Frozen rule: noise floor ${result.design.noise_floor}, one-sided sign-flip test with positive-median requirement.`,
+              "",
+              "This is an offline replay of recorded counterfactual candidates, not online learning or general capability evidence. `autonomous_improvement_demonstrated` remains false.",
+              "The complete JSON, campaign log, per-episode manifests and model receipt are attached to the Actions run artifact."
+            ].join("\n");
+            const issueNumber = 1;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number: issueNumber, per_page: 100
+            });
+            const existing = comments.find(comment => comment.body.includes(`g6-magnitude-v2-source-run:${runId}`));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner, repo, comment_id: existing.id, body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: issueNumber, body
+              });
+            }
+            core.info(`Published measured G6 result from run ${runId} to PR #${issueNumber}.`);
