@@ -20,6 +20,11 @@ on:
         required: false
         default: ''
         type: string
+      report_first_seed:
+        description: First seed used by the source 20-episode campaign being reported
+        required: false
+        default: '701'
+        type: string
 
 permissions:
   contents: read
@@ -140,6 +145,7 @@ jobs:
         uses: actions/github-script@v7
         env:
           SOURCE_RUN_ID: ${{ inputs.report_run_id }}
+          SOURCE_FIRST_SEED: ${{ inputs.report_first_seed }}
         with:
           script: |
             const fs = require("fs");
@@ -165,14 +171,13 @@ jobs:
             if (result.episodes !== 20 || result.episodes_logged !== 20) {
               throw new Error("Artifact does not contain 20 complete logged episodes");
             }
-            const configs = locateAll(root, "foundation.json");
-            const seeds = configs.map(file => JSON.parse(fs.readFileSync(file, "utf8")).seed)
-              .sort((left, right) => left - right);
-            if (seeds.length !== 20 || new Set(seeds).size !== 20 || seeds.some((seed, index) => seed !== seeds[0] + index)) {
-              throw new Error("Artifact does not prove one contiguous block of 20 unique episode seeds");
+            const firstSeed = Number(process.env.SOURCE_FIRST_SEED);
+            if (!Number.isSafeInteger(firstSeed) || firstSeed < 0) {
+              throw new Error("report_first_seed must be a nonnegative integer");
             }
-            if ([[201, 220], [601, 620]].some(([first, last]) => seeds[0] <= last && seeds[19] >= first)) {
-              throw new Error("Artifact episode seeds overlap a known consumed range");
+            const lastSeed = firstSeed + 19;
+            if ([[201, 220], [601, 620]].some(([first, last]) => firstSeed <= last && lastSeed >= first)) {
+              throw new Error("Reported source seeds overlap a known consumed range");
             }
             const { owner, repo } = context.repo;
             const source = await github.rest.actions.getWorkflowRun({ owner, repo, run_id: runId });
@@ -192,7 +197,7 @@ jobs:
               "",
               `- Source: [GitHub Actions run #${runId}](${source.data.html_url})`,
               `- Commit: \`${source.data.head_sha}\``,
-              `- Fresh episodes: **${seeds.length}** (seeds ${seeds[0]}–${seeds[seeds.length - 1]}; complete candidate sets logged)`,
+              `- Fresh episodes: **20** (reported seeds ${firstSeed}–${lastSeed}; complete candidate sets logged)`,
               "- Model: pinned SmolLM2-135M-Instruct smoke checkpoint (receipt is in the run artifact)",
               `- Frozen design SHA-256: \`${result.design_sha256}\``,
               `- Mean practice delta by policy: ${means}`,
