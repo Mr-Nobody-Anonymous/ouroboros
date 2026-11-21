@@ -25,8 +25,8 @@ from ouroboros.research.selection import (
     design_magnitude,
 )
 
-CONSUMED_SEED_RANGES = ((201, 220), (601, 620))
-DEFAULT_FIRST_SEED = 701
+CONSUMED_SEED_RANGES = ((201, 220), (601, 620), (701, 720))
+DEFAULT_FIRST_SEED = 721
 MAGNITUDE_V2_SHA256 = "f166076cfc02432e604bf089056006da3e2589c7425df42fa8f19afb9caa43e5"
 COMPACT_CAMPAIGN_BUDGET = Budget(
     max_steps=60,
@@ -92,7 +92,9 @@ def main():
         "--first-seed",
         type=int,
         default=DEFAULT_FIRST_SEED,
-        help="First fresh seed (known consumed G6 ranges 201–220 and 601–620 are refused)",
+        help=(
+            "First fresh seed (consumed G6 ranges 201–220, 601–620 and 701–720 are refused)"
+        ),
     )
     parser.add_argument("--model", required=True)
     parser.add_argument(

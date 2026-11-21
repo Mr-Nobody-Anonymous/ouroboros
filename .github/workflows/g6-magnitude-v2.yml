@@ -13,7 +13,7 @@ on:
       first_seed:
         description: First seed of a fresh 20-episode block; consumed G6 ranges are refused
         required: false
-        default: '701'
+        default: '721'
         type: string
       report_run_id:
         description: Download and report a completed G6 artifact without rerunning the campaign
@@ -21,7 +21,7 @@ on:
         default: ''
         type: string
       report_first_seed:
-        description: First seed used by the source 20-episode campaign being reported
+        description: 'Report-only metadata: first source seed; not verified against episode manifests'
         required: false
         default: '701'
         type: string
@@ -41,7 +41,7 @@ jobs:
       OMP_NUM_THREADS: '2'
       MKL_NUM_THREADS: '2'
       MALLOC_ARENA_MAX: '2'
-      G6_FIRST_SEED: ${{ github.event.inputs.first_seed || '701' }}
+      G6_FIRST_SEED: ${{ github.event.inputs.first_seed || '721' }}
       G6_WORKDIR: outputs/g6-magnitude-v2
       G6_LOG: outputs/g6-magnitude-v2-campaign.log
     steps:
@@ -197,7 +197,7 @@ jobs:
               "",
               `- Source: [GitHub Actions run #${runId}](${source.data.html_url})`,
               `- Commit: \`${source.data.head_sha}\``,
-              `- Fresh episodes: **20** (reported seeds ${firstSeed}–${lastSeed}; complete candidate sets logged)`,
+              `- Fresh episodes: **20** (reported seeds ${firstSeed}–${lastSeed}; report seed metadata was not cross-checked against episode manifests; complete candidate sets logged)`,
               "- Model: pinned SmolLM2-135M-Instruct smoke checkpoint (receipt is in the run artifact)",
               `- Frozen design SHA-256: \`${result.design_sha256}\``,
               `- Mean practice delta by policy: ${means}`,

@@ -208,8 +208,8 @@ def test_g6_campaign_defaults_to_a_fresh_seed_range_and_refuses_consumed_ranges(
     from ouroboros.research.contracts import identity
     from ouroboros.research.selection import design_magnitude
 
-    assert default_first_seed == 701
-    assert validate_fresh_seed_range(default_first_seed, 20) == (701, 720)
+    assert default_first_seed == 721
+    assert validate_fresh_seed_range(default_first_seed, 20) == (721, 740)
     assert campaign["MAGNITUDE_V2_SHA256"] == identity(design_magnitude())
     assert campaign["COMPACT_CAMPAIGN_BUDGET"].max_rss_bytes == 2400 * 1024**2
     for first_seed, episodes in (
@@ -217,10 +217,14 @@ def test_g6_campaign_defaults_to_a_fresh_seed_range_and_refuses_consumed_ranges(
         (210, 1),
         (601, 1),
         (615, 1),
+        (701, 1),
+        (719, 1),
         (200, 2),
         (220, 2),
         (600, 2),
         (620, 1),
+        (700, 2),
+        (720, 2),
     ):
         with pytest.raises(ValueError, match="overlaps consumed G6 seeds"):
             validate_fresh_seed_range(first_seed, episodes)
