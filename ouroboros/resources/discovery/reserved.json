@@ -1,0 +1,386 @@
+[
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 10 * 16. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "160",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: aiaj",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "aiaj",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 8 bags with 2 marbles each. Then 3 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "13",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nYesterday, Bruce and Michael were playing football in the park. Bruce scored 4 goals While Michael scored 3 times more than Bruce. How many goals did Bruce and Michael both score?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:1896",
+    "target": "16",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 5 * 21. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "105",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: aieo",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "aieo",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 5 bags with 4 marbles each. Then 1 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "19",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nAt Penny\u2019s bakery, her famous blueberry cheesecakes are $7 a slice.  Each cheesecake pie is cut into 6 thick slices.  If she sells 7 cheesecake pies, how much money does she make?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:1415",
+    "target": "294",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 17 + 18. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "35",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: aiha",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "aiha",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 5 bags with 3 marbles each. Then 3 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "12",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nIsabela bought twice as many cucumbers as pencils, with both costing $20 each. If she got a 20% discount on the pencils and bought 100 cucumbers, calculate the total amount she spent to buy the items.",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:4804",
+    "target": "2800",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 17 + 22. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "39",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: ajeb",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "ajeb",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 15 bags with 3 marbles each. Then 3 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "42",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nJamie is in a walking group with 4 other ladies.  The ladies all walk 3 miles together.  On top of that, Jamie walks an additional 2 miles per day for 6 days while her friend Sue walks half that amount in 6 days.  If they walk this same route 6 days a week, how many miles do the ladies walk in total?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:3001",
+    "target": "36",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 19 + 21. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "40",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: ajgk",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "ajgk",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 12 bags with 4 marbles each. Then 2 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "46",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nJohn buys 3 spools of wire that are 20 feet each.  It takes 4 feet to make a necklace.  How many necklaces can he make?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:4004",
+    "target": "15",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 14 + 15. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "29",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: akgj",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "akgj",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 9 bags with 7 marbles each. Then 1 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "62",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nAlexa has a lemonade stand where she sells lemonade for $2 for one cup. If she spent $20 on ingredients, how many cups of lemonade does she need to sell to make a profit of $80?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:1634",
+    "target": "50",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 10 * 12. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "120",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: aman",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "aman",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 8 bags with 6 marbles each. Then 2 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "46",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nErin is sorting through the library books to decide which ones to replace. She finds 8 less than 6 times as many obsolete books as damaged books. If she removes 69 books total, how many books were damaged?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:4920",
+    "target": "11",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 4 + 25. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "29",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: amgb",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "amgb",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 9 bags with 5 marbles each. Then 1 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "44",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nNelly is very pleased with the painting she bought at the auction. She tells her daughter that she outbid her rival Joe by paying $2000 more than thrice his bid. If Joe\u2019s bid was $160,000, at how much did Nelly get the painting?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:6708",
+    "target": "482000",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 7 * 20. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "140",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: amng",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "amng",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 7 bags with 6 marbles each. Then 3 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "39",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nMartha gets prize points every time she shops at her local grocery store. She gets 50 points per $10 spent, plus a 250 point bonus if she spends more than $100. Martha buys 3 pounds of beef for $11 each, 8 pounds of fruits and vegetables for $4/pound, 3 jars of spices for $6 each, and other groceries totaling $37. How many points does Martha get?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:5192",
+    "target": "850",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 9 + 16. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "25",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: amop",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "amop",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 11 bags with 8 marbles each. Then 3 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "85",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nOn a particular day, Rose's teacher read the register and realized there were twice as many girls as boys present on that day. The class has 250 students, and all the 140 girls were present. If all the absent students were boys, how many boys were absent that day?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:6977",
+    "target": "40",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 24 + 25. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "49",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: anid",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "anid",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 11 bags with 5 marbles each. Then 3 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "52",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nJacob is making s'mores. Each s'more takes two graham crackers and one marshmallow. If Jacob has 48 graham crackers and 6 marshmallows, how many more marshmallows does he need to buy?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:2839",
+    "target": "18",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 11 + 19. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "30",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: anph",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "anph",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 6 bags with 7 marbles each. Then 1 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "41",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nWhitney\u2019s mom gave her two $20 bills to spend at the school book fair. Whitney has decided to buy 2 posters, 3 notebooks, and 2 bookmarks. Each poster costs $5, each notebook costs $4, and each bookmark costs $2. How much money, in dollars, will Whitney have left over after the purchase?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:728",
+    "target": "14",
+    "verified": true
+  }
+]

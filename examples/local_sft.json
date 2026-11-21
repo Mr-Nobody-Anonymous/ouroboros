@@ -1,0 +1,37 @@
+{
+  "model": {
+    "model_name_or_path": "../models/local-causal-lm",
+    "device": "cpu",
+    "torch_dtype": "float32",
+    "use_qlora": false,
+    "max_new_tokens": 16
+  },
+  "tuning": {
+    "lora_r": 4,
+    "lora_alpha": 8,
+    "target_modules": ["q_proj", "v_proj"],
+    "learning_rate": 0.0002,
+    "num_train_epochs": 1,
+    "batch_size": 2,
+    "gradient_accumulation_steps": 1,
+    "max_seq_length": 256,
+    "max_grad_norm": 1.0
+  },
+  "cycle": {
+    "max_generations": 2,
+    "seed": 42,
+    "anchor_ratio": 0.25,
+    "forgetting_threshold": 0.05,
+    "improvement_threshold": 0.01,
+    "max_train_steps": 16,
+    "max_seconds": 180,
+    "checkpoint_dir": "../checkpoints",
+    "output_dir": "../outputs"
+  },
+  "data": {
+    "train": "data/train.json",
+    "validation": "data/validation.json",
+    "anchors": "data/anchors.json",
+    "test": "data/test.json"
+  }
+}

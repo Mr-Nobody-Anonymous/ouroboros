@@ -1,42 +1,43 @@
-# Python
+# Python and tooling
 __pycache__/
 *.py[cod]
-*$py.class
 *.so
-.Python
-env/
+.venv/
 venv/
-ENV/
-.venv
-
-# Distribution / packaging
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
+env/
 *.egg-info/
-.installed.cfg
-*.egg
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage/
+htmlcov/
 
-# PyTorch / ML weights
-*.pt
-*.pth
-*.bin
-*.safetensors
+# Build products and local experiment outputs
+build/
+dist/
+*.egg
 checkpoints/
+models/
 adapters/
 outputs/
 logs/
+.cache/
+artifacts/objects/
+artifacts/releases/
 
-# IDEs
+# Never accidentally add model weights/caches. Use artifacts/ + an explicit git add -f for approved LFS data.
+*.pt
+*.pth
+*.bin
+*.npz
+*.safetensors
+*.parquet
+*.tar.gz
+
+# Local configuration / secrets
+.env
+.env.*
+!.env.example
 .vscode/
 .idea/
 *.swp

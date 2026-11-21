@@ -1,0 +1,176 @@
+[
+  {
+    "action": "inventory",
+    "limit": 4
+  },
+  {
+    "action": "weights",
+    "names": [
+      "model.layers.28.mlp.down_proj.weight",
+      "model.layers.29.mlp.down_proj.weight"
+    ],
+    "values": 4
+  },
+  {
+    "action": "read",
+    "kind": "hidden",
+    "last": 0,
+    "modules": [
+      "model.layers.28"
+    ],
+    "texts": [
+      "One plus one is two.",
+      "One plus one is one."
+    ]
+  },
+  {
+    "action": "read",
+    "kind": "mlp_input",
+    "last": 0,
+    "modules": [
+      "model.layers.28.mlp.down_proj"
+    ],
+    "texts": [
+      "One plus one is two."
+    ]
+  },
+  {
+    "action": "read",
+    "kind": "logprobs",
+    "last": 0,
+    "texts": [
+      "One plus one is two."
+    ]
+  },
+  {
+    "action": "contrast",
+    "failing": [
+      "The answer is one. One one one one one."
+    ],
+    "last": 0,
+    "module": "model.layers.28",
+    "successful": [
+      "The answer is two."
+    ]
+  },
+  {
+    "action": "writers",
+    "direction": "d0",
+    "limit": 4,
+    "name": "model.layers.28.mlp.down_proj.weight"
+  },
+  {
+    "action": "edit",
+    "operations": [
+      {
+        "direction": "d0",
+        "name": "model.layers.28.mlp.down_proj.weight",
+        "op": "project",
+        "strength": 0.05,
+        "top_columns": 1
+      },
+      {
+        "direction": "d0",
+        "name": "model.layers.29.mlp.down_proj.weight",
+        "op": "project",
+        "strength": 0.05,
+        "top_columns": 1
+      }
+    ]
+  },
+  {
+    "action": "save",
+    "name": "small"
+  },
+  {
+    "action": "test",
+    "ids": [
+      0,
+      1
+    ],
+    "saved": [
+      "small"
+    ]
+  },
+  {
+    "action": "control",
+    "ids": [
+      0,
+      1
+    ],
+    "kind": "random_direction",
+    "seed": 43
+  },
+  {
+    "action": "control",
+    "ids": [
+      0,
+      1
+    ],
+    "kind": "no_op"
+  },
+  {
+    "action": "control",
+    "ids": [
+      0,
+      1
+    ],
+    "kind": "layer_isolation",
+    "names": [
+      "model.layers.28.mlp.down_proj.weight"
+    ]
+  },
+  {
+    "action": "sweep",
+    "ids": [
+      0,
+      1
+    ],
+    "variants": [
+      {
+        "label": "weak",
+        "operations": [
+          {
+            "direction": "d0",
+            "name": "model.layers.28.mlp.down_proj.weight",
+            "op": "project",
+            "strength": 0.01,
+            "top_columns": 1
+          },
+          {
+            "direction": "d0",
+            "name": "model.layers.29.mlp.down_proj.weight",
+            "op": "project",
+            "strength": 0.01,
+            "top_columns": 1
+          }
+        ]
+      },
+      {
+        "label": "stronger",
+        "operations": [
+          {
+            "direction": "d0",
+            "name": "model.layers.28.mlp.down_proj.weight",
+            "op": "project",
+            "strength": 0.1,
+            "top_columns": 1
+          },
+          {
+            "direction": "d0",
+            "name": "model.layers.29.mlp.down_proj.weight",
+            "op": "project",
+            "strength": 0.1,
+            "top_columns": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "action": "submit"
+  },
+  {
+    "action": "confirm"
+  }
+]

@@ -1,81 +1,55 @@
-"""
-Self-Rewarding & DPO Engine: Autonomous evaluation and preference pair generation.
-"""
-from typing import Dict, Any, List, Tuple, Optional
-import random
+"""Preference-data curation with explicit, independently supplied judges; no style-based rewards."""
+
+import math
+
 
 class SelfRewardingEngine:
-    """
-    Implements self-rewarding loops where the model scores its own generations,
-    constructs preference pairs (chosen vs. rejected), and creates DPO training batches.
-    """
+    def __init__(self, rubric=None, *, judge=None, generator=None, min_margin=0.01):
+        if not math.isfinite(min_margin) or min_margin <= 0:
+            raise ValueError("min_margin must be positive")
+        self.rubric = rubric or {}
+        self.judge, self.generator, self.min_margin = judge, generator, min_margin
 
-    def __init__(self, rubric: Optional[Dict[str, float]] = None):
-        self.rubric = rubric or {
-            "factual_accuracy": 0.4,
-            "chain_of_thought_rigor": 0.3,
-            "conciseness": 0.15,
-            "instruction_compliance": 0.15
-        }
+    def judge_generation(self, prompt, response):
+        if self.judge is None:
+            raise RuntimeError(
+                "An explicit judge is required; reasoning keywords do not measure correctness"
+            )
+        score = float(self.judge(prompt, response))
+        if not math.isfinite(score) or not 0 <= score <= 1:
+            raise ValueError("Judge score must be finite and in [0, 1]")
+        return score
 
-    def judge_generation(self, prompt: str, response: str) -> float:
-        """
-        Simulates an LLM-as-a-judge scoring function evaluating response quality (0.0 to 1.0).
-        Evaluates length penalty, reasoning keywords, and mathematical clarity.
-        """
-        score = 0.5
-        # Reward step-by-step reasoning tokens
-        reasoning_markers = ["step", "because", "therefore", "hence", "derive", "calculate", "proof"]
-        for marker in reasoning_markers:
-            if marker in response.lower():
-                score += 0.07
-
-        # Penalize vague or evasive responses
-        if "i don't know" in response.lower() or "maybe" in response.lower():
-            score -= 0.15
-
-        # Clamp between 0.05 and 0.98
-        return float(min(0.98, max(0.05, score)))
-
-    def create_dpo_pair(
-        self,
-        prompt: str,
-        candidate_a: str,
-        candidate_b: str
-    ) -> Dict[str, Any]:
-        """
-        Ranks two self-generated outputs and assigns chosen (y_w) and rejected (y_l).
-        """
-        score_a = self.judge_generation(prompt, candidate_a)
-        score_b = self.judge_generation(prompt, candidate_b)
-
-        if score_a >= score_b:
-            chosen, rejected = candidate_a, candidate_b
-            margin = score_a - score_b
-        else:
-            chosen, rejected = candidate_b, candidate_a
-            margin = score_b - score_a
-
+    def create_dpo_pair(self, prompt, candidate_a, candidate_b):
+        if not prompt.strip() or not candidate_a.strip() or not candidate_b.strip():
+            raise ValueError("Prompt and candidates must be nonempty")
+        if candidate_a.strip() == candidate_b.strip():
+            return None
+        a, b = (
+            self.judge_generation(prompt, candidate_a),
+            self.judge_generation(prompt, candidate_b),
+        )
+        if abs(a - b) < self.min_margin:
+            return None  # abstain on ties instead of manufacturing a preference
+        chosen, rejected = (candidate_a, candidate_b) if a > b else (candidate_b, candidate_a)
         return {
             "prompt": prompt,
             "chosen": chosen,
             "rejected": rejected,
-            "chosen_score": max(score_a, score_b),
-            "rejected_score": min(score_a, score_b),
-            "margin": margin
+            "chosen_score": max(a, b),
+            "rejected_score": min(a, b),
+            "margin": abs(a - b),
         }
 
-    def synthesize_dpo_dataset(self, task_prompts: List[str]) -> List[Dict[str, Any]]:
-        """
-        Generates a full synthetic preference dataset for iterative DPO fine-tuning.
-        """
-        dataset = []
+    def synthesize_dpo_dataset(self, task_prompts):
+        if self.generator is None:
+            raise RuntimeError("A candidate generator is required; no canned training responses")
+        result = []
         for prompt in task_prompts:
-            # Generate two varied candidate solutions
-            candidate_good = f"Analysis: Analyzing {prompt} systematically.\nStep 1: Formalize parameters.\nStep 2: Solve equations.\nTherefore, the calculated result is verified."
-            candidate_weak = f"I think the answer for {prompt} is probably 42 or something similar, but I am not completely certain."
-            
-            pair = self.create_dpo_pair(prompt, candidate_good, candidate_weak)
-            dataset.append(pair)
-            
-        return dataset
+            candidates = self.generator(prompt)
+            if len(candidates) != 2:
+                raise ValueError("Generate exactly two candidates per prompt")
+            pair = self.create_dpo_pair(prompt, *candidates)
+            if pair:
+                result.append(pair)
+        return result

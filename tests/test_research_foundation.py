@@ -1,0 +1,953 @@
+"""Foundation safety/protocol tests. Scripted measurements below are NOT capability evidence."""
+
+import json
+import os
+import sqlite3
+from dataclasses import asdict, replace
+from pathlib import Path
+
+import numpy as np
+import pytest
+from safetensors.numpy import save_file
+
+from ouroboros.data import Sample
+from ouroboros.lab.metrics import summarize
+from ouroboros.research.contracts import (
+    ROLES,
+    Budget,
+    Hypothesis,
+    Proposal,
+    Recipe,
+    ResearchData,
+    commands,
+    identity,
+    load_config,
+)
+from ouroboros.research.evaluation import (
+    audit_rewards,
+    choose_practice,
+    diagnosis,
+    gate,
+    retention_gate,
+)
+from ouroboros.research.memory import ExperimentMemory
+from ouroboros.research.project import init_foundation, verify_run
+from ouroboros.research.provenance import write_once
+from ouroboros.research.researcher import rank_recipes
+
+
+def config_fixture(root, *, checkpoint_selection=None):
+    model = root / "model"
+    model.mkdir(parents=True, exist_ok=True)
+    save_file({"a": np.zeros((2, 2), dtype=np.float32)}, str(model / "model.safetensors"))
+    (model / "config.json").write_text("{}")
+    result = init_foundation(root / "project", model)
+    path = Path(result["config"])
+    if checkpoint_selection is not None:
+        value = json.loads(path.read_text())
+        value["checkpoint_selection"] = checkpoint_selection
+        path.write_text(json.dumps(value))
+        # Round-trip through the same validator the controller uses before the run.
+        from ouroboros.research.contracts import load_config
+
+        load_config(path)
+    return path
+
+
+def evaluation(samples, correct=True, *, wrong_domain=None, cut=False):
+    rows = []
+    for sample in samples:
+        is_correct = correct and sample.domain != wrong_domain and not cut
+        rows.append(
+            {
+                "id": identity(sample.instruction),
+                "sample": 0,
+                "seed": 42,
+                "domain": sample.domain,
+                "text": sample.target if is_correct else "wrong",
+                "new_tokens": 1,
+                "correct": is_correct,
+                "cut": cut,
+                "thinking_closed": True,
+                "repetitive": False,
+                "tail_compression_ratio": 1.0,
+            }
+        )
+    return {"records": rows, "summary": summarize(rows)}
+
+
+def finish(memory, experiment, *, useful=False, family="lora_sft", context="context"):
+    for state in (
+        "observing",
+        "diagnosing",
+        "researching",
+        "designed",
+        "executing",
+        "validating",
+        "reserved",
+        "final",
+        "robustness",
+        "retention",
+    ):
+        memory.transition(experiment, state)
+    summary = {"full_gate_passed": useful}
+    record = {
+        "context": context,
+        "family": family,
+        "useful": useful,
+        "cost": 2.0,
+        "summary": summary,
+    }
+    memory.transition(
+        experiment, "completed" if useful else "rejected", {"result_sha256": identity(record)}
+    )
+    memory.record_result(experiment, **record)
+
+
+@pytest.mark.parametrize(
+    "patch",
+    [
+        {"max_steps": True},
+        {"max_steps": 0},
+        {"family_size": 1},
+        {"repeats": 1},
+        {"max_rss_bytes": float("inf")},
+        {"max_total_steps": -1},
+        {"max_candidates": 5},
+    ],
+)
+def test_fixed_budgets_cannot_be_relaxed_by_coercion(patch):
+    with pytest.raises(ValueError):
+        Budget(**patch)
+
+
+def hypothesis():
+    return Hypothesis(
+        "practice failures",
+        "unverified possibility",
+        0.3,
+        ["measured:1"],
+        [],
+        ["capacity rather than data"],
+        ["a controlled intervention"],
+        0.1,
+        "No independent improvement disproves this candidate prediction.",
+    )
+
+
+def test_proposals_require_evidence_uncertainty_and_actual_types():
+    proposal = Proposal(1, "experiment", "bounded", [asdict(hypothesis())], [asdict(Recipe())])
+    proposal.validate_context(["measured:1"], Budget(), ["general"])
+    with pytest.raises(ValueError, match="absent"):
+        proposal.validate_context([], Budget(), ["general"])
+    with pytest.raises(ValueError, match="step budget"):
+        proposal.validate_context(["measured:1"], Budget(max_steps=1), ["general"])
+    for value in [
+        {**asdict(proposal), "python": "import os"},
+        {**asdict(proposal), "schema_version": True},
+        {**asdict(proposal), "action": "declare_improved"},
+        {**asdict(proposal), "action": "abstain"},
+    ]:
+        with pytest.raises(ValueError):
+            Proposal.parse(value)
+    with pytest.raises(ValueError, match="Duplicate"):
+        Proposal.parse('{"action":"abstain","action":"experiment"}')
+    with pytest.raises(ValueError):
+        replace(hypothesis(), confidence=float("nan"))
+    with pytest.raises(ValueError, match="competing"):
+        replace(hypothesis(), alternatives=[])
+    with pytest.raises(ValueError):
+        Recipe(optimizer="execute_code")
+    with pytest.raises(ValueError):
+        Recipe(target_modules=['__import__("os")'])
+    with pytest.raises(ValueError):
+        Recipe(family="data_reweight")
+
+
+def test_normalized_disjoint_seven_role_data_and_verified_training():
+    roles = {role: [Sample(role + " example", "yes", verified=True)] for role in ROLES}
+    data = ResearchData(roles)
+    assert len(data.fingerprint()) == 64
+    roles["reserved"] = [Sample("TRAIN  EXAMPLE", "different", verified=True)]
+    with pytest.raises(ValueError, match="contaminated"):
+        ResearchData(roles)
+    roles["reserved"] = [Sample("new hidden prompt", "yes", verified=True)]
+    roles["train"] = [Sample("train example", "yes")]
+    with pytest.raises(ValueError, match="verification"):
+        ResearchData(roles)
+
+
+def test_check_only_scaffold_no_torch_no_download_no_database(tmp_path, monkeypatch):
+    path = config_fixture(tmp_path)
+    from ouroboros.research.controller import run_research
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("check-only must not execute a worker")
+
+    monkeypatch.setattr("ouroboros.research.controller.WorkerExecutor.run", forbidden)
+    result = run_research(path, check_only=True)
+    assert result["stored_parameters"] == 4 and result["alpha"] == 0.05 / 44
+    assert result["checked_only"] and not result["loads_model"]
+    assert not (path.parent / "experiments.sqlite3").exists()
+    assert not (path.parent / "runs").exists()
+    with pytest.raises(FileExistsError):
+        init_foundation(path.parent, tmp_path / "model")
+    raw = json.loads(path.read_text())
+    raw["budget"]["family_size"] = 1
+    path.write_text(json.dumps(raw))
+    with pytest.raises(ValueError):
+        load_config(path)
+
+
+def test_symlink_inputs_and_output_inside_model_are_rejected(tmp_path):
+    path = config_fixture(tmp_path)
+    original = path.parent / "data/train.json"
+    source = path.parent / "data/original.json"
+    original.rename(source)
+    original.symlink_to(source)
+    with pytest.raises(ValueError, match="symlink"):
+        load_config(path)
+    original.unlink()
+    original.write_bytes(source.read_bytes())
+    value = json.loads(path.read_text())
+    value["output_dir"] = str(tmp_path / "model" / "outputs")
+    path.write_text(json.dumps(value))
+    from ouroboros.research.controller import run_research
+
+    with pytest.raises(ValueError, match="immutable"):
+        run_research(path, check_only=True)
+
+
+def test_strict_paired_gates_no_loss_rescue_regression_or_seed_cherry_pick():
+    samples = [Sample(str(i), "yes", "one" if i < 12 else "two") for i in range(24)]
+    base = evaluation(samples, False)
+    good, failed = evaluation(samples), evaluation(samples, False)
+    passed = gate(base, [good, good], alpha=0.05 / 44, seed=17)
+    assert passed["passed"]
+    assert passed["problem_clustered"]["unit_of_analysis"].startswith("problem")
+    assert not gate(base, [good, failed], alpha=0.05 / 44, seed=17)["passed"]
+    assert not gate(good, [good, good], alpha=0.05 / 44, seed=17)["passed"]
+    regression = evaluation(samples, wrong_domain="two")
+    assert not gate(good, [regression, regression], alpha=0.05 / 44, seed=17)["passed"]
+    assert choose_practice(base, [[good, failed], [good, good]]) == 1
+    assert choose_practice(good, [[good, good]]) is None
+    bad_summary = {**good, "summary": {**good["summary"], "accuracy": 0.123}}
+    with pytest.raises(ValueError, match="disagrees"):
+        gate(base, [bad_summary], alpha=0.05, seed=17)
+
+
+def test_practice_loss_and_confidence_are_not_accuracy_evidence():
+    samples = [Sample(str(i), "yes") for i in range(12)]
+    base, plateau = evaluation(samples, False), evaluation(samples, False)
+    plateau["nll"] = {"problem_mean_nll": 0.0001}
+    assert not gate(base, [plateau], alpha=0.05 / 44, seed=17)["passed"]
+    symptoms = diagnosis(evaluation(samples, cut=True))
+    assert symptoms["symptoms"]["token_budget_exhausted"] == 12
+    assert not symptoms["causal_claim"]
+
+
+def test_retention_requires_actual_matched_controls_and_no_new_regression():
+    samples = [Sample(str(i), "yes") for i in range(12)]
+    bad, good = evaluation(samples, False), evaluation(samples)
+    assert retention_gate(bad, [good, good], [bad, bad], [good, good], alpha=0.001, seed=17)[
+        "passed"
+    ]
+    assert not retention_gate(bad, [good, good], [bad, bad], [bad, good], alpha=0.001, seed=17)[
+        "passed"
+    ]
+
+
+def test_rule_verified_distillation_never_accepts_self_rating_or_format():
+    rows = [
+        {"text": "wrong but very confident", "cut": False, "thinking_closed": True, "score": 1},
+        {"text": "Yes", "cut": False, "thinking_closed": True},
+        {"text": "yes", "cut": True, "thinking_closed": True},
+    ]
+    audit = audit_rewards(rows, "yes")
+    assert [r["correct"] for r in audit["records"]] == [False, True, False]
+    assert abs(sum(audit["group_relative_advantages"])) < 1e-12
+    assert not audit["uninformative_group"]
+    equal = audit_rewards([rows[0]], "yes")
+    assert equal["uninformative_group"] and equal["group_relative_advantages"] == [0]
+
+
+def test_append_only_memory_hashes_claims_holdout_consumption_and_roles(tmp_path):
+    memory = ExperimentMemory(tmp_path / "history.sqlite3")
+    baseline = memory.register_baseline({"model_files": {"model": "a" * 64}})
+    memory.register("one", {"baseline_id": baseline})
+    memory.register_roles("one", {"train": ["public"], "reserved": ["private"]})
+    memory.claim("one", "I improved myself", "model-written unverified claim")
+    assert memory.posterior("context", "lora_sft")["observations"] == 0
+    memory.consume_holdout("one", "reserved", ["private"])
+    with pytest.raises(ValueError, match="already consumed"):
+        memory.consume_holdout("one", "reserved", ["private"])
+    with pytest.raises(ValueError, match="changed dataset role"):
+        memory.register_roles("one", {"train": ["private"]})
+    with pytest.raises(sqlite3.IntegrityError, match="append-only"):
+        memory.db.execute("UPDATE experiments SET plan=?", ("{}",))
+    finish(memory, "one", useful=True)
+    assert memory.verify()
+    assert memory.search("full_gate", limit=1)[0]["useful"] == 1
+    posterior = memory.posterior("context", "lora_sft")
+    assert posterior["alpha"] == 2 and posterior["beta"] == 1
+    memory.close()
+    readonly = ExperimentMemory(tmp_path / "history.sqlite3", readonly=True)
+    with pytest.raises(sqlite3.OperationalError):
+        readonly.register_baseline({"write": "denied"})
+    readonly.close()
+
+
+def test_memory_state_machine_and_forged_result_do_not_update_strategy(tmp_path):
+    memory = ExperimentMemory(tmp_path / "m.sqlite3")
+    memory.register("one", {})
+    with pytest.raises(ValueError, match="transition"):
+        memory.transition("one", "completed")
+    memory.transition("one", "failed")
+    with pytest.raises(ValueError, match="bound"):
+        memory.record_result(
+            "one", context="x", family="lora_sft", useful=False, cost=1, summary={}
+        )
+    assert memory.posterior("x", "lora_sft")["observations"] == 0
+    memory.close()
+
+
+def test_tamper_detection_including_results(tmp_path):
+    path = tmp_path / "m.sqlite3"
+    memory = ExperimentMemory(path)
+    memory.register("one", {})
+    finish(memory, "one", useful=True)
+    memory.db.execute("DROP TRIGGER no_results_UPDATE")
+    memory.db.execute("UPDATE results SET useful=0")
+    memory.close()
+    with pytest.raises(ValueError, match="event binding"):
+        ExperimentMemory(path, readonly=True)
+
+
+def test_recover_refuses_live_or_terminal_controller_and_never_resumes(tmp_path, monkeypatch):
+    path = tmp_path / "m.sqlite3"
+    memory = ExperimentMemory(path)
+    memory.register("one", {})
+    with pytest.raises(ValueError, match="still alive"):
+        memory.recover_interrupted("one")
+    monkeypatch.setattr("ouroboros.research.memory.process_token", lambda pid: None)
+    memory.recover_interrupted("one")
+    assert memory.state("one") == "interrupted"
+    with pytest.raises(ValueError, match="unfinished"):
+        memory.recover_interrupted("one")
+    assert memory.verify()
+    memory.close()
+
+
+def test_verified_outcomes_change_future_ranking_without_claiming_selection_gain(tmp_path):
+    memory = ExperimentMemory(tmp_path / "m.sqlite3")
+    recipes = [Recipe(family="lora_sft", steps=2), Recipe(family="full_sft", steps=2)]
+    assert rank_recipes(recipes, memory, "context")[0]["proposal_index"] == 0
+    for i in range(3):
+        memory.register(str(i), {})
+        finish(memory, str(i), useful=True, family="full_sft")
+    ranked = rank_recipes(recipes, memory, "context")
+    assert ranked[0]["proposal_index"] == 1
+    assert "not a trained researcher" in ranked[0]["posterior"]["interpretation"]
+    memory.close()
+
+
+class ScriptedExecutor:
+    """Protocol fixture, explicitly scripted, NOT a scientific executor or model gain."""
+
+    mode = "pass"
+    calls = []
+
+    def __init__(
+        self,
+        config,
+        bindings,
+        files,
+        software,
+        root,
+        run_id,
+        deadline,
+        *,
+        auxiliary_model_files=None,
+    ):
+        self.config, self.bindings, self.root, self.run_id = config, bindings, root, run_id
+        self.receipts, self.planned_steps = [], 0
+        self.count = 0
+
+    def run(
+        self,
+        operation,
+        *,
+        inputs=None,
+        recipe=None,
+        checkpoint=None,
+        seed=None,
+        extra=None,
+        model=None,
+    ):
+        self.count += 1
+        self.calls.append((operation, list((inputs or {}).keys()), bool(checkpoint)))
+        if self.mode == "interrupt" and operation == "train":
+            raise KeyboardInterrupt()
+        if operation in ("train", "followup"):
+            from ouroboros.core.checkpoints import CheckpointStore
+
+            original = recipe or Recipe(**extra["original_recipe"])
+
+            class Backend:
+                def save(self, path):
+                    (Path(path) / "fixture.txt").write_text(
+                        "Not model weights; scripted controller fixture only"
+                    )
+
+                def describe(self):
+                    return {"is_llm": False}
+
+            store = CheckpointStore(self.root / f"fixture-{self.count}", self.run_id)
+            name = store.save(Backend(), 1, scores={}, metadata={"recipe": asdict(original)})
+            value = {"checkpoint": str(store.root / name), "steps": 1}
+            self.planned_steps += 1
+            return value if operation == "train" else {"training": value}
+        if operation == "research":
+            return {
+                "valid": False,
+                "error": "invalid fixture JSON",
+                "researcher": {"base_model_files": {}},
+                "fallback_used": False,
+            }
+        binding = next(iter(inputs.values()))
+        samples = [Sample.from_dict(s) for s in json.loads(Path(binding["file"]).read_text())]
+        value = evaluation(samples, bool(checkpoint) and self.mode != "plateau")
+        if operation == "observe":
+            return {
+                "evaluation": value,
+                "introspection": {
+                    "description": {"parameters": 4},
+                    "parameter_metadata": [
+                        {"name": "model.layers.0.q_proj.weight"},
+                        {"name": "model.layers.0.v_proj.weight"},
+                    ],
+                    "architecture": {"model_type": "scripted-fixture"},
+                },
+            }
+        return value
+
+
+def test_followup_recipe_keeps_the_candidate_family_structure_and_weights():
+    """The retention follow-up must not turn a data_reweight candidate into an unweighted one."""
+    from ouroboros.research.contracts import Recipe
+    from ouroboros.research.training import followup_effective_recipe
+
+    candidate = Recipe(
+        family="data_reweight",
+        target_modules=["q_proj", "v_proj"],
+        steps=50,
+        learning_rate=0.0002,
+        rank=8,
+        alpha=16,
+        domain_weights={"comparison": 2},
+    )
+    fixed = Recipe(
+        family="lora_sft",
+        target_modules=["c_attn"],
+        steps=12,
+        learning_rate=0.001,
+        rank=2,
+        alpha=4,
+        optimizer="sgd",
+        schedule="cosine",
+        weight_decay=0.01,
+    )
+    effective = followup_effective_recipe(candidate, fixed)
+    # Fixed schedule for both cells; candidate structure and data weighting for the after-cells.
+    assert (effective.steps, effective.learning_rate, effective.optimizer, effective.schedule) == (
+        12,
+        0.001,
+        "sgd",
+        "cosine",
+    )
+    assert effective.family == "data_reweight" and effective.domain_weights == {"comparison": 2}
+    assert (effective.rank, effective.alpha, effective.target_modules) == (
+        8,
+        16,
+        ["q_proj", "v_proj"],
+    )
+    # A data_reweight family without weights is exactly what used to crash the retention worker.
+    with pytest.raises(ValueError):
+        Recipe(family="data_reweight", target_modules=["q_proj"], steps=1, learning_rate=0.001)
+
+
+def test_magnitude_selection_design_is_new_and_discriminating():
+    """G6: v2 must have its own hash, separate a magnitude gap, and keep v1 frozen."""
+    from ouroboros.research.contracts import identity
+    from ouroboros.research.selection import (
+        compare_magnitude,
+        design,
+        design_magnitude,
+    )
+
+    v1, v2 = design(), design_magnitude()
+    assert identity(v1) != identity(v2)
+    assert v2["noise_floor"] == 0.02 and v2["metric"].startswith("measured practice")
+    assert "supersedes" in v2 and v1["decision_rule"].startswith("one-sided paired problem")
+
+    # Episodes where both arms always improve (so the v1 statistic ties) but one arm improves
+    # more. The magnitudes must be separable; this is a machinery check, never evidence.
+    episodes = []
+    for index in range(20):
+        strong_delta = 0.30 + (index % 3) * 0.01
+        # The stronger family alternates position, so "take the first proposal" is right only
+        # by chance while a magnitude-aware policy can learn which family pays.
+        strong_first = index % 2 == 0
+        first = {"ordinal": 0, "family": "lora_sft", "baseline": 0.0, "practice": strong_delta}
+        second = {"ordinal": 1, "family": "data_reweight", "baseline": 0.0, "practice": 0.11}
+        episodes.append(
+            {
+                "experiment_id": f"fixture-{index:03d}",
+                "candidates": [first, second] if strong_first else [second, first],
+            }
+        )
+    result = compare_magnitude(episodes, frozen=v2)
+    assert result["status"] == "estimated"
+    comparison = result["primary_minus_null"]
+    # UCB matches the proposal-order baseline when the strong family happens to come first and
+    # wins whenever it does not, so the pattern is "never worse, sometimes better" -- exactly
+    # the shape a win/loss statistic cannot see.
+    assert comparison["episodes_null_better"] == 0
+    assert comparison["episodes_primary_better"] >= len(episodes) // 2
+    assert comparison["median_difference"] > 0
+    assert result["decision"] == "policy_better_on_replay"
+    # The design refuses a re-tuned alpha or a policy name it does not own.
+    with pytest.raises(ValueError):
+        design_magnitude(primary="posterior_optimistic")
+    with pytest.raises(ValueError):
+        design_magnitude(noise_floor=0.9)
+
+
+def test_researcher_schema_is_declared_and_validated(tmp_path):
+    """G4: v2 is opt-in; an unknown schema is refused before a run starts."""
+    import json as _json
+
+    from ouroboros.research.contracts import load_config
+
+    original = config_fixture(tmp_path)
+    base = _json.loads(original.read_text())
+    # Data paths are relative to the config file, so the variants live beside it.
+    data = {key: str((original.parent / value).absolute()) for key, value in base["data"].items()}
+    for schema, ok in (("v1", True), ("v2", True), ("v3", True), ("v4", True), ("v5", False)):
+        value = {
+            **base,
+            "data": data,
+            "researcher": {"kind": "local_model", "schema": schema},
+        }
+        path = original.parent / f"config-{schema}.json"
+        path.write_text(_json.dumps(value))
+        if ok:
+            assert load_config(path)[0]["researcher"]["schema"] == schema
+        else:
+            with pytest.raises(ValueError):
+                load_config(path)
+
+
+def test_short_proposal_schema_repair_and_host_mapping():
+    """G4: the v2 interface is smaller, repairs only syntax, and logs host-filled fields."""
+    import json as _json
+
+    from ouroboros.research.researcher import (
+        HOST_FILLED_FIELDS,
+        _v2_to_proposal,
+        proposal_schema,
+        proposal_schema_v2,
+        repair_json,
+    )
+
+    v1, v2 = proposal_schema(), proposal_schema_v2()
+    assert len(_json.dumps(v2)) * 3 < len(_json.dumps(v1))
+    assert v2["required"] == [
+        "action",
+        "family",
+        "steps",
+        "learning_rate",
+        "rank",
+        "target_modules",
+        "claim",
+        "confidence",
+    ]
+
+    # Format-only repair: fences, prose, trailing commas are removed; nothing is invented.
+    assert repair_json('```json\n{"a": 1,}\n```')[0] == '{"a": 1}'
+    assert repair_json('Sure: {"a": 1}')[0] == '{"a": 1}'
+    fixed, notes, truncated = repair_json('{"a": 1, "b": [1, 2}')
+    assert truncated and "unbalanced_and_unrecoverable" in notes and fixed.endswith("[1, 2}")
+    assert repair_json('{"a": "open')[2] is True
+
+    context = {
+        "diagnosis": {
+            "evidence": [
+                {
+                    "id": "ev-1",
+                    "measurement": {"scores": {"carry_add": 0.2, "carry_add_carry": 0.0}},
+                }
+            ]
+        },
+        "train_domains": ["carry_add"],
+    }
+    host_filled = []
+    proposal = _v2_to_proposal(
+        {
+            "action": "experiment",
+            "family": "data_reweight",
+            "steps": 40,
+            "learning_rate": 0.001,
+            "rank": 8,
+            "target_modules": ["q_proj"],
+            "claim": "Reweighting the weakest domain may help",
+            "confidence": 0.3,
+        },
+        context=context,
+        budget=None,
+        host_filled=host_filled,
+    )
+    from ouroboros.research.contracts import Proposal
+
+    parsed = Proposal.parse(proposal)
+    assert parsed.action == "experiment"
+    assert parsed.recipes[0]["target_modules"] == ["q_proj"]
+    assert parsed.recipes[0]["domain_weights"] == {"carry_add_carry": 2}
+    assert "domain_weights" in host_filled
+    assert set(HOST_FILLED_FIELDS) >= {"alpha", "optimizer", "schedule", "weight_decay"}
+
+    # v3 quantises every number into an enum, so a degenerate digit run cannot be emitted.
+    from ouroboros.research.researcher import LEARNING_RATES_V3, _v3_to_v2, proposal_schema_v3
+
+    v3 = proposal_schema_v3()
+    assert v3["properties"]["steps"]["enum"] == [20, 50, 100]
+    assert v3["properties"]["rank"]["enum"] == [2, 4, 8, 16]
+    assert set(v3["properties"]["learning_rate"]["enum"]) == set(LEARNING_RATES_V3)
+    assert v3["properties"]["confidence_percent"]["maximum"] == 100
+    assert not {"steps", "rank", "learning_rate"} & {
+        key for key, value in v3["properties"].items() if value.get("type") == "number"
+    }
+    mapped = _v3_to_v2(
+        {
+            "action": "experiment",
+            "family": "lora_sft",
+            "steps": 50,
+            "learning_rate": "lr_2e4",
+            "rank": 4,
+            "target_modules": ["q_proj"],
+            "claim": "try a smaller rank",
+            "confidence_percent": 35,
+        }
+    )
+    assert mapped["learning_rate"] == 0.0002 and mapped["confidence"] == 0.35
+
+    # v4 removes the last free-text surface: the claim becomes a declared choice.
+    from ouroboros.research.researcher import CLAIM_KINDS, _v4_to_v3, proposal_schema_v4
+
+    v4 = proposal_schema_v4()
+    assert "claim" not in v4["properties"] and "claim_kind" in v4["required"]
+    assert set(v4["properties"]["claim_kind"]["enum"]) == set(CLAIM_KINDS)
+
+    class Budget:
+        max_steps = 60
+
+    # The step menu can never express an experiment the budget cannot pay for.
+    assert proposal_schema_v4(Budget())["properties"]["steps"]["enum"] == [20, 40, 60]
+    assert all(step <= 60 for step in proposal_schema_v4(Budget())["properties"]["steps"]["enum"])
+    assert all(
+        value.get("type") != "string" or "enum" in value or "items" in value
+        for value in v4["properties"].values()
+    )
+    converted = _v4_to_v3(
+        {
+            "action": "experiment",
+            "family": "distill_sft",
+            "steps": 100,
+            "learning_rate": "lr_1e4",
+            "rank": 2,
+            "target_modules": ["v_proj"],
+            "claim_kind": "capacity",
+            "confidence_percent": 0,
+        }
+    )
+    assert converted["claim"] == CLAIM_KINDS["capacity"][1]
+    assert converted["claim_kind"] == "capacity"
+
+    # An abstention stays an abstention: no recipe can be smuggled in.
+    abstain = _v2_to_proposal(
+        {
+            "action": "abstain",
+            "family": "lora_sft",
+            "steps": 1,
+            "learning_rate": 0.001,
+            "rank": 1,
+            "target_modules": ["q_proj"],
+            "claim": "Evidence is insufficient",
+            "confidence": 0.1,
+        },
+        context=context,
+        budget=None,
+        host_filled=[],
+    )
+    assert abstain["action"] == "abstain" and not abstain["recipes"]
+
+
+def test_staged_profile_holds_out_the_carry_composition():
+    """G3: training never crosses the carry boundary; every evaluation role does."""
+    import re
+
+    from ouroboros.research.dataset import PROFILES, build
+
+    roles = build(seed=501, profile="staged")
+    assert {sample.domain for sample in roles["train"]} == {"carry_add"}
+    assert set(PROFILES["staged"]["domains"]) - set(PROFILES["staged"]["train_domains"]) == {
+        "carry_add_carry"
+    }
+    for role in ("practice", "validation", "reserved", "final", "robustness"):
+        assert {sample.domain for sample in roles[role]} == {"carry_add", "carry_add_carry"}
+
+    def operands(sample):
+        body = sample.instruction.split(". ", 1)[1]
+        return [int(value) for value in re.findall(r"\d+", body)][:2]
+
+    for sample in roles["train"]:
+        left, right = operands(sample)
+        assert left % 10 + right <= 9, "training must never carry"
+        assert str(left + right) == sample.target
+    for role in ("validation", "reserved", "final"):
+        for sample in roles[role]:
+            left, right = operands(sample)
+            carries = left % 10 + right >= 10
+            assert carries == (sample.domain == "carry_add_carry")
+            assert str(left + right) == sample.target
+    assert len({sample.instruction for sample in roles["train"]}) == len(roles["train"])
+
+
+class TwoCheckpointExecutor(ScriptedExecutor):
+    """Fixture training that exports three checkpoints; only the earliest is strong."""
+
+    checkpoints = {}
+    modes = {}
+
+    def run(
+        self,
+        operation,
+        *,
+        inputs=None,
+        recipe=None,
+        checkpoint=None,
+        seed=None,
+        extra=None,
+        model=None,
+    ):
+        from ouroboros.core.checkpoints import CheckpointStore
+
+        result = super().run(
+            operation,
+            inputs=inputs,
+            recipe=recipe,
+            checkpoint=checkpoint,
+            seed=seed,
+            extra=extra,
+            model=model,
+        )
+        if operation == "train":
+
+            class Backend:
+                def save(self, path):
+                    (Path(path) / "fixture.txt").write_text("scripted checkpoint, not weights")
+
+                def describe(self):
+                    return {"is_llm": False}
+
+            store = CheckpointStore(self.root / f"fixture-{self.count}", self.run_id)
+            names = [Path(result["checkpoint"]).name]
+            for step in (10, 20):
+                names.append(store.save(Backend(), step, scores={}, metadata={"scripted": True}))
+            root = Path(result["checkpoint"]).parent
+            self.modes[str(root / names[-1])] = "weak"
+            result = {**result, "checkpoints": names}
+        elif operation == "evaluate" and self.modes.get(str(checkpoint)) == "weak":
+            samples = [
+                Sample.from_dict(row)
+                for row in json.loads(Path(inputs["evaluation"]["file"]).read_text())
+            ]
+            rows = evaluation(samples, True)["records"]
+            for row in rows[2:]:
+                row["correct"], row["text"] = False, "wrong"
+            from ouroboros.research.evaluation import summarize
+
+            return {"records": rows, "summary": summarize(rows)}
+        return result
+
+
+def test_intermediate_checkpoint_selection_is_declared_measured_and_sealed(tmp_path, monkeypatch):
+    path = config_fixture(tmp_path, checkpoint_selection="practice_macro_accuracy")
+    from ouroboros.research.controller import run_research
+
+    monkeypatch.setattr("ouroboros.research.controller.WorkerExecutor", TwoCheckpointExecutor)
+    TwoCheckpointExecutor.mode = "pass"
+    report = run_research(path)
+    assert report["state"] == "completed"
+    for candidate in report["candidates"]:
+        for replication in candidate["replications"]:
+            record = replication["checkpoint_selection"]
+            assert record["rule"] == "practice_macro_accuracy"
+            assert record["evaluated"] >= 2
+            assert record["chosen_step_order"] == 0, "ties and worse checkpoints must not win"
+    sealed = json.loads((Path(report["report_file"]).parent / "sealed_selection.json").read_text())
+    assert sealed["checkpoint_selection_rule"] == "practice_macro_accuracy"
+    assert sealed["checkpoint_selection"]
+    # The sealed checkpoints are the ones whose practice score was measured, not the last export.
+    assert all(name.endswith("generation_0001") for name in sealed["checkpoints"])
+    # A declared rule is validated before the run, so an unknown rule cannot be smuggled in.
+    with pytest.raises(ValueError):
+        config_fixture(tmp_path / "bad", checkpoint_selection="best_gate_score")
+
+
+@pytest.mark.parametrize(
+    "mode,expected", [("pass", "completed"), ("plateau", "rejected"), ("interrupt", "interrupted")]
+)
+def test_complete_state_machine_and_rejection_recovery_paths(tmp_path, monkeypatch, mode, expected):
+    path = config_fixture(tmp_path)
+    from ouroboros.research.controller import run_research
+
+    ScriptedExecutor.mode, ScriptedExecutor.calls = mode, []
+    monkeypatch.setattr("ouroboros.research.controller.WorkerExecutor", ScriptedExecutor)
+    report = run_research(path)
+    assert report["state"] == expected and report["source_files_unchanged"]
+    assert not report["autonomous_improvement_demonstrated"]
+    assert report["full_gate_passed"] == (expected == "completed")
+    assert verify_run(report["report_file"])["report_bound_to_database"]
+    if expected == "completed":
+        assert set(report["gates"]) == {
+            "validation",
+            "reserved",
+            "final",
+            "robustness",
+            "retention",
+        }
+        assert report["promoted_checkpoints"]
+        # Every post-followup score is produced by a separate evaluate operation.
+        calls = ScriptedExecutor.calls
+        assert all(
+            calls[i + 1][0] == "evaluate" for i, call in enumerate(calls) if call[0] == "followup"
+        )
+    elif mode == "plateau":
+        assert not report["gates"] and not report["promoted_checkpoints"]
+    assert json.loads(Path(report["plan"]["file"]).read_text())["gates"]["alpha"] == 0.05 / 44
+    # Tampering with the top-level report is detected via the authoritative DB binding.
+    raw = Path(report["report_file"])
+    raw.write_text(raw.read_text() + "\n")
+    with pytest.raises(ValueError, match="authoritative"):
+        verify_run(raw)
+
+
+def test_invalid_local_researcher_never_falls_back_to_host_training(tmp_path, monkeypatch):
+    path = config_fixture(tmp_path)
+    value = json.loads(path.read_text())
+    value["researcher"] = {"kind": "local_model", "model_path": str(tmp_path / "model")}
+    path.write_text(json.dumps(value))
+    from ouroboros.research.controller import run_research
+
+    ScriptedExecutor.mode, ScriptedExecutor.calls = "pass", []
+    monkeypatch.setattr("ouroboros.research.controller.WorkerExecutor", ScriptedExecutor)
+    report = run_research(path)
+    assert report["state"] == "abstained"
+    assert report["invalid_model_proposal"]
+    assert all(call[0] != "train" for call in ScriptedExecutor.calls)
+
+
+def test_second_run_cannot_reopen_consumed_hidden_set(tmp_path, monkeypatch):
+    path = config_fixture(tmp_path)
+    from ouroboros.research.controller import run_research
+
+    ScriptedExecutor.mode, ScriptedExecutor.calls = "pass", []
+    monkeypatch.setattr("ouroboros.research.controller.WorkerExecutor", ScriptedExecutor)
+    assert run_research(path)["state"] == "completed"
+    second = run_research(path)
+    assert second["state"] == "failed" and "already consumed" in second["reason"]
+    assert not second["full_gate_passed"] and not second["promoted_checkpoints"]
+
+
+def test_campaign_rejects_reused_hidden_data_before_execution(tmp_path, monkeypatch):
+    path = config_fixture(tmp_path)
+    from ouroboros.research.controller import run_campaign
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("invalid campaign must not start workers")
+
+    monkeypatch.setattr("ouroboros.research.controller.WorkerExecutor.run", forbidden)
+    with pytest.raises(ValueError, match="fresh"):
+        run_campaign([path, path], max_cycles=2)
+    with pytest.raises(ValueError, match="1–8"):
+        run_campaign([path], max_cycles=100)
+
+
+def test_cli_commands_are_read_only_by_default_and_versioned(tmp_path, capsys):
+    from ouroboros.cli import main
+
+    assert main(["research", "tools"]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result == commands() and not result["arbitrary_python"]
+    assert {"design_experiment", "rollback_candidate", "record_result"} <= result["commands"].keys()
+    path = config_fixture(tmp_path)
+    assert main(["research", "run", "--config", str(path), "--check-only"]) == 0
+    capsys.readouterr()
+    assert main(["research", "history", "--database", str(tmp_path / "missing.sqlite3")]) == 2
+    capsys.readouterr()
+
+
+def test_append_only_json_is_not_overwritten(tmp_path):
+    write_once(tmp_path / "immutable.json", {"fixed": True})
+    with pytest.raises(FileExistsError):
+        write_once(tmp_path / "immutable.json", {"fixed": False})
+    assert os.path.isfile(tmp_path / "immutable.json")
+
+
+def test_deepseek_matrix_is_source_linked_and_does_not_claim_reproduction():
+    from ouroboros.research.applicability import STATUSES, report
+
+    root = Path(__file__).resolve().parents[1]
+    result = report(root)
+    assert not result["missing_local_evidence"]
+    assert not result["source_reported_gains_reproduced_locally"]
+    assert not result["review_is_exhaustive"]
+    assert sum(result["counts"].values()) == len(result["entries"])
+    assert set(result["counts"]) == set(STATUSES)
+    assert result["counts"]["implemented"] and result["counts"]["deferred"]
+    assert result["documented_repositories"] == 19
+    assert result["repositories_reviewed"] == 19
+    for entry in result["entries"]:
+        assert entry["status"] in STATUSES
+        assert entry["claims_not_made"] and entry["differences"]
+        assert entry["repo"].startswith("deepseek-ai/")
+    # The two deliberately refused substitutions must stay visible, not silently "done".
+    by_id = {entry["id"]: entry for entry in result["entries"]}
+    assert by_id["deepseekmath-grpo"]["status"] == "partial"
+    assert by_id["esft-expert-specialization"]["status"] == "deferred"
+    assert by_id["engram-conditional-memory"]["status"] == "deferred"
+
+
+def test_every_reviewed_deepseek_repository_is_present_in_the_repo_writing():
+    """The review must live in the repository's own research writing, not only in a matrix."""
+    from ouroboros.research.applicability import ENTRIES
+
+    root = Path(__file__).resolve().parents[1]
+    catalogue = json.loads((root / "papers/research.json").read_text(encoding="utf-8"))["papers"]
+    mapped = {paper["deepseek_repo"] for paper in catalogue if paper.get("deepseek_repo")}
+    assert mapped == {entry["repo"] for entry in ENTRIES}
+    assert len(mapped) == 19
+    bibliography = (root / "papers/references.bib").read_text(encoding="utf-8")
+    index = (root / "papers/PAPERS_INDEX.md").read_text(encoding="utf-8")
+    for paper in catalogue:
+        if not paper.get("deepseek_repo"):
+            continue
+        assert paper["url"].startswith("https://")
+        assert (root / paper["local_path"]).exists()
+        assert paper["reproduced_here"] is False
+        assert f"@misc{{{paper['id']}," in bibliography
+        assert paper["title"] in index
+    # The paper that introduces GRPO must stay explicitly labelled as unimplemented RL.
+    math = next(paper for paper in catalogue if paper["id"] == "deepseekmath")
+    assert "GRPO is not implemented" in math["summary"]

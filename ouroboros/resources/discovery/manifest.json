@@ -1,0 +1,356 @@
+{
+  "counts": {
+    "development": 32,
+    "final": 64,
+    "practice": 32,
+    "reserved": 48,
+    "retention": 64
+  },
+  "domain_counts_per_role": {
+    "development": 8,
+    "final": 16,
+    "practice": 8,
+    "reserved": 12,
+    "retention": 16
+  },
+  "domains": [
+    "arithmetic",
+    "copying",
+    "compositional_reasoning",
+    "gsm8k"
+  ],
+  "files": {
+    "development.json": "e9c6d2c1ce040d80bcb7cab1b4cff0300b87367633d2a0b824af9dc79cd7a9ec",
+    "final.json": "24f6e65e15d3f97f784d771b916b63ea15a41c189c555b50492a4da713f8455c",
+    "practice.json": "3b76e74f85fb5004349a4bcfddda8f1e06666eef707bcfefa099760bf3e33405",
+    "reserved.json": "328b134e108a20c7dbac7eba94c7685e95ca4aeb291a5478c7f00a34657ad98c",
+    "retention.json": "4d633bd69c11f350c6415844d5e6e09f4867334a6ea2db3f71fda1cb1425d6e9"
+  },
+  "gsm8k_selected_rows": {
+    "development": [
+      {
+        "raw_row_sha256": "c6d60afe8e6b35a9d99a859d0f554aad9962d1dd931b129ce68fb7642faca825",
+        "upstream_split": "train",
+        "zero_based_line": 5969
+      },
+      {
+        "raw_row_sha256": "0c99990ca4f91dee7efe90544f80dea63629137bc5933a2969c6e9188cc4d5bf",
+        "upstream_split": "train",
+        "zero_based_line": 3706
+      },
+      {
+        "raw_row_sha256": "14fd2dcc1fca01a9b24002be36240420d4d5f36125f6c42ee183aee450e8287b",
+        "upstream_split": "train",
+        "zero_based_line": 4553
+      },
+      {
+        "raw_row_sha256": "0a886b8a1c898395d8905970d8173331b935a8e3f67c3ffeb93cc1c38dfbfd74",
+        "upstream_split": "train",
+        "zero_based_line": 2751
+      },
+      {
+        "raw_row_sha256": "2c181d8d368fa35ce6fc59c7f42d8748472408fb1b44788b2e6ad0a33e99efb7",
+        "upstream_split": "train",
+        "zero_based_line": 4237
+      },
+      {
+        "raw_row_sha256": "03ede28414f0d75b0dac8551b468f547c24859e8400804140a8519ed1d5a33fa",
+        "upstream_split": "train",
+        "zero_based_line": 2516
+      },
+      {
+        "raw_row_sha256": "af76335ce54dc7e969185c0b4ec7328f1462d51a2bd175e9ec5d1d295cbbfd42",
+        "upstream_split": "train",
+        "zero_based_line": 4866
+      },
+      {
+        "raw_row_sha256": "85919de95711ec4be52b7ceea816f45e9ef42bd3f57b20ef8d4c91b5d9c18af5",
+        "upstream_split": "train",
+        "zero_based_line": 2088
+      }
+    ],
+    "final": [
+      {
+        "raw_row_sha256": "22acb7d245fe08f5ebf232318831fb3e1a476820773c5d6a15ea8b0aca7aafd7",
+        "upstream_split": "test",
+        "zero_based_line": 1056
+      },
+      {
+        "raw_row_sha256": "c837db4cc066ec6534d30cbdb47b927b1f97ac05a6ca5fc0abda4b914c4b7c14",
+        "upstream_split": "test",
+        "zero_based_line": 498
+      },
+      {
+        "raw_row_sha256": "5e3cfaa87d041cdeef4d7d7ca4ff56e9d3af5a0aa69a8d55c9b69bd19c682ef8",
+        "upstream_split": "test",
+        "zero_based_line": 1069
+      },
+      {
+        "raw_row_sha256": "23bf4c59d76d99741f3c391fd0b29833a6d4871b808ccb4be766de0fff5ca111",
+        "upstream_split": "test",
+        "zero_based_line": 1122
+      },
+      {
+        "raw_row_sha256": "4b70cef7b3c964186aaa7da7ac37e6036b77a49f9696f50f93320d943f821a93",
+        "upstream_split": "test",
+        "zero_based_line": 997
+      },
+      {
+        "raw_row_sha256": "fb0c2f7b7df112f93294b6702e2fead40ff2ef34a92f92b2a9e7b7c56c9f280c",
+        "upstream_split": "test",
+        "zero_based_line": 557
+      },
+      {
+        "raw_row_sha256": "5cb55486136251cb62a7e6be3d4b424850630a77593116f86a89400e28ea9e0d",
+        "upstream_split": "test",
+        "zero_based_line": 585
+      },
+      {
+        "raw_row_sha256": "c1de1fa925ae1271761f1d0a5bc7aa981417222626a643829220b84e0e98f14b",
+        "upstream_split": "test",
+        "zero_based_line": 1252
+      },
+      {
+        "raw_row_sha256": "171c19ef8236161328498021b2aa859e6f28879f87fb2b46edee4581262c92b6",
+        "upstream_split": "test",
+        "zero_based_line": 1073
+      },
+      {
+        "raw_row_sha256": "2718f8b1120ca1ee923cd954912cb7bf39e404956814223aee22653d7d4681ae",
+        "upstream_split": "test",
+        "zero_based_line": 1142
+      },
+      {
+        "raw_row_sha256": "7a7dadb886990de8ec08f16a60822195a3fa42615f8272d3fb0647cb6eaf1f82",
+        "upstream_split": "test",
+        "zero_based_line": 587
+      },
+      {
+        "raw_row_sha256": "9b652f54e1a79723026894f245968e567fc8b7997c8e81009a1d143f3f0a9399",
+        "upstream_split": "test",
+        "zero_based_line": 427
+      },
+      {
+        "raw_row_sha256": "b500ac76099b0b039a7c8fc507ae5f259d2ff418f5ebf3806907eb3ec16d65ae",
+        "upstream_split": "test",
+        "zero_based_line": 912
+      },
+      {
+        "raw_row_sha256": "435db50affe5270e945e8fdf81044787f19ac135d2c0c4b2c14b4e9018d228d6",
+        "upstream_split": "test",
+        "zero_based_line": 42
+      },
+      {
+        "raw_row_sha256": "4dcdf82a8241a7a8efaf7a867e49419b5a6f85d59bdede649d63b28220191d57",
+        "upstream_split": "test",
+        "zero_based_line": 1222
+      },
+      {
+        "raw_row_sha256": "bb5cf90726fb03c8861f6b596c7465fcb6123416ee0f6672014f0dbf6a180dd5",
+        "upstream_split": "test",
+        "zero_based_line": 327
+      }
+    ],
+    "practice": [
+      {
+        "raw_row_sha256": "be0a98cb893efe6174eea3d2c5845f90bed1728ed568a13a27a704d9388179a8",
+        "upstream_split": "train",
+        "zero_based_line": 5483
+      },
+      {
+        "raw_row_sha256": "6deab45a9501a8e83c5023345107f666d62a5490afd62c4fea4dc1de40c4bf5e",
+        "upstream_split": "train",
+        "zero_based_line": 6901
+      },
+      {
+        "raw_row_sha256": "83e1f9ce227cf25fc8cc05f02d78506dc6ff133295e10e393b043af2925dff22",
+        "upstream_split": "train",
+        "zero_based_line": 6113
+      },
+      {
+        "raw_row_sha256": "1510746d790f355b5508ee674eaf00ff1ce2cf49209bcc9abb1c43222b216733",
+        "upstream_split": "train",
+        "zero_based_line": 6722
+      },
+      {
+        "raw_row_sha256": "91d95ae230a66b8fd77c55b367de55c18e5524e69da01132dc1ba1afaebcc08b",
+        "upstream_split": "train",
+        "zero_based_line": 261
+      },
+      {
+        "raw_row_sha256": "153f3f11f0bc289873df1dcad9809aa103cf3db7921a9e51a97f1494c3453215",
+        "upstream_split": "train",
+        "zero_based_line": 96
+      },
+      {
+        "raw_row_sha256": "558151efbd7d1ae14c13aa4fe286501c97863f0e667082c676a3c4d0359b9240",
+        "upstream_split": "train",
+        "zero_based_line": 3516
+      },
+      {
+        "raw_row_sha256": "0f32f5d7d2d537f900f609e2684f77af72b3f5192ecd4b3fbbb8ee094806ccb8",
+        "upstream_split": "train",
+        "zero_based_line": 5511
+      }
+    ],
+    "reserved": [
+      {
+        "raw_row_sha256": "7096b456355519d6c08f25f06c704fb4dd91fb14f4bc925bd3ecc6abb738b186",
+        "upstream_split": "train",
+        "zero_based_line": 1896
+      },
+      {
+        "raw_row_sha256": "c85ec0d9dc248a2b6c33d9aaa86c9260f38f2111673ec4e81850c8819c0f12cc",
+        "upstream_split": "train",
+        "zero_based_line": 1415
+      },
+      {
+        "raw_row_sha256": "a8c00d06026bd0d900a911efc436a36d74d5fd116096c9893ccf61481afb6c2a",
+        "upstream_split": "train",
+        "zero_based_line": 4804
+      },
+      {
+        "raw_row_sha256": "3cab0fe54f190069c175d21ea9d65382b37fa11085c6c86cdfeaa16ccef531be",
+        "upstream_split": "train",
+        "zero_based_line": 3001
+      },
+      {
+        "raw_row_sha256": "c33eef2cf8fefdad5b1c9cd4b54d395caf26ab994ec99198f287fcaf9ef6ec60",
+        "upstream_split": "train",
+        "zero_based_line": 4004
+      },
+      {
+        "raw_row_sha256": "43022e3f5ddb6c18dc0f8f339a08dc98c747a893070e803db023dc9af53ac4f8",
+        "upstream_split": "train",
+        "zero_based_line": 1634
+      },
+      {
+        "raw_row_sha256": "be2bf7af84482d6df99d1ce701f2144d0b9b4c5e6723afdd7c28d70fe3f6e912",
+        "upstream_split": "train",
+        "zero_based_line": 4920
+      },
+      {
+        "raw_row_sha256": "f7a0a5a022fe61e0604e48d8da5cc2752554feed222654b2c1d2ad5c573ec239",
+        "upstream_split": "train",
+        "zero_based_line": 6708
+      },
+      {
+        "raw_row_sha256": "46153f5e47ee6e337c6dd4e9670fe7c5b8b85f3ef7d8c6dbcc0d09d942b23a63",
+        "upstream_split": "train",
+        "zero_based_line": 5192
+      },
+      {
+        "raw_row_sha256": "64a3e73ca172b29e1db09884a3189de91c507f958275eafda5c8b7b58604f968",
+        "upstream_split": "train",
+        "zero_based_line": 6977
+      },
+      {
+        "raw_row_sha256": "12feec7578955ab8e5921621af87c56158a429ee6b52b6f7a11e453678a9f143",
+        "upstream_split": "train",
+        "zero_based_line": 2839
+      },
+      {
+        "raw_row_sha256": "466b7a3a48d1da93b0980449a1648f94b92d31fb049bbec17a97a1dd34e52c59",
+        "upstream_split": "train",
+        "zero_based_line": 728
+      }
+    ],
+    "retention": [
+      {
+        "raw_row_sha256": "7737c36e1663b1e389ad234157bbd7df3be0699fe687df36e6ec33981de969b3",
+        "upstream_split": "test",
+        "zero_based_line": 341
+      },
+      {
+        "raw_row_sha256": "a37d42da4c0f454f06688f57b35d48cf5f359e9325ca63709e787bc8d6599731",
+        "upstream_split": "test",
+        "zero_based_line": 894
+      },
+      {
+        "raw_row_sha256": "e90f7eb53e1a46c5a76b910bb518c8b44aafc143340122c4aba0e2b2fa21fccc",
+        "upstream_split": "test",
+        "zero_based_line": 618
+      },
+      {
+        "raw_row_sha256": "764c4611c20b74eded4cc97e1214a5dd61534106d35cc4b5b7788fae52d56949",
+        "upstream_split": "test",
+        "zero_based_line": 74
+      },
+      {
+        "raw_row_sha256": "d05c6fc35e496227837a77423ad323f51c7fe657caca75a4423a92ba7b636314",
+        "upstream_split": "test",
+        "zero_based_line": 231
+      },
+      {
+        "raw_row_sha256": "acb4d9bbb2213400514888e69687e020582bac77fdb9b4ab565f31954ef30668",
+        "upstream_split": "test",
+        "zero_based_line": 610
+      },
+      {
+        "raw_row_sha256": "93fbb3809a2f580e390eb4dfc45bbaebd67cfafba351b86c437b0f507c8b3765",
+        "upstream_split": "test",
+        "zero_based_line": 1309
+      },
+      {
+        "raw_row_sha256": "2b7c6e84ba377cfbff2bb733b99ad8fbefff78c0c4a73928e913932fd7cda00c",
+        "upstream_split": "test",
+        "zero_based_line": 360
+      },
+      {
+        "raw_row_sha256": "82d008f94335bef1def8493a9f482c3faa4ec53db89632a8c325bf2917f23695",
+        "upstream_split": "test",
+        "zero_based_line": 415
+      },
+      {
+        "raw_row_sha256": "57c7e15f4da1c10e7c8cac4dcc9695dce80da2cf586bf5e092337c9c4bfe1d70",
+        "upstream_split": "test",
+        "zero_based_line": 1162
+      },
+      {
+        "raw_row_sha256": "4200006d7267cb15146876c42fb61187990e13b92fdbf8b1e05b563271fd50c7",
+        "upstream_split": "test",
+        "zero_based_line": 1035
+      },
+      {
+        "raw_row_sha256": "793e0482979de02d054a81a13462f4f9a25f0eebaff45e603ad37ef1a14db875",
+        "upstream_split": "test",
+        "zero_based_line": 568
+      },
+      {
+        "raw_row_sha256": "8b94c169c96870c5580139f62cf3cba6edebb851098bb6c61aa4404721f35937",
+        "upstream_split": "test",
+        "zero_based_line": 696
+      },
+      {
+        "raw_row_sha256": "47adc75ba7c66ca893ee69392b396d50c83de5fd5cafd0a8327fdc4e2c8d0ce3",
+        "upstream_split": "test",
+        "zero_based_line": 1167
+      },
+      {
+        "raw_row_sha256": "ff41b73757e87f11e5cfa71a73cbd49d9d7a8201409372ac4f6beb8db909fb36",
+        "upstream_split": "test",
+        "zero_based_line": 645
+      },
+      {
+        "raw_row_sha256": "b81019403a6339a998ea0c5e9e4f0a51c369c85b63dafc298c455eea1232e225",
+        "upstream_split": "test",
+        "zero_based_line": 186
+      }
+    ]
+  },
+  "kind": "ouroboros-discovery-data",
+  "limitations": "240 selected diagnostics, of which 60 are independently authored GSM8K problems; synthetic tasks are not an external benchmark. Prompt-disjoint is not semantic or pretrained decontamination. Final/retention distribution shifts are deliberate, not evidence of generalization until measured.",
+  "schema_version": 1,
+  "scoring": "Strict NFKC/case/whitespace-normalized exact match over entire completion; length cuts or unclosed thinking fail. NLL separately includes reference+EOS and never substitutes for accuracy.",
+  "selection": "Fixed SHA256 ordering with salt ouroboros-discovery-v1-2026-11-19; GSM8K questions <=800 characters, numeric #### targets (commas removed); no model response, length in model tokens or performance-based filtering. Practice/development/reserved use disjoint upstream train rows; final/retention disjoint upstream test rows. Synthetic problems ranked independently; final/retention use shifted templates/content/ranges.",
+  "source": {
+    "files": {
+      "LICENSE": "86bbb73e855821d7c401912fd4bf82e34313e6e3b6fd6f909f2b6cc9e209a53b",
+      "grade_school_math/data/test.jsonl": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14",
+      "grade_school_math/data/train.jsonl": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465"
+    },
+    "license": "MIT, Copyright (c) 2021 OpenAI",
+    "repository": "https://github.com/openai/grade-school-math.git",
+    "revision": "3101c7d5072418e28b9008a6636bde82a006892c"
+  }
+}

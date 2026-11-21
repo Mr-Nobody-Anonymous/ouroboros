@@ -1,26 +1,17 @@
-# Autonomous Self-Rewarding & Self-Play Fine-Tuning (SPIN)
+# Self-rewarding, preferences, DPO and self-play
 
-- **Papers**:
-  - *Self-Rewarding Language Models* (Yuan et al., Meta & NYU, 2024) — [arXiv:2401.10020](https://arxiv.org/abs/2401.10020)
-  - *SPIN: Self-Play Fine-Tuning Converts Weak Language Models to Strong Language Models* (Chen et al., UCLA, 2024) — [arXiv:2401.01335](https://arxiv.org/abs/2401.01335)
-- **Primary Breakthrough**:
-  - LLMs possess higher discriminative capability (judging) than pure generation capability.
-  - The model can iteratively evaluate its own candidate responses, assign rewards via LLM-as-a-Judge, and fine-tune its own weights using Direct Preference Optimization (DPO).
+Primary references:
 
----
+- Rafailov et al., [Direct Preference Optimization: Your Language Model is Secretly a Reward Model](https://arxiv.org/abs/2305.18290), 2023.
+- Yuan et al., [Self-Rewarding Language Models](https://arxiv.org/abs/2401.10020), 2024.
+- Chen et al., [Self-Play Fine-Tuning Converts Weak Language Models to Strong Language Models](https://arxiv.org/abs/2401.01335), 2024 (SPIN).
 
-## 🧮 Mathematical Formulation
+DPO optimizes preferred versus rejected completions using their policy/reference log-probability ratios. A preference record requires a real prompt, chosen/rejected candidates and a defensible ranking signal. A learned model judging itself may share blind spots or reward-hack; stylistic words such as “therefore” are not factual correctness.
 
-### 1. Direct Preference Optimization (DPO) Loss
-For preferred response $y_w$ and rejected response $y_l$ scored by the model itself:
-$$\mathcal{L}_{DPO}(\theta; \theta_{ref}) = - \mathbb{E}_{(x, y_w, y_l)} \left[ \log \sigma \left( \beta \log \frac{\pi_\theta(y_w|x)}{\pi_{ref}(y_w|x)} - \beta \log \frac{\pi_\theta(y_l|x)}{\pi_{ref}(y_l|x)} \right) \right]$$
+SPIN and self-rewarding methods have specific training procedures and data assumptions. A fixed riddle set is not a learned minimax opponent, and generating plausible preference JSON does not execute DPO or GRPO.
 
-### 2. Self-Play Minimax Formulation (SPIN)
-Main Player $p_\theta$ plays against Opponent $p_{\theta_{t-1}}$:
-$$\min_\theta \max_{p'} \mathbb{E}_{y \sim p_{data}} [\log p_\theta(y|x)] - \mathbb{E}_{y' \sim p'} [\log p_\theta(y'|x)] - \text{KL}(p' \| p_{\theta_{t-1}})$$
-This moves model distribution closer to the target frontier without requiring new human annotations.
+## Local status
 
----
+`SelfRewardingEngine` now requires explicit generator/judge callbacks, validates finite scores, abstains on identical/tied candidates and preserves margins. It no longer fabricates “good” generic derivations or rewards reasoning keywords. `AdversarialCritic` supports independently verified challenge rounds and canonical answer checks; its built-in questions are test fixtures.
 
-## 💻 Integrated in Ouroboros
-- Implemented in `ouroboros/core/self_rewarding.py`
+The default adaptation controller runs **SFT**, not preference/RL optimization. TRL is a preserved reference and optional dependency for separate upstream experiments. No self-rewarding/SPIN/DPO benchmark result is claimed. See [integration boundaries](../docs/INTEGRATIONS.md), [GRPO notes](GRPO_and_DeepSeekMath.md) and [security](../SECURITY.md).

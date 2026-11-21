@@ -1,0 +1,12 @@
+[
+  {
+    "instruction": "What is two plus two? Answer with only the number.",
+    "target": "4",
+    "domain": "arithmetic"
+  },
+  {
+    "instruction": "What color is a ripe banana? Answer with one word.",
+    "target": "yellow",
+    "domain": "retention"
+  }
+]

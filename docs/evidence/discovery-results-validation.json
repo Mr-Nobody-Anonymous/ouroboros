@@ -1,0 +1,63 @@
+{
+  "base_checkout_head": "b0cf0a7b35a596f1b2b44d0b4997d1ff2b81fe4b",
+  "checked_input_sha256": {
+    ".github/workflows/discovery-evidence.yml": "8bf1faf0dc27735ed14bd6962389e2e748a74d4a72dc7e02757489458cff4bf7",
+    "docs/evidence/discovery-135m-partial.json": "f4a2722175de0fc2215ede09d60cf1f5b25251271102bf03d550d1b33ba8b678",
+    "docs/evidence/discovery-360m-reviewed.json": "d61c3ac8b450ff95647d00c56163c5923a7a7fed7a0783ba531d86ca9ea45a9c",
+    "scripts/review_discovery_experiment.py": "c1a7b249163503555e53eb8d3f752041de0eb47b246a52df46d40af7ac5f76e4",
+    "tests/test_discovery_protocol.py": "78566b616c6848e41a0390afad2767e2a116775f2aa83d0646d01361081d4d5b",
+    "tests/test_discovery_review.py": "9b0a76b8c06d1c0b87f5b3948899656dce36fd3108d813a0933ea11bf57fd6d0"
+  },
+  "compatibility_unittest": {
+    "passed": 14
+  },
+  "distribution": "Earlier 412-test local wheel/sdist and receipt retained as historical snapshots, not relabelled or rebuilt locally as this follow-up. No PyPI/release upload. Owned runtime package sources are unchanged; this adds standalone review/test/docs/evidence only. Ordinary GitHub core CI separately builds its checked-out source.",
+  "full_pytest": {
+    "command": ".venv/bin/python -m pytest -q",
+    "elapsed_seconds": 24.89,
+    "expected_peft_warnings": 3,
+    "passed": 426,
+    "stdout_sha256": "0fcc370ff8bb260006d99bc000e164b7779160da569c376f84be43124a082191"
+  },
+  "kind": "ouroboros-discovery-results-followup-local-validation",
+  "lightweight_pytest": {
+    "command": ".cache/editor-core-venv/bin/python -m pytest -q -m 'not ml'",
+    "elapsed_seconds": 7.23,
+    "expected_skips": "Math-Verify (1) and LM Format Enforcer parser (23) are explicitly absent; host validation remains active.",
+    "ml_deselected": 111,
+    "passed": 291,
+    "skipped": 24,
+    "stdout_sha256": "d695c0558c8a2622bbb711e75463c6db5db7a57e8c9a8a58d13d95196d54f03a",
+    "torch_installed": false
+  },
+  "other_checks": {
+    "compileall": "passed",
+    "git_diff_check": "passed",
+    "owned_markdown_files": 38,
+    "pip_check_full_and_lightweight": "passed",
+    "research_references": 33,
+    "reviewed_receipt_aggregate_references_hashes_and_no_hidden_text_fields": "passed",
+    "ruff_format_python_files": 103,
+    "ruff_lint": "passed",
+    "workflow_yaml_parse": "passed"
+  },
+  "runtime_source_bindings": {
+    "canonical_sha256": "93260c6cd476ff7630c601330bbd7f40622cf20477ec869b7098349f70664ffb",
+    "files": 63,
+    "unchanged_against_running_plan": true
+  },
+  "scientific_review": {
+    "all_exported_attempt_and_fixed_followup_numerical_norms_recomputed_locally": true,
+    "completed_360m_arms": 22,
+    "full_checks_payload_hashes_verified_locally": true,
+    "learned_future_self_improvement": false,
+    "local_135m_completed_arms_in_frozen_partial_snapshot": 7,
+    "local_135m_study_complete": false,
+    "model_or_tensor_replay_rerun_by_reviewer": false,
+    "original_360m_zip_payloads_downloaded_locally": false,
+    "original_360m_zip_payloads_verified_on_hosted_github_runner": true,
+    "validated_useful_autonomous_pretrained_edit": false
+  },
+  "scope": "Local precommit follow-up, identified by exact checked file digests. Full model runtime unchanged. Tests are mechanism/transport regression evidence, not pretrained capability success. New commit CI is verified separately.",
+  "source_runtime_commit": "cb4c0df1008f208016a8bfa941c999bd96bcfc8b"
+}

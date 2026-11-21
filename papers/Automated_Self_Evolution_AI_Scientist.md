@@ -1,28 +1,18 @@
-# Automated AI Discovery & Architecture Evolution (The AI Scientist & Self-Modifying Code)
+# Automated discovery, code proposals and structural candidates
 
-- **Papers**:
-  - *The AI Scientist: Towards Fully Automated Open-Ended Scientific Discovery* (Lu et al., Sakana AI & Oxford, 2024) — [arXiv:2408.06292](https://arxiv.org/abs/2408.06292)
-  - *Large Language Models as Tool Makers* (Cai et al., 2023) — [arXiv:2305.17126](https://arxiv.org/abs/2305.17126)
-  - *Darwinian Evolution of LLM Topologies* (Sakana AI / Evolutionary Model Merging, 2024)
-- **Primary Breakthrough**:
-  - Demonstrates that language models can autonomously modify Python codebases, alter neural network hyperparameters, prune layers, inject cross-attention pathways, execute experimental benchmarks, write papers, and review their own scientific contributions.
+Primary references:
 
----
+- Lu et al., [The AI Scientist: Towards Fully Automated Open-Ended Scientific Discovery](https://arxiv.org/abs/2408.06292), 2024.
+- Akiba et al., [Evolutionary Optimization of Model Merging Recipes](https://arxiv.org/abs/2403.13187), 2024.
+- Zhang et al., [Darwin Godel Machine: Open-Ended Evolution of Self-Improving Agents](https://arxiv.org/abs/2505.22954), 2025; [official repository](https://github.com/jennyzzt/dgm).
+- Xu et al., [Evo2: Evolving the Evolver through Weight-Harness Co-Evolution](https://arxiv.org/abs/2610.13025), October 2026.
 
-## 🧮 Architectural Mutation Mechanisms
+These target different improvement surfaces: scientific workflows, parameter/data-flow merging recipes, agent source-code evolution, and harness/policy co-training. They are not interchangeable proof that a deployed LLM autonomously rewrites all its internals successfully.
 
-### 1. Structural Layer Surgery
-- **Frankenmerging / Layer Stacking**: Repeating or reordering transformer blocks to expand reasoning depth without training from scratch.
-- **Attention Head Reweighting**: Applying dynamic scalar multipliers $\gamma_h$ to multi-head self-attention outputs:
-  $$\text{MHA}(Q, K, V) = \sum_{h=1}^H \gamma_h \cdot \text{Head}_h W_O$$
+## Local status
 
-### 2. Autonomous Code Mutation Loop
-1. **Hypothesis Generation**: Propose structural or algorithmic optimization (e.g. KV-cache compression, custom loss function).
-2. **Code Patching**: Self-generate diffs to runtime execution scripts.
-3. **Sandbox Validation**: Run automated test suite to ensure stability.
-4. **Verification**: Measure performance improvements against baseline metrics.
+`CodeMutator` changes exactly one AST-identified numeric literal and exports a reviewable patch with source hashes. Strings/comments are not rewritten accidentally, syntactic validity is checked, and no generated Python is executed or merged. `NumericObjective` is a small bounded scalar arithmetic interpreter, not a general autodiff objective compiler or security sandbox.
 
----
+`ArchitectureMutator` validates layer blueprints, head dimensions/scales, activation vectors and exact-magnitude weight pruning. Its explicit copied Llama/Qwen-style layer-stacking API updates layer counts/cache indices and leaves the original model untouched; an offline tiny-model forward pass is tested. This is a primitive, not complete evolutionary architecture search. Unstructured zeros do not imply neuron removal, smaller dense checkpoints or faster inference.
 
-## 💻 Integrated in Ouroboros
-- Implemented in `ouroboros/core/architecture_mutator.py`
+`external/dgm` is pinned for research and source-inspection purposes; its Docker/API/benchmark-dependent autonomous loop was not executed. Core runs stay on the user's working branch and never create hidden experiment branches. See [architecture](../docs/SELF_EVOLVING_ARCHITECTURE.md), [sandbox policy](../sandbox/README.md), and [security](../SECURITY.md).

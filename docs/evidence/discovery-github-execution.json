@@ -1,0 +1,348 @@
+{
+  "actions_notice_failure": {
+    "characters_per_notice": 4096,
+    "full_eleven_arm_results_recoverable_from_notices": false,
+    "notices_are_complete_valid_json": false,
+    "retrieved_notices_per_seed": 10,
+    "seeds": [
+      17,
+      42
+    ]
+  },
+  "artifacts_metadata": [
+    {
+      "digest": "sha256:fc3108e8c636748ecd75b73a04ff6d3645f67a60b32d4f60e880678f48b838f6",
+      "expired": false,
+      "id": 14623630301,
+      "name": "discovery-360m-evidence-17",
+      "size_in_bytes": 838978
+    },
+    {
+      "digest": "sha256:44bbd8f62f4884c28d3ea764b295948cd7c66223ab8a8766c540158f5a31a621",
+      "expired": false,
+      "id": 14621214992,
+      "name": "discovery-360m-evidence-42",
+      "size_in_bytes": 812097
+    },
+    {
+      "digest": "sha256:97a2dc2ab03345784a62238e731f87eef58b9e9b96799c839cc11a7b68ba6c19",
+      "expired": false,
+      "id": 14619577457,
+      "name": "pretrained-self-edit-evidence",
+      "size_in_bytes": 29929
+    }
+  ],
+  "exporter_followup_ci": {
+    "pr": {
+      "checks_reported_as_jobs": [
+        {
+          "conclusion": "success",
+          "id": 136250315378,
+          "name": "mcp"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250315710,
+          "name": "pretrained-self-edit"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250315733,
+          "name": "core (3.12)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250315746,
+          "name": "core (3.10)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250315758,
+          "name": "local-lora"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250315984,
+          "name": "core (3.11)"
+        },
+        {
+          "conclusion": "skipped",
+          "id": 136250317273,
+          "name": "discovery-scope"
+        },
+        {
+          "conclusion": "skipped",
+          "id": 136250317594,
+          "name": "pretrained-discovery-360m"
+        }
+      ],
+      "conclusion": "success",
+      "discovery_inference_rerun": false,
+      "event": "pull_request",
+      "head_sha": "b0cf0a7b35a596f1b2b44d0b4997d1ff2b81fe4b",
+      "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44725078724",
+      "id": 44725078724,
+      "status": "completed"
+    },
+    "push": {
+      "checks_reported_as_jobs": [
+        {
+          "conclusion": "success",
+          "id": 136250293433,
+          "name": "pretrained-self-edit"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250293590,
+          "name": "core (3.10)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250293648,
+          "name": "core (3.12)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250293693,
+          "name": "local-lora"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250293737,
+          "name": "core (3.11)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250293812,
+          "name": "discovery-scope"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250293998,
+          "name": "mcp"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250373619,
+          "name": "Ouroboros evidence 360m seed 17 (1/3)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250379871,
+          "name": "Ouroboros evidence 360m seed 17 (2/3)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250384547,
+          "name": "Ouroboros evidence 360m seed 17 (3/3)"
+        },
+        {
+          "conclusion": "skipped",
+          "id": 136250412580,
+          "name": "pretrained-discovery-360m"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250422904,
+          "name": "Ouroboros evidence 360m seed 42 (1/3)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250427244,
+          "name": "Ouroboros evidence 360m seed 42 (2/3)"
+        },
+        {
+          "conclusion": "success",
+          "id": 136250432023,
+          "name": "Ouroboros evidence 360m seed 42 (3/3)"
+        }
+      ],
+      "conclusion": "success",
+      "discovery_inference_rerun": false,
+      "event": "push",
+      "head_sha": "b0cf0a7b35a596f1b2b44d0b4997d1ff2b81fe4b",
+      "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44725072345",
+      "id": 44725072345,
+      "status": "completed"
+    }
+  },
+  "kind": "ouroboros-discovery-github-execution-and-evidence-transport",
+  "local_135m_current_status": {
+    "completed_arms": 7,
+    "execution_status": "interrupted_by_kernel_oom",
+    "interrupted_arm": "seed 17 / schema_full_context",
+    "interrupted_arm_resident_restoration_verified": false,
+    "original_files_preserved_without_restart": true,
+    "postmortem": "discovery-135m-interruption.json",
+    "raw_running_status_is_stale": true,
+    "source_model_files_independently_rehashed_unchanged_after_exit": true
+  },
+  "pull_request": {
+    "conclusion": "success",
+    "event": "pull_request",
+    "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44715386144",
+    "id": 44715386144,
+    "status": "completed"
+  },
+  "push": {
+    "conclusion": "success",
+    "event": "push",
+    "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44715379570",
+    "id": 44715379570,
+    "status": "completed"
+  },
+  "push_jobs": [
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217333483",
+      "conclusion": "success",
+      "id": 136217333483,
+      "name": "mcp",
+      "status": "completed"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217333842",
+      "conclusion": "success",
+      "id": 136217333842,
+      "name": "discovery-scope",
+      "status": "completed"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217333847",
+      "conclusion": "success",
+      "id": 136217333847,
+      "name": "core (3.12)",
+      "status": "completed"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217333892",
+      "conclusion": "success",
+      "id": 136217333892,
+      "name": "core (3.10)",
+      "status": "completed"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217333952",
+      "conclusion": "success",
+      "id": 136217333952,
+      "name": "local-lora",
+      "status": "completed"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217333982",
+      "conclusion": "success",
+      "id": 136217333982,
+      "name": "pretrained-self-edit",
+      "status": "completed"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217334103",
+      "conclusion": "success",
+      "id": 136217334103,
+      "name": "core (3.11)",
+      "status": "completed"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217421833",
+      "conclusion": "success",
+      "id": 136217421833,
+      "name": "pretrained-discovery-360m (17)",
+      "status": "completed"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/Mr-Nobody-Anonymous/ouroboros/check-runs/136217422003",
+      "conclusion": "success",
+      "id": 136217422003,
+      "name": "pretrained-discovery-360m (42)",
+      "status": "completed"
+    }
+  ],
+  "raw_zip_downloaded_in_local_sandbox": false,
+  "raw_zip_failure": "An explicit download of discovery-360m-evidence-42 failed with EOF at the Azure blob redirect. No unchanged retry or claim that this sandbox inspected the ZIP.",
+  "recovered_evidence": {
+    "archive_payload_verified_on_hosted_runner": true,
+    "both_complete_checks_payload_sha256_verified_locally": true,
+    "compact_reviewed_evidence": "discovery-360m-reviewed.json",
+    "exporter_commit": "b0cf0a7b35a596f1b2b44d0b4997d1ff2b81fe4b",
+    "local_original_zip_downloaded": false,
+    "review_run_id": 44725072525,
+    "review_run_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44725072525",
+    "scientific_results": "../DISCOVERY_RESULTS.md",
+    "studies": [
+      {
+        "archive_sha256": "sha256:fc3108e8c636748ecd75b73a04ff6d3645f67a60b32d4f60e880678f48b838f6",
+        "checks_payload_sha256": "b335c260c5002ed2d5a66a13f476122e81cf5d952e67c1ae6b9459c4d3484d4b",
+        "decoded_bytes": 514000,
+        "parts": [
+          {
+            "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/runs/136250373619",
+            "id": 136250373619,
+            "name": "Ouroboros evidence 360m seed 17 (1/3)"
+          },
+          {
+            "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/runs/136250379871",
+            "id": 136250379871,
+            "name": "Ouroboros evidence 360m seed 17 (2/3)"
+          },
+          {
+            "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/runs/136250384547",
+            "id": 136250384547,
+            "name": "Ouroboros evidence 360m seed 17 (3/3)"
+          }
+        ],
+        "plan_sha256": "19111d66efa6e1162d588cefb2a2d16c2d00b7b5b2bbec18683f8e4f7d2fb2da",
+        "seed": 17
+      },
+      {
+        "archive_sha256": "sha256:44bbd8f62f4884c28d3ea764b295948cd7c66223ab8a8766c540158f5a31a621",
+        "checks_payload_sha256": "12035786865ddbb53063ef45bd51b758d9f5e4bf5a2f39d4c2714fc6301f6de5",
+        "decoded_bytes": 512692,
+        "parts": [
+          {
+            "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/runs/136250422904",
+            "id": 136250422904,
+            "name": "Ouroboros evidence 360m seed 42 (1/3)"
+          },
+          {
+            "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/runs/136250427244",
+            "id": 136250427244,
+            "name": "Ouroboros evidence 360m seed 42 (2/3)"
+          },
+          {
+            "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/runs/136250432023",
+            "id": 136250432023,
+            "name": "Ouroboros evidence 360m seed 42 (3/3)"
+          }
+        ],
+        "plan_sha256": "3967f76d3b06c254a8fc12e228977439822f366d86f4dc8db000c60caa5b0df3",
+        "seed": 42
+      }
+    ]
+  },
+  "recovery": "Completed: read-only hosted review 44725072525 at b0cf0a7 downloaded and verified both EXISTING archive payloads, safely extracted original JSON, checked report/journal/event/retention hashes and numerical deltas; no inference/new evaluation/reselection. All six bounded Checks parts reconstructed locally with both uncompressed payload SHA256s verified. Complete decoded edit/rollback and fixed-follow-up numerical ledgers independently norm-checked locally. Original ZIP payloads were NOT downloaded in this sandbox.",
+  "review_date": "2026-11-19",
+  "scientific_model_outcomes_at_this_checkpoint": "Complete reviewed 360M evidence: all 22 arms, 64 actual model-editor replies, 55 parsed / 10 host-valid model commands, ZERO model-authored numerical edit attempts and ZERO accepted candidates. HOST doses harmed practice and were rolled back. No validated useful autonomous pretrained edit, useful-edit retention or learned future editing ability. Separate 135M study remains incomplete.",
+  "source_head_sha": "cb4c0df1008f208016a8bfa941c999bd96bcfc8b",
+  "strengthened_read_only_review": {
+    "checks_reconstructed_and_verified_locally": true,
+    "conclusion": "success",
+    "head_sha": "82128dfe3843e5e37181cb5cd844a0413b388e7c",
+    "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44727393281",
+    "id": 44727393281,
+    "model_rerun": false,
+    "seeds": [
+      {
+        "fixed_followup_available_numerical_norms_independently_recomputed": true,
+        "payload_sha256": "5c4d2b3006114d971c32dd2ca0ab988b4dff0593ca99c040b67aaa4ad8ac4b03",
+        "scientific_results_and_complete_numerical_audits_equal_original_export": true,
+        "seed": 17
+      },
+      {
+        "fixed_followup_available_numerical_norms_independently_recomputed": true,
+        "payload_sha256": "a99a0bdfbbbba37cf7da5d306ba3e6e1f93cdaf895277afa819f7f037d64412e",
+        "scientific_results_and_complete_numerical_audits_equal_original_export": true,
+        "seed": 42
+      }
+    ],
+    "status": "completed"
+  }
+}

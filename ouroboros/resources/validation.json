@@ -1,0 +1,22 @@
+[
+  {
+    "instruction": "Calculate 7 + 5. Give only the number.",
+    "target": "12",
+    "domain": "arithmetic"
+  },
+  {
+    "instruction": "Calculate 9 - 3. Give only the number.",
+    "target": "6",
+    "domain": "arithmetic"
+  },
+  {
+    "instruction": "What is the capital of France? Answer with only the city name.",
+    "target": "Paris",
+    "domain": "retention"
+  },
+  {
+    "instruction": "What is the opposite of hot? Answer with one word.",
+    "target": "cold",
+    "domain": "retention"
+  }
+]

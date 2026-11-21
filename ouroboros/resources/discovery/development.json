@@ -1,0 +1,258 @@
+[
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 4 + 23. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "27",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: aedo",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "aedo",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 11 bags with 8 marbles each. Then 2 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "86",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nCandace decides to enter a race. The race is run in 4 segments, with racers eliminated at the end of each segment. 10 racers are eliminated after the first segment. A third of the remaining racers are eliminated after the next section. Half of the remaining racers are eliminated before the last leg of the race. If 100 racers started the race, how many will run in the final section of the race?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:5969",
+    "target": "30",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 5 * 12. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "60",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: aegl",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "aegl",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 7 bags with 9 marbles each. Then 1 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "62",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nBobby received his weekly paycheck today.  Although his salary is $450 per week, his actual paycheck is reduced in size because there are some taxes, insurance payments, and fees removed from his pay before his employer writes the check.  If the government removes 1/3 in federal taxes and 8% in state taxes, the health insurance removes $50 per week, the life insurance removes $20 per week, and the city charges him a fee of $10 per week for parking, then what is the final amount left in Bobby's paycheck, in dollars?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:3706",
+    "target": "184",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 1 + 3. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "4",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: aenb",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "aenb",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 6 bags with 8 marbles each. Then 1 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "47",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nAngela is 4 cm taller than Helen. Helen is 3 cm taller than Amy. If Amy is 150 cm tall, how many centimeters tall is Angela?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:4553",
+    "target": "157",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 12 * 21. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "252",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: afgn",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "afgn",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 15 bags with 4 marbles each. Then 1 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "59",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nJorge has an equal number of baseball cards as Matias, who has 6 fewer cards than Carlos. If Carlos has 20 baseball cards, what is the total number of baseball cards the three have?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:2751",
+    "target": "48",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 8 + 14. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "22",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: afje",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "afje",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 5 bags with 6 marbles each. Then 1 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "29",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nSilvio was running a race that had 4 parts. The total length of the race was 74.5 kilometers. The first part of the race is 15.5 kilometers long. The second and third parts are each 21.5 kilometers long. How many kilometers is the last part of the race?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:4237",
+    "target": "16",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 9 * 19. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "171",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: agof",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "agof",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 12 bags with 3 marbles each. Then 1 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "35",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nKate has 2 red balloons and 4 blue balloons. Assuming she inflates 4 more balloons, two of each color red and blue, what is the percent likelihood that one selected at random will be red?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:2516",
+    "target": "40",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 13 * 22. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "286",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: ahbj",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "ahbj",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 12 bags with 4 marbles each. Then 1 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "47",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nThe number of female students in the school hall is 4 times as many as the number of male students. If there are 29 male students, and there are 29 benches in the hall, at least how many students can sit on each bench for them to all fit in the hall?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:4866",
+    "target": "5",
+    "verified": true
+  },
+  {
+    "domain": "arithmetic",
+    "instruction": "Compute 5 * 8. Reply with only the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "40",
+    "verified": true
+  },
+  {
+    "domain": "copying",
+    "instruction": "Copy this text exactly, with no extra words: ahbn",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "ahbn",
+    "verified": true
+  },
+  {
+    "domain": "compositional_reasoning",
+    "instruction": "There are 12 bags with 5 marbles each. Then 3 marbles are removed. How many marbles remain? Reply only with the integer.",
+    "is_anchor": false,
+    "source": "owned-discovery-v1:in-distribution",
+    "target": "57",
+    "verified": true
+  },
+  {
+    "domain": "gsm8k",
+    "instruction": "Solve this problem. Give only the final number, without explanation or commas.\nSam is serving spaghetti and meatballs for dinner.  The pasta costs $1.00 per box, a jar of sauce is $2.00 and 1 pound of meatballs is $5.00.  He wants to stretch this meal into 8 servings.  How much does each serving cost?",
+    "is_anchor": false,
+    "source": "GSM8K@3101c7d5072418e28b9008a6636bde82a006892c/train:2088",
+    "target": "1",
+    "verified": true
+  }
+]

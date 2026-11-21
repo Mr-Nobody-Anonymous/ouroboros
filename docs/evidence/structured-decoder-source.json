@@ -1,0 +1,28 @@
+{
+  "kind": "ouroboros-optional-package-source-review",
+  "package": "lm-format-enforcer",
+  "version": "0.11.3",
+  "repository": "https://github.com/noamgat/lm-format-enforcer",
+  "cloned_revision": "817f944fcc8851917c40300a47f62d1defc3ffc3",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2023 Noam Gat",
+  "inspected": [
+    "LICENSE",
+    "README.md",
+    "pyproject.toml",
+    "lmformatenforcer/characterlevelparser.py",
+    "lmformatenforcer/jsonschemaparser.py",
+    "lmformatenforcer/tokenenforcer.py",
+    "lmformatenforcer/integrations/transformers.py"
+  ],
+  "integration": "Optional installed-package Transformers prefix token filtering for model-generated research actions only; cached tokenizer data, model-declared EOS alignment, per-reply structural schema and independent host validation.",
+  "source_code_copied": false,
+  "vendored": false,
+  "upstream_test_suite_run": false,
+  "owned_integration_tests": [
+    "tests/test_lab_editor_schema.py",
+    "tests/test_lab_editor_protocol.py",
+    "tests/test_lab_structured_generation.py"
+  ],
+  "limits": "Syntax filtering is not edit selection, shape/numeric/policy validation, a sandbox or evidence of a useful research policy. JSON Schema minimum/maximum annotations are not all enforced by this decoder. Target answer generation is not schema-constrained."
+}

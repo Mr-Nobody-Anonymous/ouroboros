@@ -1,0 +1,16 @@
+[
+  {
+    "instruction": "What is 12 plus 5? Answer with digits only.",
+    "target": "17",
+    "domain": "math_logic",
+    "source": "hand-authored-post-selection-smoke-fixture",
+    "verified": true
+  },
+  {
+    "instruction": "Reply with the single lowercase word violet.",
+    "target": "violet",
+    "domain": "instruction_following",
+    "source": "hand-authored-post-selection-smoke-fixture",
+    "verified": true
+  }
+]

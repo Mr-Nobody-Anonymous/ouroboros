@@ -1,0 +1,59 @@
+name: Review preserved discovery evidence (no model rerun)
+
+on:
+  push:
+    branches: ['arena/4dd3ddb6-ouroboros']
+    paths:
+      - '.github/workflows/discovery-evidence.yml'
+      - 'scripts/review_discovery_experiment.py'
+  workflow_dispatch:
+    inputs:
+      source_run:
+        description: Successfully completed source study run ID
+        default: '44715379570'
+        required: true
+      source_head:
+        description: Exact source study implementation commit
+        default: 'cb4c0df1008f208016a8bfa941c999bd96bcfc8b'
+        required: true
+
+# Trusted push/manual review only, never arbitrary pull-request code. The ordinary
+# inference workflow keeps read-only permissions; this job only publishes CI evidence.
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
+jobs:
+  review-preserved-study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        seed: [17, 42]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Verify existing archive, numerical ledgers and publish complete bounded evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN: ${{ inputs.source_run || '44715379570' }}
+          SOURCE_HEAD: ${{ inputs.source_head || 'cb4c0df1008f208016a8bfa941c999bd96bcfc8b' }}
+          STUDY_SEED: ${{ matrix.seed }}
+        run: |
+          python scripts/review_discovery_experiment.py \
+            --github-run "$SOURCE_RUN" --expected-head "$SOURCE_HEAD" \
+            --repo "$GITHUB_REPOSITORY" --seed "$STUDY_SEED" --profile 360m \
+            --workdir "outputs/discovery-review-$STUDY_SEED" --publish-checks
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: reviewed-discovery-360m-${{ matrix.seed }}
+          path: |
+            outputs/discovery-review-${{ matrix.seed }}/reviewed_summary.json
+            outputs/discovery-review-${{ matrix.seed }}/numerical_audits.json
+            outputs/discovery-review-${{ matrix.seed }}/review_receipt.json
+          if-no-files-found: warn

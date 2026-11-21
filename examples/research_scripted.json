@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "model": {
+    "model_name_or_path": "../models/smollm2",
+    "device": "cpu",
+    "torch_dtype": "float32",
+    "max_new_tokens": 12,
+    "prompt_format": "chat"
+  },
+  "policy": {
+    "max_turns": 24,
+    "max_forward_calls": 12,
+    "max_edit_actions": 8,
+    "max_seconds": 600,
+    "max_edit_tensors": 4,
+    "max_read_tokens": 96,
+    "cpu_threads": 2
+  },
+  "sampling": {
+    "temperature": 0.0,
+    "thinking": false
+  },
+  "editor": {
+    "mode": "scripted",
+    "actions": "research_actions.json"
+  },
+  "grader": "exact",
+  "data": {
+    "train": "../ouroboros/resources/practice.json",
+    "validation": "../ouroboros/resources/validation.json",
+    "test": "../ouroboros/resources/test.json"
+  },
+  "output_dir": "../outputs/research-scripted",
+  "license": "Apache-2.0 (verify the model card and distribution license before reuse)",
+  "provenance": "Explicitly SCRIPTED SmolLM2-135M two-layer tool integration on public fixtures and a synthetic contrast, not an autonomous discovery, causal repetition diagnosis or capability benchmark. Review model license/receipt. Expected plateau rejection is valid."
+}

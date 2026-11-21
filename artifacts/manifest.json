@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-11-19",
+  "files": [],
+  "unrecovered_historical_claims": [
+    {
+      "description": "Earlier conversation claimed over 600 MB of deleted benchmark caches and intermediate checkpoints.",
+      "status": "not_present_in_starting_checkout_or_v0.1.0_uploaded_assets",
+      "verified_file_names": [],
+      "verified_bytes": null,
+      "note": "No recoverable payload, LFS pointer or per-file inventory was found. Do not fabricate files, sizes or an upload."
+    }
+  ]
+}

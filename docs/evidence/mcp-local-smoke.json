@@ -1,0 +1,38 @@
+{
+  "accepted_patches": 0,
+  "base_restored": true,
+  "changed_entries": [
+    884,
+    884
+  ],
+  "config_allowlisted": "outputs/pretrained-local-01/self_edit.json",
+  "config_check_model_loaded": false,
+  "decisions": [
+    "rejected",
+    "rejected"
+  ],
+  "experiments_explicitly_enabled": true,
+  "full_model_report": "smollm2-self-edit-local.json",
+  "inspection_read_only": true,
+  "model_run_id": "19e4481593804aa799b95e4604120740",
+  "report_readback_matches": true,
+  "sdk_version": "1.30.0",
+  "server": {
+    "icons": null,
+    "name": "Ouroboros",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null
+  },
+  "source_files_unchanged": true,
+  "tools": [
+    "status",
+    "check_self_edit_config",
+    "inspect_weights",
+    "verify_patch",
+    "list_self_edit_reports",
+    "read_self_edit_report",
+    "run_self_edit"
+  ],
+  "transport": "stdio"
+}

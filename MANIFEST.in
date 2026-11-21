@@ -1,0 +1,20 @@
+include README.md AGENTS.md LICENSE SECURITY.md CONTRIBUTING.md CHANGELOG.md THIRD_PARTY_NOTICES.md
+include requirements.txt .gitmodules .gitignore .gitattributes
+include external/README.md external/sources.lock.json artifacts/manifest.json
+recursive-include docs *.md *.png *.json
+recursive-include analysis *.md
+recursive-include papers *.md *.json *.bib
+recursive-include examples *.json *.jsonl
+recursive-include constraints *.txt
+recursive-include scripts *.py *.sh
+recursive-include sandbox Dockerfile *.md
+recursive-include .github *.yml *.yaml
+recursive-include tests *.py
+global-exclude *.py[cod] __pycache__ .DS_Store
+prune external/SEAL
+prune external/peft
+prune external/trl
+prune external/repeng
+prune external/self-instruct
+prune artifacts/objects
+prune artifacts/releases

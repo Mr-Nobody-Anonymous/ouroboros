@@ -1,0 +1,64 @@
+{
+  "kind": "ouroboros-discovery-source-review",
+  "reviewed_on": "2026-11-19",
+  "sources": [
+    {
+      "repository": "https://github.com/openai/grade-school-math",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2021 OpenAI",
+      "cloned_revision": "3101c7d5072418e28b9008a6636bde82a006892c",
+      "reviewed_files": {
+        "README.md": "27e1676d572f2289210170ff6dbb8c2ef7d9f6950c0f08c978ea8ee6b39dca29",
+        "LICENSE": "86bbb73e855821d7c401912fd4bf82e34313e6e3b6fd6f909f2b6cc9e209a53b",
+        "grade_school_math/data/train.jsonl": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465",
+        "grade_school_math/data/test.jsonl": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14"
+      },
+      "integration": "Data-only selection of 60 question/numeric-reference pairs across five fixed roles, no upstream code execution. Disjoint upstream train rows for practice/development/reserved; test rows for final/retention. SHA256-ranked, not performance-selected. Chain-of-thought rationales excluded from emitted role files.",
+      "selection_manifest": "ouroboros/resources/discovery/manifest.json",
+      "preparation_adapter": "ouroboros/lab/discovery_data.py",
+      "license_copy": "ouroboros/resources/discovery/GSM8K_LICENSE.txt",
+      "code_executed": false,
+      "weights_provisioned_from_source": false,
+      "pretraining_decontamination_claimed": false
+    },
+    {
+      "repository": "https://github.com/Dadhichi-Sarker-Shayon/SmolLM2-360M-GGUF",
+      "license": "Apache-2.0 (source assertion)",
+      "cloned_revision": "a3f5ab2509573383064fd986bfff2d912dc4ba39",
+      "reviewed_files": {
+        "README.md": "c3fcf46302920c9bdefa806f402c1e4a546a0450e898c6bbc5d71479b6095a14",
+        "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "REPRO.json": "7bb11cbf2bd5e6a2803b984ad76af5ecef4e1cf70da0bbadad185488d1419461",
+        "SHA256.txt": "caae794ff670a4814b3e0b72a73e5f82f2861c61b374aaa0a5cc4d46b0142b00",
+        "build_gguf.py": "c6df13be316ef407f6379886b9d52b55eec3ba5f0ffb460d93b76b004f8b8bdc",
+        "requirements-build.txt": "ad53e4fb5afe494ead0d0542a5d7ce95470dc3a83b3e9ec1e1b52e5b55994537"
+      },
+      "integration": "Reviewed data/conversion provenance and resource requirements. Base checkpoint, not Instruct; no model payload in this GitHub clone and no converter/upstream code executed. The independent CI plan provisions official HuggingFaceTB/SmolLM2-360M-Instruct and records a separate immutable resolved revision/files receipt before inference.",
+      "source_declared_model": "HuggingFaceTB/SmolLM2-360M",
+      "source_declared_revision": "f8027fd0eaeea54caa13c31d31b9fdc459c38b49",
+      "declared_artifacts_independently_verified": false,
+      "weights_provisioned_from_source": false,
+      "code_executed": false,
+      "declared_artifacts": [
+        {
+          "name": "smollm2-360m-F16.gguf",
+          "bytes": 725553216,
+          "sha256": "5a6c60f5cc355570bb8b6426eed107502ca71202b89c616f53156d0d543cb3b6"
+        },
+        {
+          "name": "smollm2-360m-Q4_K_M.gguf",
+          "bytes": 270590368,
+          "sha256": "058c2ab50dc53b4a41563632f7e1bde71c4538fcb317d050006380cfad8c4913"
+        },
+        {
+          "name": "smollm2-360m-Q8_0.gguf",
+          "bytes": 386404416,
+          "sha256": "8741525f43fbdbaab07dcdb9d64f2a55f97b9ba9bf0e4e3c6f2b65471abaef38"
+        }
+      ]
+    }
+  ],
+  "source_code_copied": false,
+  "upstream_test_suites_run": false,
+  "scope": "Actual cloned source inspection and data-only adapter provenance, not pretrained gain, independent audit, official benchmark reproduction or verification of upstream performance/payload claims."
+}

@@ -1,0 +1,30 @@
+{
+  "actual_report": "outputs/research-local-01/outputs/model-authored/e5d56e8a63574f2f94880070b4f0c0b0/lab.json",
+  "base_restored": true,
+  "capability_gain_claimed": false,
+  "editor_state_sha256": "6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8",
+  "kind": "ouroboros-pretrained-research-smoke",
+  "model_authored": {
+    "accepted": false,
+    "editor_generations": 2,
+    "invalid_actions": 2,
+    "status": "budget_exhausted",
+    "valid_tool_actions": 0
+  },
+  "model_receipt_verified": true,
+  "note": "Actual pretrained model-authored attempts and 16 scripted integration actions were measured separately. Synthetic contrast texts/public exact-match fixtures are not a scientific benchmark.",
+  "parameters": 134515008,
+  "scripted_report": "outputs/research-local-01/outputs/scripted-tools/dae04ddc6a1d419f98347c44967a8ec8/lab.json",
+  "scripted_tools": {
+    "accepted": false,
+    "actions": 16,
+    "changed_entries": 1152,
+    "edited_tensors": 2,
+    "forward_requests": 10,
+    "max_control_norm_rounding_error": 1.8843233596132713e-08,
+    "reserved_baseline_accuracy": 0.0,
+    "reserved_candidate_accuracy": 0.0,
+    "status": "rejected"
+  },
+  "source_files_unchanged": true
+}

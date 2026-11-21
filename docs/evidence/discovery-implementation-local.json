@@ -1,0 +1,184 @@
+{
+  "date": "2026-11-19",
+  "distribution": {
+    "catalogue_actions": {
+      "discovery": 25,
+      "general": 19
+    },
+    "cli_check_only_no_model_or_network": true,
+    "family_alpha_matches": true,
+    "heavy_modules_imported": false,
+    "kind": "ouroboros-discovery-distribution-verification",
+    "no_heavy_optional_packages": true,
+    "non_editable_install_outside_checkout": true,
+    "published_or_uploaded": false,
+    "scaffold_five_roles": true,
+    "sdist": {
+      "bytes": 478932,
+      "required_discovery_files_present": true,
+      "safe_inventory": true,
+      "sha256": "2078a7cb5b1c926847b3c782907d5a1b93b986cf9526b6b7caabdb75c440ae80"
+    },
+    "wheel": {
+      "bytes": 202453,
+      "license_notice_present": true,
+      "resource_files_verified": 16,
+      "sha256": "b40a5ed513bb581d633d8f82d8dc218f6da5239da7bb79ba5476b82b6a399536",
+      "source_bytes_match": true,
+      "structured_extra_declared": true
+    }
+  },
+  "full_suite": {
+    "command": ".venv/bin/python -m pytest -q",
+    "passed": 412,
+    "seconds": 12.8,
+    "warning_note": "Existing PEFT Conv1D fan-in/fan-out warnings; no failing tests.",
+    "warnings": 3
+  },
+  "kind": "ouroboros-discovery-implementation-verification",
+  "lightweight_core_mcp": {
+    "command": ".cache/editor-core-venv/bin/python -m pytest -q -m not-ml (updated editable installation)",
+    "deselected_ml": 106,
+    "optional_skip_note": "1 absent Math-Verify and 23 absent LM Format Enforcer parser cases; no host validation disabled.",
+    "passed": 282,
+    "seconds": 6.98,
+    "skipped": 24,
+    "torch_installed": false
+  },
+  "lint_and_format": "Ruff check and format passed; 101 Python files after the discovery additions.",
+  "mechanism_controls": {
+    "actual_host_random_controller_fixture": {
+      "autonomous": false,
+      "same_hypothesis_edit_evaluate_rollback_tools": true,
+      "two_nonempty_random_edits": true
+    },
+    "handcrafted_neural_token_classifier": {
+      "accuracy_after": 1.0,
+      "accuracy_before": 0.5,
+      "exact_numerical_replay_and_resident_restoration": true,
+      "fixed_final_retention_probe_passed": true,
+      "host_authored": true,
+      "nonempty_actual_edit": true,
+      "note": "Reworded feature-identical fixture examples are mechanism tests, not independent pretrained capability evidence. The tiny fixture explicitly uses max_edited_fraction=0.1 so a coefficient can be tested; both actual pretrained studies keep the unchanged production 0.001 fraction and 0.1 relative norm limits.",
+      "pretrained_llm": false,
+      "scientific_generalization_claimed": false,
+      "strict_development_reserved_gates_passed": true
+    },
+    "real_random_llama_gradient": {
+      "absolute_tolerance": 2e-05,
+      "central_difference_epsilon": 0.01,
+      "hidden_size": 16,
+      "layers": 2,
+      "pretrained": false,
+      "relative_tolerance": 0.02,
+      "state_flags_rng_restored": true
+    }
+  },
+  "pretrained_status_at_implementation_checkpoint": {
+    "github_360m": "Configured, not yet executed/verified at this checkpoint.",
+    "local_135m": "Running, incomplete. Only completed no-edit arm observed; no model gain claimed."
+  },
+  "published_or_released": false,
+  "runtime_source_sha256": {
+    "ouroboros/__init__.py": "d7c72e2aa7a3d85430f7e8c246a416475989878c0059f5bb825c792ead555473",
+    "ouroboros/backends/__init__.py": "df479852199a203276c4e5d2325c05c313015dca25f4c78926ce1e815f5bc33d",
+    "ouroboros/backends/base.py": "a97b4965c7b9b1138be277257432161ca18f650895619881243301919becc9d3",
+    "ouroboros/backends/local_model.py": "e66af9e0ef7bee02b420d23156acea64b54f51bd00c349d35f206dd282f57517",
+    "ouroboros/backends/numpy_backend.py": "5de3feabe3d777572ae1bceadba48260f8211923192a94e185fb76ebe4a9bdc2",
+    "ouroboros/backends/tokens.py": "41f5ba4ce8ca83d9c4422442e6c9269a28f7998cc0da7bdeb47eb906588f51c2",
+    "ouroboros/backends/transformers_backend.py": "7cb062b8e6114f2adc06a7076568e7b27034b6ca0b145b6775cf92b897dc07a3",
+    "ouroboros/cli.py": "48d2d2296bb1a5d8583ddf58518ff65f7aa691c262ba63e0d7016f5f35410e57",
+    "ouroboros/config.py": "dd488790f01004d838debe189adf03290fc46e3cc56a5ad78370981ac2d771a5",
+    "ouroboros/core/__init__.py": "88976f09190461b48df4363fef467425a8fe1a24672ab33be39a586a75d0d60a",
+    "ouroboros/core/adapter_engine.py": "ca29785d373a28fa08077f732a6157d7a8f343fd901b750abe92fb090eab4f48",
+    "ouroboros/core/adversarial_critic.py": "94c40783e3141d5a300732f61bedd3453c2bf7049b32b5d48dd2a2658f3a6319",
+    "ouroboros/core/anchor_memory.py": "62135f9dff9a57323ddaa36ece804bb8ec54145dba567b148718ac186c57408c",
+    "ouroboros/core/architecture_mutator.py": "163d35715bd25788582a8bfccd64bdeffe98851cf514e9a47f7ea48ced934356",
+    "ouroboros/core/checkpoints.py": "f6102ab37692248ba1014c91120ac82f4048a97fec3187eb7316ed8d3c327fc4",
+    "ouroboros/core/code_mutator.py": "4c1449d98531ca782b6e8b3298fcb006957b20f8e80df075c8eafc98a9dfa63e",
+    "ouroboros/core/evaluator.py": "fcadbe08dbf3fc03f76cfca9e50c0815bad35d2b834ce245a25af58edd7cf6c5",
+    "ouroboros/core/meta_feedback.py": "d781c6c9a96b17df9d7835965909227594cef4392e8af89c1f1df5c766409d73",
+    "ouroboros/core/pareto_pruner.py": "d91d9c032576c4b5876c16da7dacdc131c4488e32f7c9d248c0759c94b1b520a",
+    "ouroboros/core/self_rewarding.py": "e3c0e43aa591719332c14b46003bc4181d484eb71cba8fcf023931cd3b8c3a22",
+    "ouroboros/core/task_arithmetic.py": "91f791a70f7c5adac6fcea2b2e63a54f763024123953a8240afbb8e375879a36",
+    "ouroboros/core/test_time_compute.py": "dc25218aeb46505e94b2131a0c9fc935cba35e52ac91f8a8e3b12e197213137a",
+    "ouroboros/core/weight_editor.py": "e6cf3df88172ae9dbe04fe68612d067cad93460a9ebe88122b45e0b9357f92ad",
+    "ouroboros/core/weight_space_programmer.py": "c51c9ec2fc23d02ae55fa440d47921021da651efaf6e6fb5f011a20adfdafcb6",
+    "ouroboros/core/weight_trials.py": "4771d6b11623056c5045c631824c7f19126cff7523da0fb1cba3c7373c7e020b",
+    "ouroboros/data.py": "8b38c992dd23c743feecbd3868f86213bbcd472401482006f634390bafb0dc8c",
+    "ouroboros/integrations/__init__.py": "31fe1a79113778f94dcf89e15f44b1dbea76ab94ccc5e5de52470ec677cabe44",
+    "ouroboros/integrations/easyedit_bridge.py": "6b60d4d1ccf64957a5eed966fd066dc84d756bf52c4253b8851062648ec25737",
+    "ouroboros/integrations/mergekit_bridge.py": "4e696436a8805db98667e765004fc0d09149a0d2c8ff39fa869191ba58e7df34",
+    "ouroboros/lab/__init__.py": "0281ae9a9b9186fa057fc38aeba49e198d5f9fb7b13ba5e4da53bea72ea9fabb",
+    "ouroboros/lab/action_schema.py": "62f10f56d302a7a41a0d1ad53171ff7ffb183755ec500650893c9c0769f537ac",
+    "ouroboros/lab/backend.py": "e963f37222723d24bb52f55b52a5d4bbd2a8b4a0ec340f5a6a20bcdbf4bdc2b2",
+    "ouroboros/lab/benchmarks.py": "02b27eef595e2e28d874a6202c91ec35a161c549c92aa83fda7ed20112793f9b",
+    "ouroboros/lab/config.py": "0e0e4583f2ee18d99c70a5c9916074e36e8727a60d2917da8cb4f13cf191c23b",
+    "ouroboros/lab/controls.py": "7e3b2900fcfbae1defd12c6f82427b8e5236f0861d46d559f9bb4d214801bc35",
+    "ouroboros/lab/diagnosis.py": "9c39a7a57ea95684cf5b03cf6dc46e9126de5f393d4ac4d2398c72e465986069",
+    "ouroboros/lab/discovery_config.py": "26b184b847a3f7a0385e803729535bfefde34fdd56193ca4d7b27dddbd98d551",
+    "ouroboros/lab/discovery_data.py": "92189601c3c9165fd8c9330a71e6340e9cce0c8036055b8d502a3d15c6b5dd88",
+    "ouroboros/lab/discovery_prompt.py": "0d0dcdcf1315ed1b0b30a08968442f78129fd75f1373900207f4ce261a830692",
+    "ouroboros/lab/discovery_session.py": "e6c011b611a15242c82f7e2fb3477147133211f614bb54a98a98cb2380fcf2a0",
+    "ouroboros/lab/experiment.py": "5146e068944b2f60d5e7065a43d3c73bf6d61373da6611dd40f1e958d089656f",
+    "ouroboros/lab/instrumentation.py": "3215c61bb30dcea80c44d28fb5f9b2d36146bb8907b1e0529bd0f00579b4a53b",
+    "ouroboros/lab/journal.py": "675be45b1248073561ef450145c347fb5c18d27cfd654cdfaddcdfcbadc3eb13",
+    "ouroboros/lab/metrics.py": "8a6dc629646e09bf7543798d5255a8df2a145d05d269619c08d7f2340a843da1",
+    "ouroboros/lab/patches.py": "cc2bc0abd535b25d00d3959ffc1aad30c42ac5caf5c27dfdf1a1df9ef03a8731",
+    "ouroboros/lab/program.py": "333147de8333ca8b64c15e6ed3ed83606e69505b496ffe82cb24386723a11d16",
+    "ouroboros/lab/retention.py": "3ae441019984415b3d2c973f86fe34ac158da7976e2b3bc1af6dc687bb1a8cfd",
+    "ouroboros/lab/runner.py": "33e407758199129f9a5745ca5d7b1f225b6faf5be0f83a1d338622cf3f01dd2f",
+    "ouroboros/lab/sensitivity.py": "054b9823711b50e67900081187984cc659b99dac20aec1b2c521290c89ab4921",
+    "ouroboros/lab/session.py": "c10b0b29c8172129608f4b0fec4d9e346a7cfa4a65d36b4dcbe8aaa4d5e6a0f3",
+    "ouroboros/lab/state.py": "b18fd3786c385406a857f7226e5badb8405923bc99b7399daab38eb4d6f39997",
+    "ouroboros/lab/tools.py": "3f75cb50599cf2300de292aa8256f521a77c776d13a7175ed1d8a1e2bdbae261",
+    "ouroboros/mcp_server.py": "9b6f8a9e90cd8ed212ba8bbba6f82ded90f565c6ee149aa0fff10b8b92f18325",
+    "ouroboros/model_files.py": "551b506ab8b34a9f5476d2ca01db45f994595982378520940c9d374d006abe7b",
+    "ouroboros/pipeline/__init__.py": "aff279beda60c507ee562e98f58a170e26dbbd78ca0f8f1c67c31d4286f302d6",
+    "ouroboros/pipeline/self_loop.py": "532d38b4956f01e3d712e220352aa7262a416eb7f19444bb8245f643cd022089",
+    "ouroboros/project.py": "0e47d71452cab6f4904365c9e8ec615c39d4b62ec8f308ccd4e0b72b2c38ab60",
+    "ouroboros/repositories.py": "958ae9c57eba8cfe237b73145a492017d1afc99757a1062cbb45dd584df38dee",
+    "ouroboros/resources/__init__.py": "62b944f93376aef6bb0a7f15ff7dc6bad707b8baae36672d17a7577ef35d2ad0",
+    "ouroboros/self_edit.py": "056b5f7591062ceae33e299e22725a96c6a3a588080b1170f0e3c8ca3c704242",
+    "ouroboros/storage.py": "ce92e8e5a317069331bbe006cf2254dacc60d2471f001d46d2d82a0df63fa1b6",
+    "ouroboros/tensor_inspection.py": "4eb97ce13efdce5ba226f3c9428e8fb95326b706c04e8247b10b8fdb8f327886",
+    "scripts/run_discovery_experiment.py": "e1053e5cb18cb1ac263a13ab47ae5740db73f1396a707bdbc9fbeb722d3e1d7e"
+  },
+  "scope": "Local mechanism/interface/distribution verification, NOT pretrained capability evidence. Model studies are separately planned/executed; no useful pretrained/autonomous edit or learned editing-policy claim follows from these tests.",
+  "sdist_core_mcp": {
+    "additional_skip": "Release provenance requires Git, absent from extracted archive.",
+    "deselected_ml": 106,
+    "passed": 281,
+    "seconds": 7.68,
+    "skipped": 25
+  },
+  "source_review": "docs/evidence/discovery-sources.json",
+  "study_family": {
+    "checkpoints": 2,
+    "conditions": [
+      "no_edit",
+      "human_directed",
+      "random_valid",
+      "unconstrained",
+      "schema",
+      "model_directed_gradient",
+      "schema_no_feedback",
+      "schema_full_context",
+      "schema_sparse_ops",
+      "schema_staged",
+      "schema_staged_gradient"
+    ],
+    "loss_can_promote": false,
+    "per_gate_alpha": 0.0011363636363636365,
+    "possible_submissions": 44,
+    "seeds": [
+      17,
+      42
+    ]
+  },
+  "tests_sha256": {
+    "tests/test_discovery_config_data.py": "5618c2918ead887ac813efc1e1921af6b309c04d32bec6d39cfe034d5e87ef6e",
+    "tests/test_discovery_protocol.py": "f6b243a04057a4ac2bc69a04096e475d7e897cac53b35940c6b47d990f60f2d9",
+    "tests/test_lab_instrumentation.py": "670ad1feef9874f6a5ea5bdfdd7f495521a43889489e15c01528154ebe8b833f"
+  }
+}

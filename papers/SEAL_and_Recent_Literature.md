@@ -1,42 +1,23 @@
-# 🚀 Recent 2024–2025 Breakthroughs: Self-Adapting Language Models & Continual Evolution
+# SEAL, continual adaptation, and research corrections
 
-This document highlights state-of-the-art research published in late 2024 and 2025 on autonomous weight-adaptation, self-edits, and entropy collapse prevention.
+## Self-Adapting Language Models (SEAL)
 
----
+Adam Zweiger, Jyothish Pari, Han Guo, Ekin Akyürek, Yoon Kim, Pulkit Agrawal. [arXiv:2506.10943](https://arxiv.org/abs/2506.10943); [official repository](https://github.com/Continual-Intelligence/SEAL). SEAL generates self-edits such as adaptation data/directives and optimizes them through an outer reinforcement-learning loop using downstream adaptation outcomes.
 
-## 📑 Featured Recent Publications
+Ouroboros preserves the existing source snapshot in `external/SEAL`. Its new local SFT controller and verified proposal callbacks are useful infrastructure but do **not** reproduce SEAL's outer RL training. A regex hyperparameter edit alone is not SEAL. Source/snapshot provenance and integration levels are in [the inventory](../external/README.md).
 
-### 1. SEAL: Self-Adapting Language Models
-* **Authors**: Adam Zweiger, Jyothish Pari, Han Guo, Ekin Akyürek, Yoon Kim, Pulkit Agrawal (MIT CSAIL, 2025)
-* **arXiv**: [2506.10943](https://arxiv.org/abs/2506.10943)
-* **Repository**: [GitHub - Continual-Intelligence/SEAL](https://github.com/Continual-Intelligence/SEAL)
-* **Breakthrough**:
-  * Eliminates external auxiliary networks by training the base LLM to generate its own **self-edits** (fine-tuning data, loss formulations, and optimization hyperparameters).
-  * Implements an outer Reinforcement Learning loop where downstream task performance of the updated weights serves as the reward signal to improve the quality of future self-edits.
+## Recursive synthetic-data drift and replay
 
-### 2. MoE-CL: Self-Evolving LLMs via Continual Instruction Tuning
-* **Authors**: Jiazheng Kang, Le Huang, Cheng Hou, et al. (2024)
-* **arXiv**: [2404.14818](https://arxiv.org/abs/2404.14818)
-* **Breakthrough**:
-  * Introduces an adversarial Mixture-of-Experts LoRA architecture for continual self-evolution.
-  * Employs task-specific LoRA experts alongside a shared adversarial expert regulated by a discriminator, mathematically guaranteeing zero catastrophic forgetting on legacy benchmarks.
+[AI models collapse when trained on recursively generated data](https://www.nature.com/articles/s41586-024-07566-y), Shumailov et al., Nature 2024, motivates keeping real-data support and measuring distributional degradation. It does not establish a universal “20–30% golden-anchor” prescription or a proof that a tiny memory bank eliminates collapse.
 
-### 3. Model Autophagy Disorder (MAD) & Entropy Collapse in Recursive Training
-* **Authors**: Ilia Shumailov, Zakhar Shumaylov, Yiren Zhao, Nicolas Papernot, Ross Anderson (Oxford, Cambridge, Toronto, *Nature* 2024)
-* **DOI**: [Nature 631, 755–759 (2024)](https://www.nature.com/articles/s41586-024-07566-y)
-* **Breakthrough**:
-  * Proves mathematically that when models train recursively on their own synthetic generations without anchor data, their probability distributions suffer from variance reduction and irreversible collapse.
-  * Establishes the necessity of the **Anchor Memory Bank** (mixing 20–30% untainted foundational data) to preserve distribution variance.
+`AnchorMemoryBank` now implements configurable replay at the intended final-batch fraction with immutable copies and local RNG state. Callers must supply verified, licensed anchors. Duplicating a few examples is not a high-entropy foundational corpus and cannot guarantee no forgetting.
 
-### 4. Co-Evolving Model Weights and Agent Harnesses (SIA)
-* **Core Concept**: (Late 2024 / 2025)
-  * Dual-knob optimization: simultaneously updating software harnesses (scaffolds, prompt strategies, tool interfaces) and underlying weight matrices via task vectors.
-  * Injects deep intuitive heuristics into model parameters that static prompts cannot convey.
+## Incorrect MoE-CL citation removed
 
----
+The old index described **arXiv:2404.14818** as a self-evolving MoE/continual-learning paper with a zero-forgetting guarantee. The [actual arXiv page](https://arxiv.org/abs/2404.14818) is **Simplicial volume of manifolds fibering with connected structure group**, by Thorben Kastenholz, an unrelated topology paper. That AI attribution and guarantee were removed rather than propagated. No replacement MoE-CL implementation is claimed without a verified source.
 
-## 💻 Integrated into Ouroboros
-* **MIT SEAL**: Cloned into `external/SEAL` and mapped to `ouroboros/core/code_mutator.py`.
-* **Anchor Memory Bank**: Implemented in `ouroboros/core/anchor_memory.py` to prevent MAD entropy collapse.
-* **Adversarial Red/Blue Team**: Implemented in `ouroboros/core/adversarial_critic.py`.
-* **Pareto Storage Pruner**: Implemented in `ouroboros/core/pareto_pruner.py`.
+## Harness and weight co-evolution
+
+[SIA: Self Improving AI with Harness & Weight Updates](https://arxiv.org/abs/2605.27276), Hebbar et al., first submitted May 26, 2026 (v2 May 28), is the exact source replacing the previous vague 2025 homepage link. It co-updates harness and weights in selected domains. [Evo2](https://arxiv.org/abs/2610.13025), October 9, connects proposer/reflector harness changes with policy training. Neither algorithm is automatically implemented by the presence of a `CodeMutator` class.
+
+For **11 actually recent sources in the August 19–November 19, 2026 window**, use [the dated review](RECENT_RESEARCH_2026.md) and [paper index](PAPERS_INDEX.md). Foundational 2024/2025 work is not mislabeled as “published in the last three months.”

@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "verified_on": "2026-11-19",
+  "sources": [
+    {
+      "name": "EasyEdit",
+      "path": "external/EasyEdit",
+      "url": "https://github.com/zjunlp/EasyEdit",
+      "mode": "submodule",
+      "license": "MIT",
+      "integration": "explicit-bridge",
+      "notes": "Localized editing; separate upstream environment and method hyperparameters required.",
+      "revision": "5c519afb14e39c7f70bc5536ebd777a62d8493bf"
+    },
+    {
+      "name": "mergekit",
+      "path": "external/mergekit",
+      "url": "https://github.com/arcee-ai/mergekit",
+      "mode": "submodule",
+      "license": "LGPL-3.0",
+      "integration": "recipe-and-executor",
+      "notes": "Validated recipe generation and opt-in subprocess execution; no bundled model weights.",
+      "revision": "0f1423ecf0f06f46f17b045b333b6c445705390e"
+    },
+    {
+      "name": "SEAL",
+      "path": "external/SEAL",
+      "url": "https://github.com/Continual-Intelligence/SEAL",
+      "mode": "vendored",
+      "license": "MIT",
+      "integration": "research-reference",
+      "notes": "Existing snapshot; unknown original revision. Outer-loop SEAL RL is not executed by Ouroboros.",
+      "revision": null,
+      "snapshot_sha256": "c3444aa13452d34e3ad07d70865037264a9272fe6f50c37a9a4f85a66c8cc7eb",
+      "tracked_file_count": 142
+    },
+    {
+      "name": "peft",
+      "path": "external/peft",
+      "url": "https://github.com/huggingface/peft",
+      "mode": "vendored",
+      "license": "Apache-2.0",
+      "integration": "installed-package-backend",
+      "notes": "Existing reference snapshot. Training uses the separately installed peft package, not a sys.path injection.",
+      "revision": null,
+      "snapshot_sha256": "78eaecf926bc245e9a1fd1ba42be1c9e0f892d63f23bbc2cf6fbae6062b0d69a",
+      "tracked_file_count": 1046
+    },
+    {
+      "name": "trl",
+      "path": "external/trl",
+      "url": "https://github.com/huggingface/trl",
+      "mode": "vendored",
+      "license": "Apache-2.0",
+      "integration": "optional-preference-recipe",
+      "notes": "Existing reference snapshot. Optional DPO recipe; GRPO not implemented in the default loop.",
+      "revision": null,
+      "snapshot_sha256": "240c3919c129d85a1cd3e6043075afebb2a44ce98dcceff66aa93cea181f8198",
+      "tracked_file_count": 620
+    },
+    {
+      "name": "repeng",
+      "path": "external/repeng",
+      "url": "https://github.com/vgel/repeng",
+      "mode": "vendored",
+      "license": "MIT",
+      "integration": "research-reference",
+      "notes": "Existing snapshot; vector math is local. No automatic repeng hooks installed.",
+      "revision": null,
+      "snapshot_sha256": "ec2ab2737dfa4d2c849b7cecbdc394e324b046476442c263ef964bca5f44974c",
+      "tracked_file_count": 20
+    },
+    {
+      "name": "self-instruct",
+      "path": "external/self-instruct",
+      "url": "https://github.com/yizhongw/self-instruct",
+      "mode": "vendored",
+      "license": "Apache-2.0",
+      "integration": "research-reference",
+      "notes": "Existing partial source snapshot. Ouroboros supplies a verified generation callback boundary, not the original full training pipeline.",
+      "revision": null,
+      "snapshot_sha256": "1419f4d1e61ab33b2e3373c5c84a91fb6364a82e9b35971fa3aa6fee9b445b68",
+      "tracked_file_count": 19
+    },
+    {
+      "name": "weight-space-logs",
+      "path": "external/weight-space-logs",
+      "url": "https://github.com/RikiyaT/lm_understand-logs",
+      "mode": "submodule",
+      "license": "CUSTOM: see LICENSE",
+      "integration": "research-logs",
+      "notes": "Cloned/read exp8 scripts/protocol/license; informs owned instrumentation, projections, controls and exact bundles. No upstream agent/evaluation executed; mixed licenses.",
+      "revision": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f"
+    },
+    {
+      "name": "WSP-Scope",
+      "path": "external/WSP-Scope",
+      "url": "https://github.com/WSP-Scope/WSP-Scope-Project",
+      "mode": "submodule",
+      "license": "NOASSERTION",
+      "integration": "paper-only",
+      "notes": "At this revision the checkout contains a PDF only, with no runnable code or license grant. Do not treat as an integrated engine.",
+      "revision": "d51670cab60364eafd44000a0e9a65a75cc9ac56"
+    },
+    {
+      "name": "WeightBench",
+      "path": "external/WeightBench",
+      "url": "https://github.com/Aayush-Marasini/WeightBench",
+      "mode": "submodule",
+      "license": "MIT",
+      "integration": "external-benchmark",
+      "notes": "Cloned/inspected 42-task WSP reference; sandbox and model/API setup required separately. No benchmark run.",
+      "revision": "2acd60172fc9758eb9030b1cab4a2ff29be5c993"
+    },
+    {
+      "name": "lm-evaluation-harness",
+      "path": "external/lm-evaluation-harness",
+      "url": "https://github.com/EleutherAI/lm-evaluation-harness",
+      "mode": "submodule",
+      "license": "MIT",
+      "integration": "opt-in-external-benchmark-driver",
+      "notes": "Cloned/inspected CLI; owned plan-first offline fixed-argument driver. Actual installed upstream benchmark unrun; licensed datasets/model provisioned separately.",
+      "revision": "d6de81643928d653435c431bae19945d41d32520"
+    },
+    {
+      "name": "dgm",
+      "path": "external/dgm",
+      "url": "https://github.com/jennyzzt/dgm",
+      "mode": "submodule",
+      "license": "Apache-2.0",
+      "integration": "research-reference",
+      "notes": "Agent source-code evolution. Requires Docker, benchmark assets and API access; does not itself edit LLM weights.",
+      "revision": "a565fd2d1dca504ef5104a7cc0f3bdc4ab9b4fd2"
+    }
+  ],
+  "optional_installed_package_reviews": [
+    {
+      "name": "lm-format-enforcer",
+      "version": "0.11.3",
+      "url": "https://github.com/noamgat/lm-format-enforcer",
+      "cloned_revision": "817f944fcc8851917c40300a47f62d1defc3ffc3",
+      "license": "MIT",
+      "receipt": "docs/evidence/structured-decoder-source.json",
+      "integration": "Optional separately installed Transformers prefix decoder, owned closed action schema and independent host checks; no upstream code vendored.",
+      "verification_scope": "Cloned/source-inspected in local development; receipt and owned integration tests are preserved. Not a thirteenth preserved source tree; repos sync/verify still cover only sources[]. Upstream test suite not executed."
+    }
+  ],
+  "development_data_model_source_reviews": [
+    {
+      "repository": "https://github.com/openai/grade-school-math",
+      "cloned_revision": "3101c7d5072418e28b9008a6636bde82a006892c",
+      "license": "MIT",
+      "integration": "Data-only selection of 60 question/numeric-reference pairs across five fixed roles, no upstream code execution. Disjoint upstream train rows for practice/development/reserved; test rows for final/retention. SHA256-ranked, not performance-selected. Chain-of-thought rationales excluded from emitted role files.",
+      "receipt": "docs/evidence/discovery-sources.json"
+    },
+    {
+      "repository": "https://github.com/Dadhichi-Sarker-Shayon/SmolLM2-360M-GGUF",
+      "cloned_revision": "a3f5ab2509573383064fd986bfff2d912dc4ba39",
+      "license": "Apache-2.0 (source assertion)",
+      "integration": "Reviewed data/conversion provenance and resource requirements. Base checkpoint, not Instruct; no model payload in this GitHub clone and no converter/upstream code executed. The independent CI plan provisions official HuggingFaceTB/SmolLM2-360M-Instruct and records a separate immutable resolved revision/files receipt before inference.",
+      "receipt": "docs/evidence/discovery-sources.json"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "model": {
+    "model_name_or_path": "models/smollm2",
+    "device": "cpu",
+    "torch_dtype": "float32",
+    "max_new_tokens": 128,
+    "prompt_format": "chat"
+  },
+  "policy": {
+    "max_sessions": 1,
+    "max_turns": 24,
+    "max_forward_calls": 20,
+    "max_edit_actions": 8,
+    "max_seconds": 600,
+    "max_invalid_actions": 4,
+    "max_repeated_actions": 3,
+    "max_model_parameters": 300000000,
+    "max_model_bytes": 1073741824,
+    "max_matrix_elements": 8000000,
+    "max_edit_tensors": 2,
+    "max_changed_entries": 8192,
+    "max_edited_fraction": 0.001,
+    "max_relative_norm": 0.1,
+    "max_patch_bytes": 16777216,
+    "max_examples_per_split": 3000,
+    "max_problems_per_call": 32,
+    "samples_per_problem": 1,
+    "test_samples_per_problem": 1,
+    "diagnosis_problems": 32,
+    "max_read_tokens": 512,
+    "max_read_texts": 8,
+    "max_read_elements": 1000000,
+    "max_logit_elements": 16000000,
+    "max_history_chars": 8000,
+    "forgetting_threshold": 0,
+    "improvement_threshold": 0,
+    "require_significance": true,
+    "alpha": 0.0011363636363636365,
+    "permutation_draws": 10000,
+    "attention_maps": false,
+    "seed": 42,
+    "test_seed": 20261119,
+    "cpu_threads": 2
+  },
+  "sampling": {
+    "temperature": 0.0,
+    "thinking": false
+  },
+  "editor": {
+    "mode": "model",
+    "decoding": "json_schema",
+    "max_new_tokens": 512,
+    "sampling": {
+      "temperature": 0.3,
+      "top_p": 0.95,
+      "top_k": 20,
+      "thinking": false
+    }
+  },
+  "grader": "exact",
+  "data": {
+    "train": "discovery/practice.json",
+    "validation": "discovery/reserved.json",
+    "test": "discovery/final.json"
+  },
+  "discovery": {
+    "development": "discovery/development.json",
+    "retention": "discovery/retention.json",
+    "gradient_access": false,
+    "measure_loss": true,
+    "feedback": true,
+    "prompt_style": "compact",
+    "operation_scope": "all",
+    "followup_operations": [
+      {
+        "op": "add",
+        "name": "model.layers.29.post_attention_layernorm.weight",
+        "indices": [
+          0
+        ],
+        "value": 0.001
+      }
+    ],
+    "workflow": "free"
+  },
+  "output_dir": "outputs/discovery",
+  "license": "Apache-2.0 (verify local model receipt and distribution license)",
+  "provenance": "Fixed 135M Q4_1-derived SmolLM2 model-editor profile. 240 selected arithmetic/copying/reasoning/GSM8K examples; no full-benchmark or pretraining-decontamination claim. Hypotheses precede data-only edits, actual practice feedback is archived, development and reserved accuracy/significance gates seal before any look. Final and subsequent-edit retention never select. No host-written autonomous fallback. Use lab experiment for matched controls and preregistered seeds."
+}

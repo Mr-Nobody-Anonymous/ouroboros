@@ -1,0 +1,140 @@
+{
+  "kind": "ouroboros-github-research-ci-evidence",
+  "checked_on": "2026-11-19",
+  "implementation_commit": "9a3745eb698d9198b774c9c20cae4716793dbea5",
+  "retrieval": "GitHub Actions run/jobs/check-annotations APIs, not artifact ZIP payload",
+  "runs": [
+    {
+      "id": 44690540729,
+      "event": "push",
+      "url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44690540729",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "mcp",
+          "conclusion": "success"
+        },
+        {
+          "name": "pretrained-self-edit",
+          "conclusion": "success"
+        },
+        {
+          "name": "core (3.10)",
+          "conclusion": "success"
+        },
+        {
+          "name": "core (3.12)",
+          "conclusion": "success"
+        },
+        {
+          "name": "local-lora",
+          "conclusion": "success"
+        },
+        {
+          "name": "core (3.11)",
+          "conclusion": "success"
+        }
+      ],
+      "research_measurements": {
+        "parameters": 134515008,
+        "editor_state_sha256": "6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8",
+        "model_authored": {
+          "editor_generations": 2,
+          "valid_tool_actions": 0,
+          "invalid_actions": 2,
+          "status": "budget_exhausted",
+          "accepted": false
+        },
+        "scripted_tools": {
+          "actions": 16,
+          "forward_requests": 10,
+          "changed_entries": 1152,
+          "edited_tensors": 2,
+          "status": "rejected",
+          "accepted": false,
+          "reserved_baseline_accuracy": 0.0,
+          "reserved_candidate_accuracy": 0.0,
+          "max_control_norm_rounding_error": 4.6595295734683324e-08
+        },
+        "base_restored": true,
+        "source_files_unchanged": true,
+        "capability_gain_claimed": false
+      },
+      "artifact_inventory": [
+        {
+          "id": 14608267253,
+          "name": "pretrained-self-edit-evidence",
+          "bytes": 15052,
+          "expired": false,
+          "digest": "sha256:1c92b480b4b89459722f845aa52b52c7e21cd2fcf0c14f1179b1397ee4b24a62"
+        }
+      ]
+    },
+    {
+      "id": 44690546371,
+      "event": "pull_request",
+      "url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44690546371",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "pretrained-self-edit",
+          "conclusion": "success"
+        },
+        {
+          "name": "local-lora",
+          "conclusion": "success"
+        },
+        {
+          "name": "mcp",
+          "conclusion": "success"
+        },
+        {
+          "name": "core (3.10)",
+          "conclusion": "success"
+        },
+        {
+          "name": "core (3.11)",
+          "conclusion": "success"
+        },
+        {
+          "name": "core (3.12)",
+          "conclusion": "success"
+        }
+      ],
+      "research_measurements": {
+        "parameters": 134515008,
+        "editor_state_sha256": "6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8",
+        "model_authored": {
+          "editor_generations": 2,
+          "valid_tool_actions": 0,
+          "invalid_actions": 2,
+          "status": "budget_exhausted",
+          "accepted": false
+        },
+        "scripted_tools": {
+          "actions": 16,
+          "forward_requests": 10,
+          "changed_entries": 1152,
+          "edited_tensors": 2,
+          "status": "rejected",
+          "accepted": false,
+          "reserved_baseline_accuracy": 0.0,
+          "reserved_candidate_accuracy": 0.0,
+          "max_control_norm_rounding_error": 4.6595295734683324e-08
+        },
+        "base_restored": true,
+        "source_files_unchanged": true,
+        "capability_gain_claimed": false
+      },
+      "artifact_inventory": [
+        {
+          "id": 14607799280,
+          "name": "pretrained-self-edit-evidence",
+          "bytes": 15054,
+          "expired": false,
+          "digest": "sha256:c77429ebbc5d64c5a83fead264336a0e3caad6bbd2b21d1eec3e38569a868ca5"
+        }
+      ]
+    }
+  ]
+}

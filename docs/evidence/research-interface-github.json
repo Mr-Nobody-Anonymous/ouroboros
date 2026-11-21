@@ -1,0 +1,386 @@
+{
+  "kind": "ouroboros-structured-editor-github-api-verified-evidence",
+  "implementation_commit": "8e7e4ffc39679ad4aeb1c784e185d086d66bd221",
+  "verification": "Independent GitHub workflow-run/jobs/check-annotation/artifact metadata API reads after both complete. Six jobs each verified success; actual pretrained command-interface notice parsed, not inferred from unit tests.",
+  "runs": [
+    {
+      "run_id": 44702138081,
+      "url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44702138081",
+      "event": "push",
+      "head_sha": "8e7e4ffc39679ad4aeb1c784e185d086d66bd221",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 136172812718,
+          "name": "local-lora",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44702138081/job/136172812718"
+        },
+        {
+          "id": 136172812975,
+          "name": "mcp",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44702138081/job/136172812975"
+        },
+        {
+          "id": 136172812983,
+          "name": "core (3.12)",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44702138081/job/136172812983"
+        },
+        {
+          "id": 136172813138,
+          "name": "core (3.10)",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44702138081/job/136172813138"
+        },
+        {
+          "id": 136172813141,
+          "name": "core (3.11)",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44702138081/job/136172813141"
+        },
+        {
+          "id": 136172813292,
+          "name": "pretrained-self-edit",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44702138081/job/136172813292"
+        }
+      ],
+      "pretrained_job_notices": {
+        "Ouroboros structured editor evidence": {
+          "message_sha256": "61ab5d2f045ea813edda849821038851d8d53552c82f1c6cdc49be04aca6990b",
+          "measurements": {
+            "kind": "ouroboros-research-interface-experiment",
+            "parameters": 134515008,
+            "editor_state_sha256": "6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8",
+            "dataset_sha256": "10902c06a4d91c2201ff0dde0a4ea5ac969d94017f8b4470e9e9dfe421969bce",
+            "conditions": [
+              {
+                "accepted": false,
+                "base_restored": true,
+                "decoding": "unconstrained",
+                "editor_generations": 4,
+                "final_test_used_for_promotion": false,
+                "invalid_actions": 4,
+                "max_staged_changed_entries": 0,
+                "model_authored_actions": true,
+                "parsed_json_replies": 0,
+                "practice_baseline_accuracy": 0.05555555555555555,
+                "practice_cut_share": 0.1111111111111111,
+                "practice_signal": "mixed_correct_and_incorrect",
+                "practice_test_actions": 0,
+                "source_files_unchanged": true,
+                "staged_edit_actions": 0,
+                "status": "budget_exhausted",
+                "valid_action_names": [],
+                "valid_tool_actions": 0
+              },
+              {
+                "accepted": false,
+                "base_restored": true,
+                "decoding": "json_schema",
+                "editor_generations": 3,
+                "final_test_used_for_promotion": false,
+                "invalid_actions": 0,
+                "max_staged_changed_entries": 0,
+                "model_authored_actions": true,
+                "parsed_json_replies": 3,
+                "practice_baseline_accuracy": 0.05555555555555555,
+                "practice_cut_share": 0.1111111111111111,
+                "practice_signal": "mixed_correct_and_incorrect",
+                "practice_test_actions": 0,
+                "source_files_unchanged": true,
+                "staged_edit_actions": 0,
+                "status": "stalled",
+                "valid_action_names": [
+                  "inventory"
+                ],
+                "valid_tool_actions": 3
+              }
+            ],
+            "base_restored": true,
+            "source_files_unchanged": true,
+            "capability_gain_claimed": false,
+            "initial_editor_prompt_sha256": "f8a0842760807b344460c313905cb31ec691b355bf194ad03637c1aa10c365fd",
+            "matched_initial_editor_prompt": true
+          }
+        },
+        "Ouroboros research evidence": {
+          "message_sha256": "f984168d9433fdcf1a1f7ea63755aa5920e55df17562c6c3296958b36eead452",
+          "measurements": {
+            "parameters": 134515008,
+            "editor_state_sha256": "6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8",
+            "model_authored": {
+              "editor_generations": 2,
+              "valid_tool_actions": 0,
+              "invalid_actions": 2,
+              "status": "budget_exhausted",
+              "accepted": false
+            },
+            "scripted_tools": {
+              "actions": 16,
+              "forward_requests": 10,
+              "changed_entries": 1152,
+              "edited_tensors": 2,
+              "status": "rejected",
+              "accepted": false,
+              "reserved_baseline_accuracy": 0.0,
+              "reserved_candidate_accuracy": 0.0,
+              "max_control_norm_rounding_error": 4.6595295734683324e-08
+            },
+            "base_restored": true,
+            "source_files_unchanged": true,
+            "capability_gain_claimed": false
+          }
+        },
+        "Ouroboros pretrained smoke": {
+          "message_sha256": "d4d9fb4fce8b6b497982c1eff83b6a2386878198e07fba1728eb499f4af250f2",
+          "measurements": {
+            "accepted_patches": 0,
+            "base_restored": true,
+            "base_state_sha256": "6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8",
+            "baseline_macro_accuracy": 0.0,
+            "candidate_macro_accuracies": [
+              0.0,
+              0.0
+            ],
+            "changed_entries": [
+              884,
+              884
+            ],
+            "decisions": [
+              "rejected",
+              "rejected"
+            ],
+            "final_test_used_for_promotion": false,
+            "kind": "pretrained-mechanics-smoke",
+            "model_parameters": 134515008,
+            "restored_state_sha256": "6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8",
+            "source_files_unchanged": true
+          }
+        }
+      },
+      "artifact_metadata": [
+        {
+          "id": 14613322670,
+          "name": "pretrained-self-edit-evidence",
+          "size_in_bytes": 29308,
+          "digest": "sha256:50c22f5e8c79f2a6b19ef085a6672bb2b0750ee7f636e0fa050c029e4962f545",
+          "expired": false
+        }
+      ]
+    },
+    {
+      "run_id": 44702144531,
+      "url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44702144531",
+      "event": "pull_request",
+      "head_sha": "8e7e4ffc39679ad4aeb1c784e185d086d66bd221",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 136172832644,
+          "name": "local-lora",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44702144531/job/136172832644"
+        },
+        {
+          "id": 136172832865,
+          "name": "core (3.10)",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44702144531/job/136172832865"
+        },
+        {
+          "id": 136172832901,
+          "name": "pretrained-self-edit",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44702144531/job/136172832901"
+        },
+        {
+          "id": 136172833056,
+          "name": "mcp",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44702144531/job/136172833056"
+        },
+        {
+          "id": 136172833141,
+          "name": "core (3.12)",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44702144531/job/136172833141"
+        },
+        {
+          "id": 136172833215,
+          "name": "core (3.11)",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44702144531/job/136172833215"
+        }
+      ],
+      "pretrained_job_notices": {
+        "Ouroboros structured editor evidence": {
+          "message_sha256": "61ab5d2f045ea813edda849821038851d8d53552c82f1c6cdc49be04aca6990b",
+          "measurements": {
+            "kind": "ouroboros-research-interface-experiment",
+            "parameters": 134515008,
+            "editor_state_sha256": "6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8",
+            "dataset_sha256": "10902c06a4d91c2201ff0dde0a4ea5ac969d94017f8b4470e9e9dfe421969bce",
+            "conditions": [
+              {
+                "accepted": false,
+                "base_restored": true,
+                "decoding": "unconstrained",
+                "editor_generations": 4,
+                "final_test_used_for_promotion": false,
+                "invalid_actions": 4,
+                "max_staged_changed_entries": 0,
+                "model_authored_actions": true,
+                "parsed_json_replies": 0,
+                "practice_baseline_accuracy": 0.05555555555555555,
+                "practice_cut_share": 0.1111111111111111,
+                "practice_signal": "mixed_correct_and_incorrect",
+                "practice_test_actions": 0,
+                "source_files_unchanged": true,
+                "staged_edit_actions": 0,
+                "status": "budget_exhausted",
+                "valid_action_names": [],
+                "valid_tool_actions": 0
+              },
+              {
+                "accepted": false,
+                "base_restored": true,
+                "decoding": "json_schema",
+                "editor_generations": 3,
+                "final_test_used_for_promotion": false,
+                "invalid_actions": 0,
+                "max_staged_changed_entries": 0,
+                "model_authored_actions": true,
+                "parsed_json_replies": 3,
+                "practice_baseline_accuracy": 0.05555555555555555,
+                "practice_cut_share": 0.1111111111111111,
+                "practice_signal": "mixed_correct_and_incorrect",
+                "practice_test_actions": 0,
+                "source_files_unchanged": true,
+                "staged_edit_actions": 0,
+                "status": "stalled",
+                "valid_action_names": [
+                  "inventory"
+                ],
+                "valid_tool_actions": 3
+              }
+            ],
+            "base_restored": true,
+            "source_files_unchanged": true,
+            "capability_gain_claimed": false,
+            "initial_editor_prompt_sha256": "f8a0842760807b344460c313905cb31ec691b355bf194ad03637c1aa10c365fd",
+            "matched_initial_editor_prompt": true
+          }
+        },
+        "Ouroboros research evidence": {
+          "message_sha256": "a1fd9cc289373f4f66426a81998a1c7e8dc9a78f11d2e50850207accd0dc8581",
+          "measurements": {
+            "parameters": 134515008,
+            "editor_state_sha256": "6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8",
+            "model_authored": {
+              "editor_generations": 2,
+              "valid_tool_actions": 0,
+              "invalid_actions": 2,
+              "status": "budget_exhausted",
+              "accepted": false
+            },
+            "scripted_tools": {
+              "actions": 16,
+              "forward_requests": 10,
+              "changed_entries": 1152,
+              "edited_tensors": 2,
+              "status": "rejected",
+              "accepted": false,
+              "reserved_baseline_accuracy": 0.0,
+              "reserved_candidate_accuracy": 0.0,
+              "max_control_norm_rounding_error": 4.347629321779039e-08
+            },
+            "base_restored": true,
+            "source_files_unchanged": true,
+            "capability_gain_claimed": false
+          }
+        },
+        "Ouroboros pretrained smoke": {
+          "message_sha256": "d4d9fb4fce8b6b497982c1eff83b6a2386878198e07fba1728eb499f4af250f2",
+          "measurements": {
+            "accepted_patches": 0,
+            "base_restored": true,
+            "base_state_sha256": "6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8",
+            "baseline_macro_accuracy": 0.0,
+            "candidate_macro_accuracies": [
+              0.0,
+              0.0
+            ],
+            "changed_entries": [
+              884,
+              884
+            ],
+            "decisions": [
+              "rejected",
+              "rejected"
+            ],
+            "final_test_used_for_promotion": false,
+            "kind": "pretrained-mechanics-smoke",
+            "model_parameters": 134515008,
+            "restored_state_sha256": "6af734f2a618851e913950745c62fca65a4664cf6a9474b1b03577b1cc5329c8",
+            "source_files_unchanged": true
+          }
+        }
+      },
+      "artifact_metadata": [
+        {
+          "id": 14614230181,
+          "name": "pretrained-self-edit-evidence",
+          "size_in_bytes": 29308,
+          "digest": "sha256:ae417af4b525d16520183ae1ac15a81f9d0fad37fe8bbbda6852d5a4aaf5dfa4",
+          "expired": false
+        }
+      ]
+    }
+  ],
+  "ci_interface_policy": {
+    "max_turns_per_condition": 8,
+    "max_seconds_per_condition": 240,
+    "answer_tokens": 128,
+    "editor_tokens": 384
+  },
+  "local_interface_policy": {
+    "max_turns_per_condition": 16,
+    "max_seconds_per_condition": 600
+  },
+  "artifact_zip_payload_downloaded_or_verified": false,
+  "superseded_cancelled_runs": [
+    {
+      "id": 44702073863,
+      "head_sha": "6d586fe77a05d53963b4adaa4642cc293e70cb49",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44702073863"
+    },
+    {
+      "id": 44702079200,
+      "head_sha": "6d586fe77a05d53963b4adaa4642cc293e70cb49",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/Mr-Nobody-Anonymous/ouroboros/actions/runs/44702079200"
+    }
+  ],
+  "capability_gain_claimed": false,
+  "limits": "Owned public arithmetic/copy diagnostics, repeated engineering runs and one condition order/seed/checkpoint; syntax/validity is not a useful edit. No model-authored weight edit, accepted patch or gain. Redirected artifact ZIP payload was not inspected. Historical experiments remain separate; no release/merge."
+}

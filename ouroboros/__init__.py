@@ -1,5 +1,3 @@
-"""
-Ouroboros: Autonomous Recursive Self-Fine-Tuning & Weight Adaptation Framework.
-"""
+"""Ouroboros: auditable, bounded local model adaptation experiments."""
 
-__version__ = "0.1.0"
+__version__ = "0.5.0"
