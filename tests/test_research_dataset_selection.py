@@ -195,3 +195,34 @@ def test_dataset_profiles_keep_roles_disjoint_and_resolvable(tmp_path):
 def test_unknown_profile_is_refused():
     with pytest.raises(ValueError, match="Unknown dataset profile"):
         owned.build(17, profile="enormous")
+
+
+def test_g6_campaign_defaults_to_a_fresh_seed_range_and_refuses_consumed_ranges():
+    import runpy
+    from pathlib import Path
+
+    script = Path(__file__).resolve().parents[1] / "scripts" / "run_selection_campaign.py"
+    campaign = runpy.run_path(str(script))
+    validate_fresh_seed_range = campaign["validate_fresh_seed_range"]
+    default_first_seed = campaign["DEFAULT_FIRST_SEED"]
+    from ouroboros.research.contracts import identity
+    from ouroboros.research.selection import design_magnitude
+
+    assert default_first_seed == 701
+    assert validate_fresh_seed_range(default_first_seed, 20) == (701, 720)
+    assert campaign["MAGNITUDE_V2_SHA256"] == identity(design_magnitude())
+    assert campaign["COMPACT_CAMPAIGN_BUDGET"].max_rss_bytes == 2400 * 1024**2
+    for first_seed, episodes in (
+        (201, 1),
+        (210, 1),
+        (601, 1),
+        (615, 1),
+        (200, 2),
+        (220, 2),
+        (600, 2),
+        (620, 1),
+    ):
+        with pytest.raises(ValueError, match="overlaps consumed G6 seeds"):
+            validate_fresh_seed_range(first_seed, episodes)
+    with pytest.raises(ValueError, match="positive integer"):
+        validate_fresh_seed_range(default_first_seed, 0)
