@@ -92,9 +92,7 @@ def main():
         "--first-seed",
         type=int,
         default=DEFAULT_FIRST_SEED,
-        help=(
-            "First fresh seed (consumed G6 ranges 201–220, 601–620 and 701–720 are refused)"
-        ),
+        help=("First fresh seed (consumed G6 ranges 201–220, 601–620 and 701–720 are refused)"),
     )
     parser.add_argument("--model", required=True)
     parser.add_argument(
