@@ -130,8 +130,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       actions: read
+      checks: write
       contents: read
-      issues: write
     steps:
       - name: Download completed replay evidence
         uses: actions/download-artifact@v6
@@ -209,18 +209,32 @@ jobs:
               "This is an offline replay of recorded counterfactual candidates, not online learning or general capability evidence. `autonomous_improvement_demonstrated` remains false.",
               "The complete JSON, campaign log, per-episode manifests and model receipt are attached to the Actions run artifact."
             ].join("\n");
-            const issueNumber = 1;
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner, repo, issue_number: issueNumber, per_page: 100
+            const now = new Date().toISOString();
+            const externalId = `g6-magnitude-v2-source-run:${runId}`;
+            const output = {
+              title: "Completed 20-episode magnitude_v2 replay",
+              summary: body,
+              text: `Source workflow run ${runId}; offline replay only.`
+            };
+            const checks = await github.paginate(github.rest.checks.listForRef, {
+              owner, repo, ref: source.data.head_sha, filter: "all", per_page: 100
             });
-            const existing = comments.find(comment => comment.body.includes(`g6-magnitude-v2-source-run:${runId}`));
+            const existing = checks.find(check => check.external_id === externalId);
+            let report;
             if (existing) {
-              await github.rest.issues.updateComment({
-                owner, repo, comment_id: existing.id, body
+              report = await github.rest.checks.update({
+                owner, repo, check_run_id: existing.id,
+                details_url: source.data.html_url,
+                status: "completed", conclusion: "success", completed_at: now, output
               });
             } else {
-              await github.rest.issues.createComment({
-                owner, repo, issue_number: issueNumber, body
+              report = await github.rest.checks.create({
+                owner, repo, name: "G6 magnitude_v2 replay result",
+                head_sha: source.data.head_sha, external_id: externalId,
+                details_url: source.data.html_url,
+                status: "completed", conclusion: "success",
+                started_at: now, completed_at: now, output
               });
             }
-            core.info(`Published measured G6 result from run ${runId} to PR #${issueNumber}.`);
+            await core.summary.addRaw(body).write();
+            core.info(`Published measured G6 result as check run ${report.data.id}.`);
